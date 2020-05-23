@@ -264,14 +264,14 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
 
 void
 RoutingProtocol::DoInitialize (void)
-{
+{ 
   int32_t id =m_ipv4->GetObject<Node> ()->GetId ();
    Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> () ->GetObject<MobilityModel>();
        Vector mypos = mobility->GetPosition ();
   if(id == 0 ){
        std::cout<<"M0de Position----------------------------------------------------------"<<"\n";
   }
-  
+
    std::cout<<"|node id|"<<id<<"|xposition|"<<mypos.x<<"|yposition"<<mypos.y<<"\n";
    if(id == NumNodes - 1){
     std::cout<<"-----------------------------------------------------------------------"<<"\n";
@@ -296,6 +296,8 @@ RoutingProtocol::RecvSample (Ptr<Socket> socket)
 {
   int32_t id =m_ipv4->GetObject<Node> ()->GetId ();
   recv_num[id]++;
+  //
+  
   //std::cout<<"receive id"<<id<<"\n";
   //std::cout<<"In recv Sample(Node "<< m_ipv4->GetObject<Node> ()->GetId ()<<")\n";
   //int8_t id =m_ipv4->GetObject<Node> ()->GetId ();

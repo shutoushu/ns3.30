@@ -557,7 +557,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
   OlsrHelper olsr;
   DsdvHelper dsdv;
   DsrHelper dsr;
-  SampleHelper sampleProtocol;
+  SampleHelper sample;
   DsrMainHelper dsrMain;
   Ipv4ListRoutingHelper list;
   InternetStackHelper internet;
@@ -565,9 +565,6 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
   Time rtt = Time (5.0);
   AsciiTraceHelper ascii;
   Ptr<OutputStreamWrapper> rtw = ascii.CreateFileStream ("routing_table");
-  
-  std::cout<<"set up routing m_protocol---------------------"<<m_protocol<<"\n";
-  m_protocol = 5;//無理やりプロトコルを切り替える
 
   switch (m_protocol)
     {
@@ -589,7 +586,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
         }
       list.Add (aodv, 100);
       m_protocolName = "AODV";
-      std::cout<<"aodv protocol done"<<"\n";
+      std::cout<<"obstacle debug --------------------------------------------------------aodv protocol done"<<"\n\n";
       break;
     case 3:
       if (m_routingTables != 0)
@@ -607,12 +604,13 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);
       break;
     case 5:
+      list.Add (sample, 100);
       m_protocolName = "SAMPLE";
-      std::cout<<"sample protocol done"<<"\n";
+      std::cout<<"obstacle debug ---------------------------------------------------------sample protocol done"<<"\n\n";
       break;
     }
 
-  if (m_protocol < 4)
+  if (m_protocol < 4)                              //obstacle
     {
       internet.SetRoutingHelper (list);
       internet.Install (c);
@@ -621,6 +619,12 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
     {
       internet.Install (c);
       dsrMain.Install (dsr, c);
+    }
+  else if (m_protocol >= 5)
+    {
+      std::cout<<"イフに入ってる"<<"\n";
+      internet.SetRoutingHelper (list);
+      internet.Install (c);
     }
 
   if (m_log != 0)
@@ -633,10 +637,12 @@ void
 RoutingHelper::AssignIpAddresses (NetDeviceContainer & d,
                                   Ipv4InterfaceContainer & adhocTxInterfaces)
 {
+  ///原因となるメソッド
   NS_LOG_INFO ("Assigning IP addresses");
   Ipv4AddressHelper addressAdhoc;
   // we may have a lot of nodes, and want them all
   // in same subnet, to support broadcast
+  std::cout<<"a"<<"\n";
   addressAdhoc.SetBase ("10.1.0.0", "255.255.0.0");
   adhocTxInterfaces = addressAdhoc.Assign (d);
 }
@@ -1358,7 +1364,7 @@ VanetRoutingExperiment::VanetRoutingExperiment ()
     m_wavePacketSize (200),
     m_waveInterval (0.1),
     m_verbose (0),
-    m_scenario (1),
+    m_scenario (2),
     m_gpsAccuracyNs (40),
     m_txMaxDelayMs (10),
     m_routingTables (0),
@@ -1707,7 +1713,7 @@ VanetRoutingExperiment::ProcessOutputs ()
 
   if (m_log != 0)
     {
-      NS_LOG_UNCOND ("BSM_PDR1=" << bsm_pdr1 << " BSM_PDR2=" << bsm_pdr2 << " BSM_PDR3=" << bsm_pdr3 << " BSM_PDR4=" << bsm_pdr4 << " BSM_PDR5=" << bsm_pdr5 << " BSM_PDR6=" << bsm_pdr6 << " BSM_PDR7=" << bsm_pdr7 << " BSM_PDR8=" << bsm_pdr8 << " BSM_PDR9=" << bsm_pdr9 << " BSM_PDR10=" << bsm_pdr10 << " Goodput=" << averageRoutingGoodputKbps << "Kbps MAC/PHY-oh=" << mac_phy_oh);
+      //NS_LOG_UNCOND ("BSM_PDR1=" << bsm_pdr1 << " BSM_PDR2=" << bsm_pdr2 << " BSM_PDR3=" << bsm_pdr3 << " BSM_PDR4=" << bsm_pdr4 << " BSM_PDR5=" << bsm_pdr5 << " BSM_PDR6=" << bsm_pdr6 << " BSM_PDR7=" << bsm_pdr7 << " BSM_PDR8=" << bsm_pdr8 << " BSM_PDR9=" << bsm_pdr9 << " BSM_PDR10=" << bsm_pdr10 << " Goodput=" << averageRoutingGoodputKbps << "Kbps MAC/PHY-oh=" << mac_phy_oh);
 
     }
 
@@ -1745,6 +1751,7 @@ VanetRoutingExperiment::Run ()
   anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(m_TotalSimTime));
   Simulator::Run ();
   Simulator::Destroy ();
+  std::cout<<"simulator destroy"<<"\n";
 }
 
 // Prints actual position and velocity when a course change event occurs
@@ -1817,7 +1824,8 @@ VanetRoutingExperiment::CheckThroughput ()
 
   if (m_log != 0 )
     {
-      NS_LOG_UNCOND ("At t=" << (Simulator::Now ()).GetSeconds () << "s BSM_PDR1=" << wavePDR1_2 << " BSM_PDR1=" << wavePDR2_2 << " BSM_PDR3=" << wavePDR3_2 << " BSM_PDR4=" << wavePDR4_2 << " BSM_PDR5=" << wavePDR5_2 << " BSM_PDR6=" << wavePDR6_2 << " BSM_PDR7=" << wavePDR7_2 << " BSM_PDR8=" << wavePDR8_2 << " BSM_PDR9=" << wavePDR9_2 << " BSM_PDR10=" << wavePDR10_2 << " Goodput=" << kbps << "Kbps" /*<< " MAC/PHY-OH=" << mac_phy_oh*/);
+      //obstacle
+      //NS_LOG_UNCOND ("At t=" << (Simulator::Now ()).GetSeconds () << "s BSM_PDR1=" << wavePDR1_2 << " BSM_PDR1=" << wavePDR2_2 << " BSM_PDR3=" << wavePDR3_2 << " BSM_PDR4=" << wavePDR4_2 << " BSM_PDR5=" << wavePDR5_2 << " BSM_PDR6=" << wavePDR6_2 << " BSM_PDR7=" << wavePDR7_2 << " BSM_PDR8=" << wavePDR8_2 << " BSM_PDR9=" << wavePDR9_2 << " BSM_PDR10=" << wavePDR10_2 << " Goodput=" << kbps << "Kbps" /*<< " MAC/PHY-OH=" << mac_phy_oh*/);
     }
 
   out << (Simulator::Now ()).GetSeconds () << ","
@@ -2045,15 +2053,15 @@ VanetRoutingExperiment::CommandSetup (int argc, char **argv)
   cmd.AddValue ("sinks", "Number of routing sinks", m_nSinks);
   cmd.AddValue ("txp", "Transmit power (dB), e.g. txp=7.5", m_txp);
   cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
-  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV;4=DSR;5=SAMPLE", m_protocol);
+  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV;4=DSR;5=SAMPLE", m_protocol);//コマンドで入力必要
   cmd.AddValue ("lossModel", "1=Friis;2=ItuR1411Los;3=TwoRayGround;4=LogDistance", m_lossModel);
   cmd.AddValue ("fading", "0=None;1=Nakagami;(buildings=1 overrides)", m_fading);
-  cmd.AddValue ("buildings", "Load building (obstacles)", m_loadBuildings);
+  cmd.AddValue ("buildings", "Load building (obstacles)", m_loadBuildings);//コマンド入力必要なし　1で初期化済み
   cmd.AddValue ("phyMode", "Wifi Phy mode", m_phyMode);
   cmd.AddValue ("80211Mode", "1=802.11p; 2=802.11b; 3=WAVE-PHY", m_80211mode);
   cmd.AddValue ("traceFile", "Ns2 movement trace file", m_traceFile);
   cmd.AddValue ("logFile", "Log file", m_logFile);
-  cmd.AddValue ("mobility", "1=trace;2=RWP", m_mobility);
+  cmd.AddValue ("mobility", "1=trace;2=RWP", m_mobility);//1を選択すると trace ファイルを読み込むmobility 2ランダムトポロジ
   cmd.AddValue ("rate", "Rate", m_rate);
   cmd.AddValue ("phyModeB", "Phy mode 802.11b", m_phyModeB);
   cmd.AddValue ("speed", "Node speed (m/s)", m_nodeSpeed);
@@ -2061,7 +2069,7 @@ VanetRoutingExperiment::CommandSetup (int argc, char **argv)
   cmd.AddValue ("verbose", "0=quiet;1=verbose", m_verbose);
   cmd.AddValue ("bsm", "(WAVE) BSM size (bytes)", m_wavePacketSize);
   cmd.AddValue ("interval", "(WAVE) BSM interval (s)", m_waveInterval);
-  cmd.AddValue ("scenario", "1=synthetic, 2=playback-trace", m_scenario);
+  cmd.AddValue ("scenario", "1=synthetic, 2=playback-trace", m_scenario); //２or 3
   // User is allowed to have up to 10 different PDRs (Packet
   // Delivery Ratios) calculate, and so can specify up to
   // 10 different tx distances.
@@ -2254,7 +2262,7 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   if (m_loadBuildings != 0)
     {
       wifiChannel.AddPropagationLoss ("ns3::ObstacleShadowingPropagationLossModel");
-      std::cout<<"obstacle shadowing loss model"<<"\n";
+      std::cout<<"obstacle debug -----------------------------------------------obstacle shadowing loss model"<<"\n\n";
     }
   else if (m_fading != 0)
     {
@@ -2396,6 +2404,10 @@ VanetRoutingExperiment::SetupScenario ()
   // certain parameters may be further overridden
   // i.e. specify a scenario, override tx power.
 
+
+  //m_scenario = 3;      //obstacle   無理やり2にかえる
+
+
   if (m_scenario == 1)
     {
       // 40 nodes in RWP 300 m x 1500 m synthetic highway, 10s
@@ -2408,7 +2420,7 @@ VanetRoutingExperiment::SetupScenario ()
         }
       if (m_TotalSimTime == 300.01)
         {
-          m_TotalSimTime = 10.0;
+          m_TotalSimTime = 100.0;
         }
     }
   else if (m_scenario == 2)
@@ -2419,7 +2431,7 @@ VanetRoutingExperiment::SetupScenario ()
       m_logFile = "low99-ct-unterstrass-1day.filt.7.adj.log";
       m_mobility = 1;
       m_nNodes = 99;
-      m_TotalSimTime = 300.01;
+      m_TotalSimTime = 100.0;
       m_nodeSpeed = 0;
       m_nodePause = 0;
       m_CSVfileName = "low_vanet-routing-compare.csv";
@@ -2434,7 +2446,7 @@ VanetRoutingExperiment::SetupScenario ()
       m_logFile = "Raleigh_Downtown50.log";
       m_mobility = 1;
       m_nNodes = 50;
-      m_TotalSimTime = 199;
+      m_TotalSimTime = 100;
       m_nodeSpeed = 0;
       m_nodePause = 0;
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
@@ -2458,7 +2470,7 @@ VanetRoutingExperiment::SetupScenario ()
         }
       if (m_loadBuildings != 0)
         {
-          //std::cout("building loading");
+          std::cout<<"obstacle debug -------------------------------------building loading"<<"\n\n";
 
           std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";
           NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
@@ -2517,7 +2529,6 @@ VanetRoutingExperiment::WriteCsvHeader ()
 int
 main (int argc, char *argv[])
 {
-  //std::string animFile = "mobiiltytest" ;  //netanim
   VanetRoutingExperiment experiment;
   experiment.Simulate (argc, argv);
 }
