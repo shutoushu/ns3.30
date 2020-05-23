@@ -1,0 +1,32 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('senko', ['internet', 'wifi'])
+    module.includes = '.'
+    module.source = [
+        'model/senko-packet.cc',
+        'model/senko-routing-protocol.cc',
+        'helper/senko-helper.cc',
+        ]
+
+    #senko_test = bld.create_ns3_module_test_library('senko')
+   # senko_test.source = [
+      #  'test/senko-id-cache-test-suite.cc',
+       # 'test/senko-test-suite.cc',
+       # 'test/senko-regression.cc',
+       # 'test/bug-772.cc',
+       # 'test/loopback.cc',
+       # ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'senko'
+    headers.source = [
+        'model/senko-packet.h',
+        'model/senko-routing-protocol.h',
+        'helper/senko-helper.h',
+        ]
+
+    #if bld.env['ENABLE_EXAMPLES']:
+     #   bld.recurse('examples')
+
+   # bld.ns3_python_bindings()
