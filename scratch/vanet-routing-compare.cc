@@ -2227,6 +2227,7 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       m_lossModelName = "ns3::LogDistancePropagationLossModel";
       std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
+      std::cout<<"aiaiaiai"<<"\n";
     }
   else
     {
@@ -2258,10 +2259,20 @@ VanetRoutingExperiment::SetupAdhocDevices ()
       wifiChannel.AddPropagationLoss (m_lossModelName, "Frequency", DoubleValue (freq), "HeightAboveZ", DoubleValue (1.5));
       std::cout<<"obstacle debug ---------------------------------------------------------set propagation lossmodel"<<m_lossModelName<<"\n\n";
     }
-  else
+  else if(m_lossModel == 4)
     {
+      wifiChannel.AddPropagationLoss("ns3::LogDistancePropagationLossModel",
+		"Exponent", DoubleValue(6.0),
+		"ReferenceDistance", DoubleValue(400.0),///伝搬距離１メートル
+		"ReferenceLoss", DoubleValue(46.6777));
+
+      std::cout<<"obstacle debug  -------------------------------------------------------set propagation loss model logdistance propagation model"<<"\n";
+    }
+  else{
+      std::cout<<"aiaiaiai2"<<"\n";
       wifiChannel.AddPropagationLoss (m_lossModelName, "Frequency", DoubleValue (freq));
       std::cout<<"obstacle debug ---------------------------------------------------------set propagation lossmodel"<<m_lossModelName<<"\n\n";
+      std::cout<<"aiaiaiai3"<<"\n";
     }
 
   // Propagation loss models are additive.  If Obstacle modeling is included,

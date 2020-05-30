@@ -276,7 +276,7 @@ RoutingProtocol::DoInitialize (void)
    if(id == NumNodes - 1){
     std::cout<<"-----------------------------------------------------------------------"<<"\n";
   }
-  if(id == 0)   //if Node ID = 0
+  if(id == 2)   //if Node ID = 0
     {
       for(int i=0; i<NumNodes; i++)
      {
