@@ -31,6 +31,18 @@
 #include "ns3/sample-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/netanim-module.h"
+#include "ns3/itu-r-1411-los-propagation-loss-model.h"
+#include "ns3/ocb-wifi-mac.h"
+#include "ns3/wifi-80211p-helper.h"
+#include "ns3/wave-mac-helper.h"
+#include "ns3/flow-monitor-module.h"
+#include "ns3/config-store-module.h"
+#include "ns3/integer.h"
+#include "ns3/wave-bsm-helper.h"
+#include "ns3/wave-helper.h"
+#include "ns3/topology.h"        ///obstacle
+#include "ns3/netanim-module.h"
+#include "ns3/yans-wifi-helper.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -45,7 +57,7 @@
 #define DIS_TIME   20.0
 #define SIM_STOP 	100.0
 #define TH_INTERVAL     0.1 
-#define NumNodes 100
+//#define NumNodes 10
 
 
 //#define PROG_DIR        "ns-3.29"
@@ -235,11 +247,12 @@ NetSim::ConfigureDataLinkLayer(bool verbose, StringValue phyMode, double dist)
     //"The random variable used to pick a loss every time CalcRxPower is invoked.",
    // MakePointerAccessor (&RandomPropagationLossModel::90));
 
-    wifiChannel.AddPropagationLoss  ("ns3::LogDistancePropagationLossModel");
+    //wifiChannel.AddPropagationLoss  ("ns3::LogDistancePropagationLossModel");
 //    wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue(200));
 	//wifiChannel.AddPropagationLoss("ns3::NakagamiPropagationLossModel","m0",
 	//DoubleValue(1),"m1", DoubleValue(1),"m2", DoubleValue(1));
-
+	
+    wifiChannel.AddPropagationLoss  ("ns3::ns3::TwoRayGroundPropagationLossModel");
 	wifiChannel.AddPropagationLoss("ns3::NakagamiPropagationLossModel");
 
 
@@ -462,10 +475,10 @@ main (int argc, char *argv[])
 	Simulator::Stop (Seconds (SIM_STOP));
   AnimationInterface anim(animFile);
 
-  for(int i=0; i< NumNodes; i++)
-  {
-	  anim.UpdateNodeSize(i,10,1);
-  }
+//   for(int i=0; i< NumNodes; i++)
+//   {
+// 	  anim.UpdateNodeSize(i,10,1);
+//   }
 
   anim.EnablePacketMetadata();
   anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(500));

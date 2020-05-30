@@ -622,7 +622,6 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
     }
   else if (m_protocol >= 5)
     {
-      std::cout<<"イフに入ってる"<<"\n";
       internet.SetRoutingHelper (list);
       internet.Install (c);
     }
@@ -1344,7 +1343,9 @@ VanetRoutingExperiment::VanetRoutingExperiment ()
     // SAMPLE
     //m_protocol (5),
     // Two-Ray ground
-    m_lossModel (3),
+    // m_lossModel (3),
+    //log distance 
+    m_lossModel (4),
     m_fading (0),
     m_loadBuildings (1),
     m_lossModelName (""),
@@ -1395,7 +1396,6 @@ VanetRoutingExperiment::VanetRoutingExperiment ()
   // set to non-zero value to enable
   // simply uncond logging during simulation run
   m_log = 1;
-  std::cout<<"m_protocol--------------------------------"<<m_protocol<<"\n";
 }
 
 void
@@ -2207,21 +2207,26 @@ VanetRoutingExperiment::SetupAdhocMobilityNodes ()
 void
 VanetRoutingExperiment::SetupAdhocDevices ()
 {
+  //m_lossModel=4;///obstacle
   if (m_lossModel == 1)
     {
       m_lossModelName = "ns3::FriisPropagationLossModel";
+      std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
     }
   else if (m_lossModel == 2)
     {
       m_lossModelName = "ns3::ItuR1411LosPropagationLossModel";
+      std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
     }
   else if (m_lossModel == 3)
     {
       m_lossModelName = "ns3::TwoRayGroundPropagationLossModel";
+      std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
     }
   else if (m_lossModel == 4)
     {
       m_lossModelName = "ns3::LogDistancePropagationLossModel";
+      std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
     }
   else
     {
@@ -2251,10 +2256,12 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       // two-ray requires antenna height (else defaults to Friss)
       wifiChannel.AddPropagationLoss (m_lossModelName, "Frequency", DoubleValue (freq), "HeightAboveZ", DoubleValue (1.5));
+      std::cout<<"obstacle debug ---------------------------------------------------------set propagation lossmodel"<<m_lossModelName<<"\n\n";
     }
   else
     {
       wifiChannel.AddPropagationLoss (m_lossModelName, "Frequency", DoubleValue (freq));
+      std::cout<<"obstacle debug ---------------------------------------------------------set propagation lossmodel"<<m_lossModelName<<"\n\n";
     }
 
   // Propagation loss models are additive.  If Obstacle modeling is included,
@@ -2406,6 +2413,15 @@ VanetRoutingExperiment::SetupScenario ()
 
 
   //m_scenario = 3;      //obstacle   無理やり2にかえる
+  //m_loadBuildings = 1;   //obstacle   無理やり
+  if (m_loadBuildings != 0)
+    {
+      std::cout<<"obstacle debug -------------------------------------building loading"<<"\n\n";
+
+      std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";
+      NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
+      Topology::LoadBuildings(bldgFile);
+    }
 
 
   if (m_scenario == 1)
@@ -2422,6 +2438,8 @@ VanetRoutingExperiment::SetupScenario ()
         {
           m_TotalSimTime = 100.0;
         }
+
+      std::cout<<"oioioioiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii m_lossmodel"<<m_lossModel<<"\n";
     }
   else if (m_scenario == 2)
     {
@@ -2451,9 +2469,9 @@ VanetRoutingExperiment::SetupScenario ()
       m_nodePause = 0;
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
-      // WAVE BSM only, no routing data
-      m_protocol = 0;
-      m_lossModel = 3; // two-ray ground
+      // WAVE BSM only, no routing data   
+     // m_protocol = 0;////////////////////////////////////////////////////////////////////初期状態 なぜprotocolを0にするのか不明
+      //m_lossModel = 3; // two-ray ground ///////////////////////////////////////////////初期状態　なぜ3にするのか不明
       if (m_txSafetyRange3 == 150.0)
         {
           // txdistances
@@ -2468,15 +2486,17 @@ VanetRoutingExperiment::SetupScenario ()
           m_txSafetyRange9 = 1000.0;
           m_txSafetyRange10 = 1500.0;
         }
-      if (m_loadBuildings != 0)
-        {
-          std::cout<<"obstacle debug -------------------------------------building loading"<<"\n\n";
 
-          std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";
-          NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
-          Topology::LoadBuildings(bldgFile);
-        }
-    }
+    // 本来この位置に　building のロードが行われていた　すなわち m_senario = 3の場合のみ建物データがロードされていた
+      // if (m_loadBuildings != 0)                                                                    
+      //   {
+      //     std::cout<<"obstacle debug -------------------------------------building loading"<<"\n\n";
+
+      //     std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";
+      //     NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
+      //     Topology::LoadBuildings(bldgFile);
+      //   }
+     }
 }
 
 void
