@@ -276,7 +276,7 @@ RoutingProtocol::DoInitialize (void)
    if(id == NumNodes - 1){
     std::cout<<"-----------------------------------------------------------------------"<<"\n";
   }
-  if(id == 2)   //if Node ID = 0
+  if(id == 1)   //if Node ID = 0
     {
       for(int i=0; i<NumNodes; i++)
      {
@@ -288,6 +288,14 @@ RoutingProtocol::DoInitialize (void)
         Simulator::Schedule(Seconds(i), &RoutingProtocol::SendXBroadcast, this);
       }
     }
+    
+    if(id == 2 || id == 5 || id == 8 || id == 10 || id == 15 || id == 20 || id == 25 || id == 30)
+    {
+      for(int i=0; i<SimTime; i++){//シミュレーション時間分ループを回す　単位 second
+        Simulator::Schedule(Seconds(i), &RoutingProtocol::SendXBroadcast, this);
+      }
+    }
+
     Simulator::Schedule(Seconds(SimTime-1), &RoutingProtocol::SimulationResult, this);
 }
 
@@ -302,7 +310,7 @@ RoutingProtocol::RecvSample (Ptr<Socket> socket)
   //std::cout<<"In recv Sample(Node "<< m_ipv4->GetObject<Node> ()->GetId ()<<")\n";
   //int8_t id =m_ipv4->GetObject<Node> ()->GetId ();
     //if(id == 3 || id == 4 id ==5 )
-   // SendXBroadcast();
+    //SendXBroadcast();
 }
 
 

@@ -82,7 +82,14 @@ ObstacleShadowingPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobili
 
       // get the obstructed loss, from the topology class
       L_obs = topology->GetObstructedLossBetween(p1, p2, r);
+      // std::cout<<"p1_x"<<p1_x<<"\n";
+      // std::cout<<"p1_y"<<p1_y<<"\n";
+      // std::cout<<"p2_x"<<p2_x<<"\n";
+      // std::cout<<"p2_y"<<p2_y<<"\n";
+
     }
+    // std::cout<<"L_obs の値は"<<L_obs<<"\n";
+    // std::cout<<"L_obs"<<L_obs<<"\n";
 
   return L_obs;
 }
@@ -95,6 +102,11 @@ ObstacleShadowingPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   double retVal = 0.0;
   double loss = GetLoss (a, b);
   retVal = txPowerDbm - loss;
+  // std::cout<<"txPowerDbm"<<txPowerDbm<<"\n";
+  // std::cout<<"-----"<<"\n";
+  // std::cout<<"loss"<<loss<<"\n";
+  // std::cout<<"==";
+  // std::cout<<"retVal"<<"\n";
   return (retVal);
 }
 
