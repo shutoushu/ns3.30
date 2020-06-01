@@ -2429,9 +2429,17 @@ VanetRoutingExperiment::SetupScenario ()
     {
       std::cout<<"obstacle debug -------------------------------------building loading"<<"\n\n";
 
-      std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";
-      NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
+      //std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";//デフォルトのbuildingモデル
+
+      std::string bldgFile = "./src/wave/examples/BerlinTest/osm.poly.xml";//謎にWaveのディレクトリなら動く
+
+      std::cout<<"building ファイルを入力しましたそのファイルは "<<bldgFile<<"\n";
+
+
+
+      //NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
       Topology::LoadBuildings(bldgFile);
+      std::cout<<"ファイル読み取り成功"<<"\n";
     }
 
 
@@ -2471,16 +2479,32 @@ VanetRoutingExperiment::SetupScenario ()
       // Realistic vehicular trace in Downtown Raleigh, NC USA
       // 50 vehicles,
       // with buildings, for Obstacle Shadowing Model
-      m_traceFile = "src/wave/examples/Raleigh_Downtown50.ns2";
-      m_logFile = "Raleigh_Downtown50.log";
+      //mobilityファイルのダウンロード ノード数なども変更
+
+      ///---------------------------------------------------------------------------------------------------
+      // m_traceFile = "src/wave/examples/Raleigh_Downtown50.ns2";//入力ファイル
+      // m_logFile = "Raleigh_Downtown50.log";//出力ファイル     デフォルトの入力ファイルと出力ファイル
+      // m_mobility = 1;
+      // m_nNodes = 50;
+      // m_TotalSimTime = 100;
+      // m_nodeSpeed = 0;
+      // m_nodePause = 0;
+      // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
+      // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
+      //-------------------------------------------------------------------------------------------------
+
+      m_traceFile = "sumo/BerlinTest/Berlin_Test_mobility.tcl";//モビリティ入力ファイル
+      m_logFile = "sumo/BerLinTest/BerlinTest.log"; //出力ファイル
+
+
       m_mobility = 1;
-      m_nNodes = 50;
-      m_TotalSimTime = 100;
+      m_nNodes = 309;
+      m_TotalSimTime = 3856;
       m_nodeSpeed = 0;
       m_nodePause = 0;
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
-      // WAVE BSM only, no routing data   
+      // WAVE BSM only, no routing data
      // m_protocol = 0;////////////////////////////////////////////////////////////////////初期状態 なぜprotocolを0にするのか不明
       //m_lossModel = 3; // two-ray ground ///////////////////////////////////////////////初期状態　なぜ3にするのか不明
       if (m_txSafetyRange3 == 150.0)

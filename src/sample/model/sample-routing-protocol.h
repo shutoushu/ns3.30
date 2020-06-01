@@ -31,8 +31,8 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
-#define NumNodes 100 //全ノード数
-#define SimTime 100 //シミュレーション時間
+#define NumNodes 310 //全ノード数
+#define SimTime 4000 //シミュレーション時間
 
 namespace ns3 {
 namespace sample {

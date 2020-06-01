@@ -306,7 +306,7 @@ RoutingProtocol::RecvSample (Ptr<Socket> socket)
   recv_num[id]++;
   //
   
-  //std::cout<<"receive id"<<id<<"\n";
+  std::cout<<"receive id"<<id<<"\n";
   //std::cout<<"In recv Sample(Node "<< m_ipv4->GetObject<Node> ()->GetId ()<<")\n";
   //int8_t id =m_ipv4->GetObject<Node> ()->GetId ();
     //if(id == 3 || id == 4 id ==5 )
