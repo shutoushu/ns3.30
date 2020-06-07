@@ -120,7 +120,7 @@
 #include "ns3/integer.h"
 #include "ns3/wave-bsm-helper.h"
 #include "ns3/wave-helper.h"
-#include "ns3/topology.h"        ///obstacle
+#include "ns3/topology.h" ///obstacle
 #include "ns3/netanim-module.h"
 #include "ns3/yans-wifi-helper.h"
 
@@ -259,14 +259,14 @@ private:
 };
 
 RoutingStats::RoutingStats ()
-  : m_RxBytes (0),
-    m_cumulativeRxBytes (0),
-    m_RxPkts (0),
-    m_cumulativeRxPkts (0),
-    m_TxBytes (0),
-    m_cumulativeTxBytes (0),
-    m_TxPkts (0),
-    m_cumulativeTxPkts (0)
+    : m_RxBytes (0),
+      m_cumulativeRxBytes (0),
+      m_RxPkts (0),
+      m_cumulativeRxPkts (0),
+      m_TxBytes (0),
+      m_cumulativeTxBytes (0),
+      m_TxPkts (0),
+      m_cumulativeTxPkts (0)
 {
 }
 
@@ -414,13 +414,8 @@ public:
    * \param routingTables dump routing tables at t=5 seconds (0=no;1=yes)
    * \return none
    */
-  void Install (NodeContainer & c,
-                NetDeviceContainer & d,
-                Ipv4InterfaceContainer & i,
-                double totalTime,
-                int protocol,
-                uint32_t nSinks,
-                int routingTables);
+  void Install (NodeContainer &c, NetDeviceContainer &d, Ipv4InterfaceContainer &i,
+                double totalTime, int protocol, uint32_t nSinks, int routingTables);
 
   /**
    * \brief Trace the receipt of an on-off-application generated packet
@@ -434,7 +429,7 @@ public:
    * \brief Returns the RoutingStats instance
    * \return the RoutingStats instance
    */
-  RoutingStats & GetRoutingStats ();
+  RoutingStats &GetRoutingStats ();
 
   /**
    * \brief Enable/disable logging
@@ -449,7 +444,7 @@ private:
    * \param c node container
    * \return none
    */
-  void SetupRoutingProtocol (NodeContainer & c);
+  void SetupRoutingProtocol (NodeContainer &c);
 
   /**
    * \brief Assigns IPv4 addresses to net devices and their interfaces
@@ -457,8 +452,7 @@ private:
    * \param adhocTxInterfaces IPv4 interface container
    * \return none
    */
-  void AssignIpAddresses (NetDeviceContainer & d,
-                          Ipv4InterfaceContainer & adhocTxInterfaces);
+  void AssignIpAddresses (NetDeviceContainer &d, Ipv4InterfaceContainer &adhocTxInterfaces);
 
   /**
    * \brief Sets up routing messages on the nodes and their interfaces
@@ -466,8 +460,7 @@ private:
    * \param adhocTxInterfaces IPv4 interface container
    * \return none
    */
-  void SetupRoutingMessages (NodeContainer & c,
-                             Ipv4InterfaceContainer & adhocTxInterfaces);
+  void SetupRoutingMessages (NodeContainer &c, Ipv4InterfaceContainer &adhocTxInterfaces);
 
   /**
    * \brief Sets up a routing packet for tranmission
@@ -484,11 +477,11 @@ private:
    */
   void ReceiveRoutingPacket (Ptr<Socket> socket);
 
-  double m_TotalSimTime;        ///< seconds
-  uint32_t m_protocol;       ///< routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR, 5=SAMPLE
-  uint32_t m_port;           ///< port
-  uint32_t m_nSinks;              ///< number of sink nodes (< all nodes)
-  int m_routingTables;      ///< dump routing table (at t=5 sec).  0=No, 1=Yes
+  double m_TotalSimTime; ///< seconds
+  uint32_t m_protocol; ///< routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR, 5=SAMPLE
+  uint32_t m_port; ///< port
+  uint32_t m_nSinks; ///< number of sink nodes (< all nodes)
+  int m_routingTables; ///< dump routing table (at t=5 sec).  0=No, 1=Yes
   RoutingStats routingStats; ///< routing statistics
   std::string m_protocolName; ///< protocol name
   int m_log; ///< log
@@ -499,19 +492,18 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingHelper);
 TypeId
 RoutingHelper::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::RoutingHelper")
-    .SetParent<Object> ()
-    .AddConstructor<RoutingHelper> ();
+  static TypeId tid =
+      TypeId ("ns3::RoutingHelper").SetParent<Object> ().AddConstructor<RoutingHelper> ();
   return tid;
 }
 
 RoutingHelper::RoutingHelper ()
-  : m_TotalSimTime (300.01),
-    m_protocol (0),
-    m_port (9),
-    m_nSinks (0),
-    m_routingTables (0),
-    m_log (0)
+    : m_TotalSimTime (300.01),
+      m_protocol (0),
+      m_port (9),
+      m_nSinks (0),
+      m_routingTables (0),
+      m_log (0)
 {
 }
 
@@ -520,13 +512,8 @@ RoutingHelper::~RoutingHelper ()
 }
 
 void
-RoutingHelper::Install (NodeContainer & c,
-                        NetDeviceContainer & d,
-                        Ipv4InterfaceContainer & i,
-                        double totalTime,
-                        int protocol,
-                        uint32_t nSinks,
-                        int routingTables)
+RoutingHelper::Install (NodeContainer &c, NetDeviceContainer &d, Ipv4InterfaceContainer &i,
+                        double totalTime, int protocol, uint32_t nSinks, int routingTables)
 {
   m_TotalSimTime = totalTime;
   m_protocol = protocol;
@@ -551,7 +538,7 @@ RoutingHelper::SetupRoutingPacketReceive (Ipv4Address addr, Ptr<Node> node)
 }
 
 void
-RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
+RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
 {
   AodvHelper aodv;
   OlsrHelper olsr;
@@ -586,7 +573,9 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
         }
       list.Add (aodv, 100);
       m_protocolName = "AODV";
-      std::cout<<"obstacle debug --------------------------------------------------------aodv protocol done"<<"\n\n";
+      std::cout << "obstacle debug --------------------------------------------------------aodv "
+                   "protocol done"
+                << "\n\n";
       break;
     case 3:
       if (m_routingTables != 0)
@@ -600,17 +589,19 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
       // setup is later
       m_protocolName = "DSR";
       break;
-      default:
+    default:
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);
       break;
     case 5:
       list.Add (sample, 100);
       m_protocolName = "SAMPLE";
-      std::cout<<"obstacle debug ---------------------------------------------------------sample protocol done"<<"\n\n";
+      std::cout << "obstacle debug ---------------------------------------------------------sample "
+                   "protocol done"
+                << "\n\n";
       break;
     }
 
-  if (m_protocol < 4)                              //obstacle
+  if (m_protocol < 4) //obstacle
     {
       internet.SetRoutingHelper (list);
       internet.Install (c);
@@ -633,25 +624,24 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer & c)
 }
 
 void
-RoutingHelper::AssignIpAddresses (NetDeviceContainer & d,
-                                  Ipv4InterfaceContainer & adhocTxInterfaces)
+RoutingHelper::AssignIpAddresses (NetDeviceContainer &d, Ipv4InterfaceContainer &adhocTxInterfaces)
 {
   ///原因となるメソッド
   NS_LOG_INFO ("Assigning IP addresses");
   Ipv4AddressHelper addressAdhoc;
   // we may have a lot of nodes, and want them all
   // in same subnet, to support broadcast
-  std::cout<<"a"<<"\n";
+  std::cout << "a"
+            << "\n";
   addressAdhoc.SetBase ("10.1.0.0", "255.255.0.0");
   adhocTxInterfaces = addressAdhoc.Assign (d);
 }
 
 void
-RoutingHelper::SetupRoutingMessages (NodeContainer & c,
-                                     Ipv4InterfaceContainer & adhocTxInterfaces)
+RoutingHelper::SetupRoutingMessages (NodeContainer &c, Ipv4InterfaceContainer &adhocTxInterfaces)
 {
   // Setup routing transmissions
-  OnOffHelper onoff1 ("ns3::UdpSocketFactory",Address ());
+  OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address ());
   onoff1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
   onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
 
@@ -664,14 +654,15 @@ RoutingHelper::SetupRoutingMessages (NodeContainer & c,
       // so do not set up sink
       if (m_protocol != 0)
         {
-          Ptr<Socket> sink = SetupRoutingPacketReceive (adhocTxInterfaces.GetAddress (i), c.Get (i));
+          Ptr<Socket> sink =
+              SetupRoutingPacketReceive (adhocTxInterfaces.GetAddress (i), c.Get (i));
         }
 
       AddressValue remoteAddress (InetSocketAddress (adhocTxInterfaces.GetAddress (i), m_port));
       onoff1.SetAttribute ("Remote", remoteAddress);
 
       ApplicationContainer temp = onoff1.Install (c.Get (i + m_nSinks));
-      temp.Start (Seconds (var->GetValue (1.0,2.0)));
+      temp.Start (Seconds (var->GetValue (1.0, 2.0)));
       temp.Stop (Seconds (m_TotalSimTime));
     }
 }
@@ -708,7 +699,8 @@ RoutingHelper::ReceiveRoutingPacket (Ptr<Socket> socket)
       GetRoutingStats ().IncRxPkts ();
       if (m_log != 0)
         {
-          NS_LOG_UNCOND (m_protocolName + " " + PrintReceivedRoutingPacket (socket, packet, srcAddress));//print log
+          NS_LOG_UNCOND (m_protocolName + " " +
+                         PrintReceivedRoutingPacket (socket, packet, srcAddress)); //print log
         }
     }
 }
@@ -773,7 +765,8 @@ public:
    * \param txPower transmission power
    * \return none
    */
-  void PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower);
+  void PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode,
+                   WifiPreamble preamble, uint8_t txPower);
 
   /**
    * \brief Callback signiture for Phy/TxDrop
@@ -801,15 +794,12 @@ NS_OBJECT_ENSURE_REGISTERED (WifiPhyStats);
 TypeId
 WifiPhyStats::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::WifiPhyStats")
-    .SetParent<Object> ()
-    .AddConstructor<WifiPhyStats> ();
+  static TypeId tid =
+      TypeId ("ns3::WifiPhyStats").SetParent<Object> ().AddConstructor<WifiPhyStats> ();
   return tid;
 }
 
-WifiPhyStats::WifiPhyStats ()
-  : m_phyTxPkts (0),
-    m_phyTxBytes (0)
+WifiPhyStats::WifiPhyStats () : m_phyTxPkts (0), m_phyTxBytes (0)
 {
 }
 
@@ -818,9 +808,10 @@ WifiPhyStats::~WifiPhyStats ()
 }
 
 void
-WifiPhyStats::PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower)
+WifiPhyStats::PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode,
+                          WifiPreamble preamble, uint8_t txPower)
 {
-  NS_LOG_FUNCTION (this << context << packet << "PHYTX mode=" << mode );
+  NS_LOG_FUNCTION (this << context << packet << "PHYTX mode=" << mode);
   ++m_phyTxPkts;
   uint32_t pktSize = packet->GetSize ();
   m_phyTxBytes += pktSize;
@@ -1263,8 +1254,8 @@ private:
    * \param context trace source context (unused)
    * \param mobility the mobility model
    */
-  static void
-  CourseChange (std::ostream *os, std::string context, Ptr<const MobilityModel> mobility);
+  static void CourseChange (std::ostream *os, std::string context,
+                            Ptr<const MobilityModel> mobility);
 
   uint32_t m_port; ///< port
   std::string m_CSVfileName; ///< CSV file name
@@ -1277,13 +1268,13 @@ private:
 
   uint32_t m_lossModel; ///< loss model
   uint32_t m_fading; ///< fading
-  uint32_t m_loadBuildings;    ///obstacle
+  uint32_t m_loadBuildings; ///obstacle
   std::string m_lossModelName; ///< loss model name
 
   std::string m_phyMode; ///< phy mode
   uint32_t m_80211mode; ///< 80211 mode
 
-  std::string m_traceFile; ///< trace file 
+  std::string m_traceFile; ///< trace file
   std::string m_logFile; ///< log file
   uint32_t m_mobility; ///< mobility
   uint32_t m_nNodes; ///< number of nodes
@@ -1325,70 +1316,70 @@ private:
   double m_txSafetyRange8; ///< range 8
   double m_txSafetyRange9; ///< range 9
   double m_txSafetyRange10; ///< range 10
-  std::vector <double> m_txSafetyRanges; ///< list of ranges
+  std::vector<double> m_txSafetyRanges; ///< list of ranges
   std::string m_exp; ///< exp
   int m_cumulativeBsmCaptureStart; ///< capture start
 };
 
 VanetRoutingExperiment::VanetRoutingExperiment ()
-  : m_port (9),
-    m_CSVfileName ("vanet-routing.output.csv"),
-    m_CSVfileName2 ("vanet-routing.output2.csv"),
-    m_nSinks (10),
-    m_protocolName ("protocol"),
-    m_txp (20),
-    m_traceMobility (false),
-    // AODV
-    m_protocol (1),
-    // SAMPLE
-    //m_protocol (5),
-    // Two-Ray ground
-    // m_lossModel (3),
-    //log distance 
-    m_lossModel (4),
-    m_fading (0),
-    m_loadBuildings (1),
-    m_lossModelName (""),
-    m_phyMode ("OfdmRate6MbpsBW10MHz"),
-    // 1=802.11p
-    m_80211mode (1),
-    m_traceFile (""),
-    m_logFile ("low99-ct-unterstrass-1day.filt.7.adj.log"),
-    m_mobility (1),
-    m_nNodes (156),
-    m_TotalSimTime (300.01),
-    m_rate ("2048bps"),
-    m_phyModeB ("DsssRate11Mbps"),
-    m_trName ("vanet-routing-compare"),
-    m_nodeSpeed (20),
-    m_nodePause (0),
-    m_wavePacketSize (200),
-    m_waveInterval (0.1),
-    m_verbose (0),
-    m_scenario (2),
-    m_gpsAccuracyNs (40),
-    m_txMaxDelayMs (10),
-    m_routingTables (0),
-    m_asciiTrace (0),
-    m_pcap (0),
-    m_loadConfigFilename ("load-config.txt"),
-    m_saveConfigFilename (""),
-    m_log (0),
-    m_streamIndex (0),
-    m_adhocTxNodes (),
-    m_txSafetyRange1 (50.0),
-    m_txSafetyRange2 (100.0),
-    m_txSafetyRange3 (150.0),
-    m_txSafetyRange4 (200.0),
-    m_txSafetyRange5 (250.0),
-    m_txSafetyRange6 (300.0),
-    m_txSafetyRange7 (350.0),
-    m_txSafetyRange8 (400.0),
-    m_txSafetyRange9 (450.0),
-    m_txSafetyRange10 (500.0),
-    m_txSafetyRanges (),
-    m_exp (""),
-    m_cumulativeBsmCaptureStart (0)
+    : m_port (9),
+      m_CSVfileName ("vanet-routing.output.csv"),
+      m_CSVfileName2 ("vanet-routing.output2.csv"),
+      m_nSinks (10),
+      m_protocolName ("protocol"),
+      m_txp (20),
+      m_traceMobility (false),
+      // AODV
+      m_protocol (1),
+      // SAMPLE
+      //m_protocol (5),
+      // Two-Ray ground
+      // m_lossModel (3),
+      //log distance
+      m_lossModel (4),
+      m_fading (0),
+      m_loadBuildings (1),
+      m_lossModelName (""),
+      m_phyMode ("OfdmRate6MbpsBW10MHz"),
+      // 1=802.11p
+      m_80211mode (1),
+      m_traceFile (""),
+      m_logFile ("low99-ct-unterstrass-1day.filt.7.adj.log"),
+      m_mobility (1),
+      m_nNodes (156),
+      m_TotalSimTime (300.01),
+      m_rate ("2048bps"),
+      m_phyModeB ("DsssRate11Mbps"),
+      m_trName ("vanet-routing-compare"),
+      m_nodeSpeed (20),
+      m_nodePause (0),
+      m_wavePacketSize (200),
+      m_waveInterval (0.1),
+      m_verbose (0),
+      m_scenario (2),
+      m_gpsAccuracyNs (40),
+      m_txMaxDelayMs (10),
+      m_routingTables (0),
+      m_asciiTrace (0),
+      m_pcap (0),
+      m_loadConfigFilename ("load-config.txt"),
+      m_saveConfigFilename (""),
+      m_log (0),
+      m_streamIndex (0),
+      m_adhocTxNodes (),
+      m_txSafetyRange1 (50.0),
+      m_txSafetyRange2 (100.0),
+      m_txSafetyRange3 (150.0),
+      m_txSafetyRange4 (200.0),
+      m_txSafetyRange5 (250.0),
+      m_txSafetyRange6 (300.0),
+      m_txSafetyRange7 (350.0),
+      m_txSafetyRange8 (400.0),
+      m_txSafetyRange9 (450.0),
+      m_txSafetyRange10 (500.0),
+      m_txSafetyRanges (),
+      m_exp (""),
+      m_cumulativeBsmCaptureStart (0)
 {
   m_wifiPhyStats = CreateObject<WifiPhyStats> ();
   m_routingHelper = CreateObject<RoutingHelper> ();
@@ -1405,173 +1396,118 @@ VanetRoutingExperiment::SetDefaultAttributeValues ()
 }
 
 // important configuration items stored in global values
-static ns3::GlobalValue g_port ("VRCport",
-                                "Port",
-                                ns3::UintegerValue (9),
+static ns3::GlobalValue g_port ("VRCport", "Port", ns3::UintegerValue (9),
                                 ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_nSinks ("VRCnSinks",
-                                  "Number of sink nodes for routing non-BSM traffic",
-                                  ns3::UintegerValue (10),
-                                  ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_traceMobility ("VRCtraceMobility",
-                                         "Trace mobility 1=yes;0=no",
+static ns3::GlobalValue g_nSinks ("VRCnSinks", "Number of sink nodes for routing non-BSM traffic",
+                                  ns3::UintegerValue (10), ns3::MakeUintegerChecker<uint32_t> ());
+static ns3::GlobalValue g_traceMobility ("VRCtraceMobility", "Trace mobility 1=yes;0=no",
                                          ns3::UintegerValue (0),
                                          ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_protocol ("VRCprotocol",
-                                    "Routing protocol",
-                                    ns3::UintegerValue (2),
+static ns3::GlobalValue g_protocol ("VRCprotocol", "Routing protocol", ns3::UintegerValue (2),
                                     ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_lossModel ("VRClossModel",
-                                     "Propagation Loss Model",
-                                     ns3::UintegerValue (3),
-                                     ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_fading ("VRCfading",
-                                  "Fast Fading Model",
-                                  ns3::UintegerValue (0),
+static ns3::GlobalValue g_lossModel ("VRClossModel", "Propagation Loss Model",
+                                     ns3::UintegerValue (3), ns3::MakeUintegerChecker<uint32_t> ());
+static ns3::GlobalValue g_fading ("VRCfading", "Fast Fading Model", ns3::UintegerValue (0),
                                   ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_80211mode ("VRC80211mode",
-                                     "802.11 mode (0=802.11a;1=802.11p)",
-                                     ns3::UintegerValue (1),
-                                     ns3::MakeUintegerChecker<uint32_t> ());
+static ns3::GlobalValue g_80211mode ("VRC80211mode", "802.11 mode (0=802.11a;1=802.11p)",
+                                     ns3::UintegerValue (1), ns3::MakeUintegerChecker<uint32_t> ());
 static ns3::GlobalValue g_mobility ("VRCmobility",
                                     "Mobility mode 0=random waypoint;1=mobility trace file",
-                                    ns3::UintegerValue (1),
-                                    ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_nNodes ("VRCnNodes",
-                                  "Number of nodes (vehicles)",
-                                  ns3::UintegerValue (156),
-                                  ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_nodeSpeed ("VRCnodeSpeed",
-                                     "Node speed (m/s) for RWP model",
+                                    ns3::UintegerValue (1), ns3::MakeUintegerChecker<uint32_t> ());
+static ns3::GlobalValue g_nNodes ("VRCnNodes", "Number of nodes (vehicles)",
+                                  ns3::UintegerValue (156), ns3::MakeUintegerChecker<uint32_t> ());
+static ns3::GlobalValue g_nodeSpeed ("VRCnodeSpeed", "Node speed (m/s) for RWP model",
                                      ns3::UintegerValue (20),
                                      ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_nodePause ("VRCnodePause",
-                                     "Node pause time (s) for RWP model",
-                                     ns3::UintegerValue (0),
-                                     ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_wavePacketSize ("VRCwavePacketSize",
-                                          "Size in bytes of WAVE BSM",
+static ns3::GlobalValue g_nodePause ("VRCnodePause", "Node pause time (s) for RWP model",
+                                     ns3::UintegerValue (0), ns3::MakeUintegerChecker<uint32_t> ());
+static ns3::GlobalValue g_wavePacketSize ("VRCwavePacketSize", "Size in bytes of WAVE BSM",
                                           ns3::UintegerValue (200),
                                           ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_verbose ("VRCverbose",
-                                   "Verbose 0=no;1=yes",
-                                   ns3::UintegerValue (0),
+static ns3::GlobalValue g_verbose ("VRCverbose", "Verbose 0=no;1=yes", ns3::UintegerValue (0),
                                    ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_scenario ("VRCscenario",
-                                    "Scenario",
-                                    ns3::UintegerValue (1),
+static ns3::GlobalValue g_scenario ("VRCscenario", "Scenario", ns3::UintegerValue (1),
                                     ns3::MakeUintegerChecker<uint32_t> ());
 static ns3::GlobalValue g_routingTables ("VRCroutingTables",
                                          "Dump routing tables at t=5 seconds 0=no;1=yes",
                                          ns3::UintegerValue (0),
                                          ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_asciiTrace ("VRCasciiTrace",
-                                      "Dump ASCII trace 0=no;1=yes",
+static ns3::GlobalValue g_asciiTrace ("VRCasciiTrace", "Dump ASCII trace 0=no;1=yes",
                                       ns3::UintegerValue (0),
                                       ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_pcap ("VRCpcap",
-                                "Generate PCAP files 0=no;1=yes",
-                                ns3::UintegerValue (0),
+static ns3::GlobalValue g_pcap ("VRCpcap", "Generate PCAP files 0=no;1=yes", ns3::UintegerValue (0),
                                 ns3::MakeUintegerChecker<uint32_t> ());
-static ns3::GlobalValue g_cumulativeBsmCaptureStart ("VRCcumulativeBsmCaptureStart",
-                                                     "Simulation starte time for capturing cumulative BSM",
-                                                     ns3::UintegerValue (0),
-                                                     ns3::MakeUintegerChecker<uint32_t> ());
+static ns3::GlobalValue
+    g_cumulativeBsmCaptureStart ("VRCcumulativeBsmCaptureStart",
+                                 "Simulation starte time for capturing cumulative BSM",
+                                 ns3::UintegerValue (0), ns3::MakeUintegerChecker<uint32_t> ());
 
-static ns3::GlobalValue g_txSafetyRange1 ("VRCtxSafetyRange1",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange1 ("VRCtxSafetyRange1", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (50.0),
                                           ns3::MakeDoubleChecker<double> ());
 
-static ns3::GlobalValue g_txSafetyRange2 ("VRCtxSafetyRange2",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange2 ("VRCtxSafetyRange2", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (100.0),
                                           ns3::MakeDoubleChecker<double> ());
 
-static ns3::GlobalValue g_txSafetyRange3 ("VRCtxSafetyRange3",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange3 ("VRCtxSafetyRange3", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (150.0),
                                           ns3::MakeDoubleChecker<double> ());
 
-static ns3::GlobalValue g_txSafetyRange4 ("VRCtxSafetyRange4",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange4 ("VRCtxSafetyRange4", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (200.0),
                                           ns3::MakeDoubleChecker<double> ());
 
-static ns3::GlobalValue g_txSafetyRange5 ("VRCtxSafetyRange5",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange5 ("VRCtxSafetyRange5", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (250.0),
                                           ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_txSafetyRange6 ("VRCtxSafetyRange6",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange6 ("VRCtxSafetyRange6", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (300.0),
                                           ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_txSafetyRange7 ("VRCtxSafetyRange7",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange7 ("VRCtxSafetyRange7", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (350.0),
                                           ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_txSafetyRange8 ("VRCtxSafetyRange8",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange8 ("VRCtxSafetyRange8", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (400.0),
                                           ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_txSafetyRange9 ("VRCtxSafetyRange9",
-                                          "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange9 ("VRCtxSafetyRange9", "BSM range for PDR inclusion",
                                           ns3::DoubleValue (450.0),
                                           ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_txSafetyRange10 ("VRCtxSafetyRange10",
-                                           "BSM range for PDR inclusion",
+static ns3::GlobalValue g_txSafetyRange10 ("VRCtxSafetyRange10", "BSM range for PDR inclusion",
                                            ns3::DoubleValue (500.0),
                                            ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_txp ("VRCtxp",
-                               "Transmission power dBm",
-                               ns3::DoubleValue (7.5),
+static ns3::GlobalValue g_txp ("VRCtxp", "Transmission power dBm", ns3::DoubleValue (7.5),
                                ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_totalTime ("VRCtotalTime",
-                                     "Total simulation time (s)",
-                                     ns3::DoubleValue (300.01),
-                                     ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_waveInterval ("VRCwaveInterval",
-                                        "Interval (s) between WAVE BSMs",
-                                        ns3::DoubleValue (0.1),
-                                        ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_gpsAccuracyNs ("VRCgpsAccuracyNs",
-                                         "GPS sync accuracy (ns)",
-                                         ns3::DoubleValue (40),
-                                         ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_txMaxDelayMs ("VRCtxMaxDelayMs",
-                                        "Tx May Delay (ms)",
-                                        ns3::DoubleValue (10),
-                                        ns3::MakeDoubleChecker<double> ());
-static ns3::GlobalValue g_CSVfileName ("VRCCSVfileName",
-                                       "CSV filename (for time series data)",
+static ns3::GlobalValue g_totalTime ("VRCtotalTime", "Total simulation time (s)",
+                                     ns3::DoubleValue (300.01), ns3::MakeDoubleChecker<double> ());
+static ns3::GlobalValue g_waveInterval ("VRCwaveInterval", "Interval (s) between WAVE BSMs",
+                                        ns3::DoubleValue (0.1), ns3::MakeDoubleChecker<double> ());
+static ns3::GlobalValue g_gpsAccuracyNs ("VRCgpsAccuracyNs", "GPS sync accuracy (ns)",
+                                         ns3::DoubleValue (40), ns3::MakeDoubleChecker<double> ());
+static ns3::GlobalValue g_txMaxDelayMs ("VRCtxMaxDelayMs", "Tx May Delay (ms)",
+                                        ns3::DoubleValue (10), ns3::MakeDoubleChecker<double> ());
+static ns3::GlobalValue g_CSVfileName ("VRCCSVfileName", "CSV filename (for time series data)",
                                        ns3::StringValue ("vanet-routing.output.csv"),
                                        ns3::MakeStringChecker ());
 static ns3::GlobalValue g_CSVfileName2 ("VRCCSVfileName2",
                                         "CSV filename 2 (for overall simulation scenario results)",
                                         ns3::StringValue ("vanet-routing.output2.csv"),
                                         ns3::MakeStringChecker ());
-static ns3::GlobalValue g_phyMode ("VRCphyMode",
-                                   "PHY mode (802.11p)",
+static ns3::GlobalValue g_phyMode ("VRCphyMode", "PHY mode (802.11p)",
                                    ns3::StringValue ("OfdmRate6MbpsBW10MHz"),
                                    ns3::MakeStringChecker ());
-static ns3::GlobalValue g_traceFile ("VRCtraceFile",
-                                     "Mobility trace filename",
-                                     ns3::StringValue ("./src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob"),
-                                     ns3::MakeStringChecker ());
-static ns3::GlobalValue g_logFile ("VRClogFile",
-                                   "Log filename",
+static ns3::GlobalValue
+    g_traceFile ("VRCtraceFile", "Mobility trace filename",
+                 ns3::StringValue ("./src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob"),
+                 ns3::MakeStringChecker ());
+static ns3::GlobalValue g_logFile ("VRClogFile", "Log filename",
                                    ns3::StringValue ("low99-ct-unterstrass-1day.filt.7.adj.log"),
                                    ns3::MakeStringChecker ());
-static ns3::GlobalValue g_rate ("VRCrate",
-                                "Data rate",
-                                ns3::StringValue ("2048bps"),
+static ns3::GlobalValue g_rate ("VRCrate", "Data rate", ns3::StringValue ("2048bps"),
                                 ns3::MakeStringChecker ());
-static ns3::GlobalValue g_phyModeB ("VRCphyModeB",
-                                    "PHY mode (802.11a)",
-                                    ns3::StringValue ("DsssRate11Mbps"),
-                                    ns3::MakeStringChecker ());
-static ns3::GlobalValue g_trName ("VRCtrName",
-                                  "Trace name",
+static ns3::GlobalValue g_phyModeB ("VRCphyModeB", "PHY mode (802.11a)",
+                                    ns3::StringValue ("DsssRate11Mbps"), ns3::MakeStringChecker ());
+static ns3::GlobalValue g_trName ("VRCtrName", "Trace name",
                                   ns3::StringValue ("vanet-routing-compare"),
                                   ns3::MakeStringChecker ());
 
@@ -1632,10 +1568,13 @@ VanetRoutingExperiment::ConfigureDevices ()
   // which is used to determine the total amount of
   // data transmitted, and then used to calculate
   // the MAC/PHY overhead beyond the app-data
-  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx", MakeCallback (&WifiPhyStats::PhyTxTrace, m_wifiPhyStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx",
+                   MakeCallback (&WifiPhyStats::PhyTxTrace, m_wifiPhyStats));
   // TxDrop, RxDrop not working yet.  Not sure what I'm doing wrong.
-  Config::Connect ("/NodeList/*/DeviceList/*/ns3::WifiNetDevice/Phy/PhyTxDrop", MakeCallback (&WifiPhyStats::PhyTxDrop, m_wifiPhyStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/ns3::WifiNetDevice/Phy/PhyRxDrop", MakeCallback (&WifiPhyStats::PhyRxDrop, m_wifiPhyStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/ns3::WifiNetDevice/Phy/PhyTxDrop",
+                   MakeCallback (&WifiPhyStats::PhyTxDrop, m_wifiPhyStats));
+  Config::Connect ("/NodeList/*/DeviceList/*/ns3::WifiNetDevice/Phy/PhyRxDrop",
+                   MakeCallback (&WifiPhyStats::PhyRxDrop, m_wifiPhyStats));
 }
 
 void
@@ -1714,24 +1653,13 @@ VanetRoutingExperiment::ProcessOutputs ()
   if (m_log != 0)
     {
       //NS_LOG_UNCOND ("BSM_PDR1=" << bsm_pdr1 << " BSM_PDR2=" << bsm_pdr2 << " BSM_PDR3=" << bsm_pdr3 << " BSM_PDR4=" << bsm_pdr4 << " BSM_PDR5=" << bsm_pdr5 << " BSM_PDR6=" << bsm_pdr6 << " BSM_PDR7=" << bsm_pdr7 << " BSM_PDR8=" << bsm_pdr8 << " BSM_PDR9=" << bsm_pdr9 << " BSM_PDR10=" << bsm_pdr10 << " Goodput=" << averageRoutingGoodputKbps << "Kbps MAC/PHY-oh=" << mac_phy_oh);
-
     }
 
   std::ofstream out (m_CSVfileName2.c_str (), std::ios::app);
 
-  out << bsm_pdr1 << ","
-      << bsm_pdr2 << ","
-      << bsm_pdr3 << ","
-      << bsm_pdr4 << ","
-      << bsm_pdr5 << ","
-      << bsm_pdr6 << ","
-      << bsm_pdr7 << ","
-      << bsm_pdr8 << ","
-      << bsm_pdr9 << ","
-      << bsm_pdr10 << ","
-      << averageRoutingGoodputKbps << ","
-      << mac_phy_oh << ""
-      << std::endl;
+  out << bsm_pdr1 << "," << bsm_pdr2 << "," << bsm_pdr3 << "," << bsm_pdr4 << "," << bsm_pdr5 << ","
+      << bsm_pdr6 << "," << bsm_pdr7 << "," << bsm_pdr8 << "," << bsm_pdr9 << "," << bsm_pdr10
+      << "," << averageRoutingGoodputKbps << "," << mac_phy_oh << "" << std::endl;
 
   out.close ();
 
@@ -1745,19 +1673,24 @@ VanetRoutingExperiment::Run ()
 
   CheckThroughput ();
   Simulator::Stop (Seconds (m_TotalSimTime));
-  AnimationInterface anim("compare-routing");
+  AnimationInterface anim ("compare-routing");
 
-  anim.EnablePacketMetadata();
-  anim.EnableIpv4L3ProtocolCounters(Seconds(0),Seconds(m_TotalSimTime));
+  anim.EnablePacketMetadata ();
+  anim.EnableIpv4L3ProtocolCounters (Seconds (0), Seconds (m_TotalSimTime));
   Simulator::Run ();
   Simulator::Destroy ();
-  std::cout<<"simulator destroy"<<"\n";
+  std::cout << "simulator destroy"
+            << "\n";
+  std::cout << "Propagation Loss Model : " << m_lossModelName << std::endl;
+  std::cout << "scenario  : " << m_scenario << std::endl;
+  std::cout << "buildings  : " << m_loadBuildings << std::endl;
+  std::cout << "protocol  : " << m_protocolName << std::endl;
 }
 
 // Prints actual position and velocity when a course change event occurs
 void
-VanetRoutingExperiment::
-CourseChange (std::ostream *os, std::string context, Ptr<const MobilityModel> mobility)
+VanetRoutingExperiment::CourseChange (std::ostream *os, std::string context,
+                                      Ptr<const MobilityModel> mobility)
 {
   Vector pos = mobility->GetPosition (); // Get position
   Vector vel = mobility->GetVelocity (); // Get velocity
@@ -1774,9 +1707,8 @@ CourseChange (std::ostream *os, std::string context, Ptr<const MobilityModel> mo
   //NS_LOG_UNCOND ("Changing pos for node=" << nodeId << " at " << Simulator::Now () );
 
   // Prints position and velocities
-  *os << Simulator::Now () << " POS: x=" << pos.x << ", y=" << pos.y
-      << ", z=" << pos.z << "; VEL:" << vel.x << ", y=" << vel.y
-      << ", z=" << vel.z << std::endl;
+  *os << Simulator::Now () << " POS: x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z
+      << "; VEL:" << vel.x << ", y=" << vel.y << ", z=" << vel.z << std::endl;
 }
 
 void
@@ -1822,34 +1754,18 @@ VanetRoutingExperiment::CheckThroughput ()
 
   std::ofstream out (m_CSVfileName.c_str (), std::ios::app);
 
-  if (m_log != 0 )
+  if (m_log != 0)
     {
       //obstacle
       //NS_LOG_UNCOND ("At t=" << (Simulator::Now ()).GetSeconds () << "s BSM_PDR1=" << wavePDR1_2 << " BSM_PDR1=" << wavePDR2_2 << " BSM_PDR3=" << wavePDR3_2 << " BSM_PDR4=" << wavePDR4_2 << " BSM_PDR5=" << wavePDR5_2 << " BSM_PDR6=" << wavePDR6_2 << " BSM_PDR7=" << wavePDR7_2 << " BSM_PDR8=" << wavePDR8_2 << " BSM_PDR9=" << wavePDR9_2 << " BSM_PDR10=" << wavePDR10_2 << " Goodput=" << kbps << "Kbps" /*<< " MAC/PHY-OH=" << mac_phy_oh*/);
     }
 
-  out << (Simulator::Now ()).GetSeconds () << ","
-      << kbps << ","
-      << packetsReceived << ","
-      << m_nSinks << ","
-      << m_protocolName << ","
-      << m_txp << ","
-      << wavePktsSent << ","
-      << wavePktsReceived << ","
-      << wavePDR << ","
-      << waveExpectedRxPktCount << ","
-      << waveRxPktInRangeCount << ","
-      << wavePDR1_2 << ","
-      << wavePDR2_2 << ","
-      << wavePDR3_2 << ","
-      << wavePDR4_2 << ","
-      << wavePDR5_2 << ","
-      << wavePDR6_2 << ","
-      << wavePDR7_2 << ","
-      << wavePDR8_2 << ","
-      << wavePDR9_2 << ","
-      << wavePDR10_2 << ","
-      << mac_phy_oh << ""
+  out << (Simulator::Now ()).GetSeconds () << "," << kbps << "," << packetsReceived << ","
+      << m_nSinks << "," << m_protocolName << "," << m_txp << "," << wavePktsSent << ","
+      << wavePktsReceived << "," << wavePDR << "," << waveExpectedRxPktCount << ","
+      << waveRxPktInRangeCount << "," << wavePDR1_2 << "," << wavePDR2_2 << "," << wavePDR3_2 << ","
+      << wavePDR4_2 << "," << wavePDR5_2 << "," << wavePDR6_2 << "," << wavePDR7_2 << ","
+      << wavePDR8_2 << "," << wavePDR9_2 << "," << wavePDR10_2 << "," << mac_phy_oh << ""
       << std::endl;
 
   out.close ();
@@ -2053,15 +1969,17 @@ VanetRoutingExperiment::CommandSetup (int argc, char **argv)
   cmd.AddValue ("sinks", "Number of routing sinks", m_nSinks);
   cmd.AddValue ("txp", "Transmit power (dB), e.g. txp=7.5", m_txp);
   cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
-  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV;4=DSR;5=SAMPLE", m_protocol);//コマンドで入力必要
+  cmd.AddValue ("protocol", "1=OLSR;2=AODV;3=DSDV;4=DSR;5=SAMPLE", m_protocol); //コマンドで入力必要
   cmd.AddValue ("lossModel", "1=Friis;2=ItuR1411Los;3=TwoRayGround;4=LogDistance", m_lossModel);
   cmd.AddValue ("fading", "0=None;1=Nakagami;(buildings=1 overrides)", m_fading);
-  cmd.AddValue ("buildings", "Load building (obstacles)", m_loadBuildings);//コマンド入力必要なし　1で初期化済み
+  cmd.AddValue ("buildings", "Load building (obstacles)",
+                m_loadBuildings); //コマンド入力必要なし　1で初期化済み
   cmd.AddValue ("phyMode", "Wifi Phy mode", m_phyMode);
   cmd.AddValue ("80211Mode", "1=802.11p; 2=802.11b; 3=WAVE-PHY", m_80211mode);
   cmd.AddValue ("traceFile", "Ns2 movement trace file", m_traceFile);
   cmd.AddValue ("logFile", "Log file", m_logFile);
-  cmd.AddValue ("mobility", "1=trace;2=RWP", m_mobility);//1を選択すると trace ファイルを読み込むmobility 2ランダムトポロジ
+  cmd.AddValue ("mobility", "1=trace;2=RWP",
+                m_mobility); //1を選択すると trace ファイルを読み込むmobility 2ランダムトポロジ
   cmd.AddValue ("rate", "Rate", m_rate);
   cmd.AddValue ("phyModeB", "Phy mode 802.11b", m_phyModeB);
   cmd.AddValue ("speed", "Node speed (m/s)", m_nodeSpeed);
@@ -2091,7 +2009,8 @@ VanetRoutingExperiment::CommandSetup (int argc, char **argv)
   cmd.AddValue ("loadconfig", "Config-store filename to load", m_loadConfigFilename);
   cmd.AddValue ("saveconfig", "Config-store filename to save", m_saveConfigFilename);
   cmd.AddValue ("exp", "Experiment", m_exp);
-  cmd.AddValue ("BsmCaptureStart", "Start time to begin capturing pkts for cumulative Bsm", m_cumulativeBsmCaptureStart);
+  cmd.AddValue ("BsmCaptureStart", "Start time to begin capturing pkts for cumulative Bsm",
+                m_cumulativeBsmCaptureStart);
   cmd.Parse (argc, argv);
 
   m_txSafetyRange1 = txDist1;
@@ -2132,11 +2051,12 @@ VanetRoutingExperiment::SetupLogFile ()
   m_os.open (m_logFile.c_str ());
 }
 
-void VanetRoutingExperiment::SetupLogging ()
+void
+VanetRoutingExperiment::SetupLogging ()
 {
 
   // Enable logging from the ns2 helper
-  LogComponentEnable ("Ns2MobilityHelper",LOG_LEVEL_DEBUG);
+  LogComponentEnable ("Ns2MobilityHelper", LOG_LEVEL_DEBUG);
 
   Packet::EnablePrinting ();
 }
@@ -2144,17 +2064,18 @@ void VanetRoutingExperiment::SetupLogging ()
 void
 VanetRoutingExperiment::ConfigureDefaults ()
 {
-  Config::SetDefault ("ns3::OnOffApplication::PacketSize",StringValue ("64"));
-  Config::SetDefault ("ns3::OnOffApplication::DataRate",  StringValue (m_rate));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", StringValue ("64"));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue (m_rate));
 
   //Set Non-unicastMode rate to unicast mode
   if (m_80211mode == 2)
     {
-      Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",StringValue (m_phyModeB));
+      Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
+                          StringValue (m_phyModeB));
     }
   else
     {
-      Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",StringValue (m_phyMode));
+      Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", StringValue (m_phyMode));
     }
 }
 
@@ -2187,10 +2108,9 @@ VanetRoutingExperiment::SetupAdhocMobilityNodes ()
       ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << m_nodeSpeed << "]";
       std::stringstream ssPause;
       ssPause << "ns3::ConstantRandomVariable[Constant=" << m_nodePause << "]";
-      mobilityAdhoc.SetMobilityModel ("ns3::RandomWaypointMobilityModel",
-                                      "Speed", StringValue (ssSpeed.str ()),
-                                      "Pause", StringValue (ssPause.str ()),
-                                      "PositionAllocator", PointerValue (taPositionAlloc));
+      mobilityAdhoc.SetMobilityModel (
+          "ns3::RandomWaypointMobilityModel", "Speed", StringValue (ssSpeed.str ()), "Pause",
+          StringValue (ssPause.str ()), "PositionAllocator", PointerValue (taPositionAlloc));
       mobilityAdhoc.SetPositionAllocator (taPositionAlloc);
       mobilityAdhoc.Install (m_adhocTxNodes);
       m_streamIndex += mobilityAdhoc.AssignStreams (m_adhocTxNodes, m_streamIndex);
@@ -2211,35 +2131,40 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   if (m_lossModel == 1)
     {
       m_lossModelName = "ns3::FriisPropagationLossModel";
-      std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
+      std::cout << "obstacle debug ---------------------------------------------------------"
+                << m_lossModelName << "\n\n";
     }
   else if (m_lossModel == 2)
     {
       m_lossModelName = "ns3::ItuR1411LosPropagationLossModel";
-      std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
+      std::cout << "obstacle debug ---------------------------------------------------------"
+                << m_lossModelName << "\n\n";
     }
   else if (m_lossModel == 3)
     {
       m_lossModelName = "ns3::TwoRayGroundPropagationLossModel";
-      std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
+      std::cout << "obstacle debug ---------------------------------------------------------"
+                << m_lossModelName << "\n\n";
     }
   else if (m_lossModel == 4)
     {
       m_lossModelName = "ns3::LogDistancePropagationLossModel";
-      std::cout<<"obstacle debug ---------------------------------------------------------"<<m_lossModelName<<"\n\n";
-      std::cout<<"aiaiaiai"<<"\n";
+      std::cout << "obstacle debug ---------------------------------------------------------"
+                << m_lossModelName << "\n\n";
+      std::cout << "aiaiaiai"
+                << "\n";
     }
   else
     {
       // Unsupported propagation loss model.
       // Treating as ERROR
-      NS_LOG_ERROR ("Invalid propagation loss model specified.  Values must be [1-4], where 1=Friis;2=ItuR1411Los;3=TwoRayGround;4=LogDistance");
+      NS_LOG_ERROR ("Invalid propagation loss model specified.  Values must be [1-4], where "
+                    "1=Friis;2=ItuR1411Los;3=TwoRayGround;4=LogDistance");
     }
 
   // frequency
   double freq = 0.0;
-  if ((m_80211mode == 1)
-      || (m_80211mode == 3))
+  if ((m_80211mode == 1) || (m_80211mode == 3))
     {
       // 802.11p 5.9 GHz
       freq = 5.9e9;
@@ -2256,23 +2181,33 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   if (m_lossModel == 3)
     {
       // two-ray requires antenna height (else defaults to Friss)
-      wifiChannel.AddPropagationLoss (m_lossModelName, "Frequency", DoubleValue (freq), "HeightAboveZ", DoubleValue (1.5));
-      std::cout<<"obstacle debug ---------------------------------------------------------set propagation lossmodel"<<m_lossModelName<<"\n\n";
+      wifiChannel.AddPropagationLoss (m_lossModelName, "Frequency", DoubleValue (freq),
+                                      "HeightAboveZ", DoubleValue (1.5));
+      std::cout << "obstacle debug ---------------------------------------------------------set "
+                   "propagation lossmodel"
+                << m_lossModelName << "\n\n";
     }
-  else if(m_lossModel == 4)
+  else if (m_lossModel == 4)
     {
-      wifiChannel.AddPropagationLoss("ns3::LogDistancePropagationLossModel",
-		"Exponent", DoubleValue(6.0),
-		"ReferenceDistance", DoubleValue(400.0),///伝搬距離１メートル
-		"ReferenceLoss", DoubleValue(46.6777));
+      wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
+                                      DoubleValue (6.0), "ReferenceDistance",
+                                      DoubleValue (400.0), ///伝搬距離１メートル
+                                      "ReferenceLoss", DoubleValue (46.6777));
 
-      std::cout<<"obstacle debug  -------------------------------------------------------set propagation loss model logdistance propagation model"<<"\n";
+      std::cout << "obstacle debug  -------------------------------------------------------set "
+                   "propagation loss model logdistance propagation model"
+                << "\n";
     }
-  else{
-      std::cout<<"aiaiaiai2"<<"\n";
+  else
+    {
+      std::cout << "aiaiaiai2"
+                << "\n";
       wifiChannel.AddPropagationLoss (m_lossModelName, "Frequency", DoubleValue (freq));
-      std::cout<<"obstacle debug ---------------------------------------------------------set propagation lossmodel"<<m_lossModelName<<"\n\n";
-      std::cout<<"aiaiaiai3"<<"\n";
+      std::cout << "obstacle debug ---------------------------------------------------------set "
+                   "propagation lossmodel"
+                << m_lossModelName << "\n\n";
+      std::cout << "aiaiaiai3"
+                << "\n";
     }
 
   // Propagation loss models are additive.  If Obstacle modeling is included,
@@ -2280,7 +2215,9 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   if (m_loadBuildings != 0)
     {
       wifiChannel.AddPropagationLoss ("ns3::ObstacleShadowingPropagationLossModel");
-      std::cout<<"obstacle debug -----------------------------------------------obstacle shadowing loss model"<<"\n\n";
+      std::cout << "obstacle debug -----------------------------------------------obstacle "
+                   "shadowing loss model"
+                << "\n\n";
     }
   else if (m_fading != 0)
     {
@@ -2292,12 +2229,12 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   Ptr<YansWifiChannel> channel = wifiChannel.Create ();
 
   // The below set of helpers will help us to put together the wifi NICs we want
-  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (channel);
   // ns-3 supports generate a pcap trace
   wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11);
 
-  YansWavePhyHelper wavePhy =  YansWavePhyHelper::Default ();
+  YansWavePhyHelper wavePhy = YansWavePhyHelper::Default ();
   wavePhy.SetChannel (channel);
   wavePhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11);
 
@@ -2307,7 +2244,7 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   Wifi80211pHelper wifi80211p = Wifi80211pHelper::Default ();
   if (m_verbose)
     {
-      wifi80211p.EnableLogComponents ();      // Turn on all Wifi 802.11p logging
+      wifi80211p.EnableLogComponents (); // Turn on all Wifi 802.11p logging
       // likewise, turn on WAVE PHY logging
       waveHelper.EnableLogComponents ();
     }
@@ -2317,24 +2254,23 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   // Setup 802.11b stuff
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
 
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue (m_phyModeB),
-                                "ControlMode",StringValue (m_phyModeB));
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode",
+                                StringValue (m_phyModeB), "ControlMode", StringValue (m_phyModeB));
 
   // Setup 802.11p stuff
-  wifi80211p.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                      "DataMode",StringValue (m_phyMode),
-                                      "ControlMode",StringValue (m_phyMode));
+  wifi80211p.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode",
+                                      StringValue (m_phyMode), "ControlMode",
+                                      StringValue (m_phyMode));
 
   // Setup WAVE-PHY stuff
-  waveHelper.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                      "DataMode",StringValue (m_phyMode),
-                                      "ControlMode",StringValue (m_phyMode));
+  waveHelper.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode",
+                                      StringValue (m_phyMode), "ControlMode",
+                                      StringValue (m_phyMode));
 
   // Set Tx Power
-  wifiPhy.Set ("TxPowerStart",DoubleValue (m_txp));
+  wifiPhy.Set ("TxPowerStart", DoubleValue (m_txp));
   wifiPhy.Set ("TxPowerEnd", DoubleValue (m_txp));
-  wavePhy.Set ("TxPowerStart",DoubleValue (m_txp));
+  wavePhy.Set ("TxPowerStart", DoubleValue (m_txp));
   wavePhy.Set ("TxPowerEnd", DoubleValue (m_txp));
 
   // Add an upper mac and disable rate control
@@ -2360,7 +2296,7 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   if (m_asciiTrace != 0)
     {
       AsciiTraceHelper ascii;
-      Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ( (m_trName + ".tr").c_str ());
+      Ptr<OutputStreamWrapper> osw = ascii.CreateFileStream ((m_trName + ".tr").c_str ());
       wifiPhy.EnableAsciiAll (osw);
       wavePhy.EnableAsciiAll (osw);
     }
@@ -2382,14 +2318,10 @@ VanetRoutingExperiment::SetupWaveMessages ()
       chAccessMode = 1;
     }
 
-  m_waveBsmHelper.Install (m_adhocTxInterfaces,
-                           Seconds (m_TotalSimTime),
-                           m_wavePacketSize,
+  m_waveBsmHelper.Install (m_adhocTxInterfaces, Seconds (m_TotalSimTime), m_wavePacketSize,
                            Seconds (m_waveInterval),
                            // GPS accuracy (i.e, clock drift), in number of ns
-                           m_gpsAccuracyNs,
-                           m_txSafetyRanges,
-                           chAccessMode,
+                           m_gpsAccuracyNs, m_txSafetyRanges, chAccessMode,
                            // tx max delay before transmit, in ms
                            MilliSeconds (m_txMaxDelayMs));
 
@@ -2400,13 +2332,8 @@ VanetRoutingExperiment::SetupWaveMessages ()
 void
 VanetRoutingExperiment::SetupRoutingMessages ()
 {
-  m_routingHelper->Install (m_adhocTxNodes,
-                            m_adhocTxDevices,
-                            m_adhocTxInterfaces,
-                            m_TotalSimTime,
-                            m_protocol,
-                            m_nSinks,
-                            m_routingTables);
+  m_routingHelper->Install (m_adhocTxNodes, m_adhocTxDevices, m_adhocTxInterfaces, m_TotalSimTime,
+                            m_protocol, m_nSinks, m_routingTables);
 }
 
 void
@@ -2422,26 +2349,25 @@ VanetRoutingExperiment::SetupScenario ()
   // certain parameters may be further overridden
   // i.e. specify a scenario, override tx power.
 
-
   //m_scenario = 3;      //obstacle   無理やり2にかえる
   //m_loadBuildings = 1;   //obstacle   無理やり
   if (m_loadBuildings != 0)
     {
-      std::cout<<"obstacle debug -------------------------------------building loading"<<"\n\n";
+      std::cout << "obstacle debug -------------------------------------building loading"
+                << "\n\n";
 
       //std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";//デフォルトのbuildingモデル
 
-      std::string bldgFile = "./src/wave/examples/BerlinTest/osm.poly.xml";//謎にWaveのディレクトリなら動く
+      std::string bldgFile =
+          "./src/wave/examples/BerlinTest/osm.poly.xml"; //謎にWaveのディレクトリなら動く
 
-      std::cout<<"building ファイルを入力しましたそのファイルは "<<bldgFile<<"\n";
-
-
+      std::cout << "building ファイルを入力しましたそのファイルは " << bldgFile << "\n";
 
       //NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
-      Topology::LoadBuildings(bldgFile);
-      std::cout<<"ファイル読み取り成功"<<"\n";
+      Topology::LoadBuildings (bldgFile);
+      std::cout << "ファイル読み取り成功"
+                << "\n";
     }
-
 
   if (m_scenario == 1)
     {
@@ -2458,7 +2384,9 @@ VanetRoutingExperiment::SetupScenario ()
           m_TotalSimTime = 100.0;
         }
 
-      std::cout<<"oioioioiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii m_lossmodel"<<m_lossModel<<"\n";
+      std::cout << "oioioioiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
+                   "iiiiiiiiiiii m_lossmodel"
+                << m_lossModel << "\n";
     }
   else if (m_scenario == 2)
     {
@@ -2493,19 +2421,18 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
 
-      m_traceFile = "sumo/BerlinTest/Berlin_Test_mobility.tcl";//モビリティ入力ファイル
+      m_traceFile = "sumo/BerlinTest/Berlin_Test_mobility.tcl"; //モビリティ入力ファイル
       m_logFile = "sumo/BerLinTest/BerlinTest.log"; //出力ファイル
-
 
       m_mobility = 1;
       m_nNodes = 309;
-      m_TotalSimTime = 3856;
+      m_TotalSimTime = 100;
       m_nodeSpeed = 0;
       m_nodePause = 0;
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       // WAVE BSM only, no routing data
-     // m_protocol = 0;////////////////////////////////////////////////////////////////////初期状態 なぜprotocolを0にするのか不明
+      // m_protocol = 0;////////////////////////////////////////////////////////////////////初期状態 なぜprotocolを0にするのか不明
       //m_lossModel = 3; // two-ray ground ///////////////////////////////////////////////初期状態　なぜ3にするのか不明
       if (m_txSafetyRange3 == 150.0)
         {
@@ -2522,8 +2449,8 @@ VanetRoutingExperiment::SetupScenario ()
           m_txSafetyRange10 = 1500.0;
         }
 
-    // 本来この位置に　building のロードが行われていた　すなわち m_senario = 3の場合のみ建物データがロードされていた
-      // if (m_loadBuildings != 0)                                                                    
+      // 本来この位置に　building のロードが行われていた　すなわち m_senario = 3の場合のみ建物データがロードされていた
+      // if (m_loadBuildings != 0)
       //   {
       //     std::cout<<"obstacle debug -------------------------------------building loading"<<"\n\n";
 
@@ -2531,7 +2458,7 @@ VanetRoutingExperiment::SetupScenario ()
       //     NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
       //     Topology::LoadBuildings(bldgFile);
       //   }
-     }
+    }
 }
 
 void
@@ -2539,29 +2466,28 @@ VanetRoutingExperiment::WriteCsvHeader ()
 {
   //blank out the last output file and write the column headers
   std::ofstream out (m_CSVfileName.c_str ());
-  out << "SimulationSecond," <<
-    "ReceiveRate," <<
-    "PacketsReceived," <<
-    "NumberOfSinks," <<
-    "RoutingProtocol," <<
-    "TransmissionPower," <<
-    "WavePktsSent," <<
-    "WavePtksReceived," <<
-    "WavePktsPpr," <<
-    "ExpectedWavePktsReceived," <<
-    "ExpectedWavePktsInCoverageReceived," <<
-    "BSM_PDR1," <<
-    "BSM_PDR2," <<
-    "BSM_PDR3," <<
-    "BSM_PDR4," <<
-    "BSM_PDR5," <<
-    "BSM_PDR6," <<
-    "BSM_PDR7," <<
-    "BSM_PDR8," <<
-    "BSM_PDR9," <<
-    "BSM_PDR10," <<
-    "MacPhyOverhead" <<
-    std::endl;
+  out << "SimulationSecond,"
+      << "ReceiveRate,"
+      << "PacketsReceived,"
+      << "NumberOfSinks,"
+      << "RoutingProtocol,"
+      << "TransmissionPower,"
+      << "WavePktsSent,"
+      << "WavePtksReceived,"
+      << "WavePktsPpr,"
+      << "ExpectedWavePktsReceived,"
+      << "ExpectedWavePktsInCoverageReceived,"
+      << "BSM_PDR1,"
+      << "BSM_PDR2,"
+      << "BSM_PDR3,"
+      << "BSM_PDR4,"
+      << "BSM_PDR5,"
+      << "BSM_PDR6,"
+      << "BSM_PDR7,"
+      << "BSM_PDR8,"
+      << "BSM_PDR9,"
+      << "BSM_PDR10,"
+      << "MacPhyOverhead" << std::endl;
   out.close ();
 
   std::ofstream out2 (m_CSVfileName2.c_str ());
@@ -2576,8 +2502,7 @@ VanetRoutingExperiment::WriteCsvHeader ()
        << "BSM_PDR9,"
        << "BSM_PDR10,"
        << "AverageRoutingGoodputKbps,"
-       << "MacPhyOverhead"
-       << std::endl;
+       << "MacPhyOverhead" << std::endl;
   out2.close ();
 }
 
