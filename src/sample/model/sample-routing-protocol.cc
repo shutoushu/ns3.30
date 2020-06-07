@@ -265,13 +265,13 @@ RoutingProtocol::DoInitialize (void)
         }
     }
 
-  if (id == 2 || id == 5 || id == 8 || id == 10 || id == 15 || id == 20 || id == 25 || id == 30)
-    {
-      for (int i = 0; i < SimTime; i++)
-        { //シミュレーション時間分ループを回す　単位 second
-          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
-        }
-    }
+  // if (id == 40)
+  //   {
+  //     for (int i = 0; i < SimTime; i++)
+  //       { //シミュレーション時間分ループを回す　単位 second
+  //         Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
+  //       }
+  //   }
 
   Simulator::Schedule (Seconds (SimTime - 1), &RoutingProtocol::SimulationResult, this);
 }

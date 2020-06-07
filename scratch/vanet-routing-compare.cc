@@ -1675,6 +1675,9 @@ VanetRoutingExperiment::Run ()
   Simulator::Stop (Seconds (m_TotalSimTime));
   AnimationInterface anim ("compare-routing");
 
+  anim.UpdateNodeSize (1, 20, 1);
+  anim.UpdateNodeSize (40, 20, 1);
+
   anim.EnablePacketMetadata ();
   anim.EnableIpv4L3ProtocolCounters (Seconds (0), Seconds (m_TotalSimTime));
   Simulator::Run ();
