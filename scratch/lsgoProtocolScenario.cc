@@ -26,7 +26,7 @@
 #include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/sample-module.h"
+#include "ns3/lsgo-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/netanim-module.h"
 
@@ -39,12 +39,12 @@
 
 
 
-NS_LOG_COMPONENT_DEFINE ("SampleProtocolMinimum");
+NS_LOG_COMPONENT_DEFINE ("LsgoProtocolMinimum");
 
 using namespace ns3;
 
 
-//uint16_t port = 625;
+uint16_t port = 625;
 Ptr<ConstantVelocityMobilityModel> cvmm;
 
 
@@ -59,7 +59,7 @@ main (int argc, char *argv[])
    double widthField = 400;
 
 
-   int pktSize = 1024;  //packet Size in bytes
+   //int pktSize = 1024;  //packet Size in bytes
 
 
    RngSeedManager::SetSeed(15);
@@ -146,10 +146,10 @@ main (int argc, char *argv[])
 
   ////////////////////////   INTERNET STACK /////////////////////////
 
-   SampleHelper sampleProtocol;
+   LsgoHelper lsgoProtocol;
 
    Ipv4ListRoutingHelper listrouting;
-   listrouting.Add(sampleProtocol, 10);
+   listrouting.Add(lsgoProtocol, 10);
 
    InternetStackHelper internet;
    internet.SetRoutingHelper(listrouting);

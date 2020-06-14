@@ -18,11 +18,10 @@
  * Author: Alberto Gallegos <ramonet@fc.ritsumei.ac.jp>
  *         Ritsumeikan University, Shiga, Japan
  */
-#ifndef SAMPLEROUTINGPROTOCOL_H
-#define SAMPLEROUTINGPROTOCOL_H
+#ifndef LSGOROUTINGPROTOCOL_H
+#define LSGOROUTINGPROTOCOL_H
 
-
-#include "sample-packet.h"
+#include "lsgo-packet.h"
 #include "ns3/node.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/output-stream-wrapper.h"
@@ -31,12 +30,15 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
+#define NumNodes 12 //全ノード数
+#define SimTime 100 //シミュレーション時間
+
 namespace ns3 {
-namespace sample {
+namespace lsgo {
 /**
- * \ingroup sample
+ * \ingroup lsgo
  *
- * \brief SAMPLE routing protocol
+ * \brief LSGO routing protocol
  */
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
@@ -46,7 +48,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  static const uint32_t SAMPLE_PORT;
+  static const uint32_t LSGO_PORT;
 
   /// constructor
   RoutingProtocol ();
@@ -54,7 +56,8 @@ public:
   virtual void DoDispose ();
 
   // Inherited from Ipv4RoutingProtocol
-  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
+  Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif,
+                              Socket::SocketErrno &sockerr);
   bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                    UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                    LocalDeliverCallback lcb, ErrorCallback ecb);
@@ -64,8 +67,6 @@ public:
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
-
-
 
   /**
    * Assign a fixed random variable stream number to the random variables
@@ -79,29 +80,33 @@ public:
 
 protected:
   virtual void DoInitialize (void);
-private:
 
-  void SendXBroadcast(void);
-  void RecvSample (Ptr<Socket> socket);
+private:
+  void SendXBroadcast (void);
+  void RecvLsgo (Ptr<Socket> socket);
+
+  //**自作メソッド start**/
+  void SendHelloPacket (void); //hello packet を broadcast するメソッド
+  void SimulationResult (void); //シミュレーション結果を出力する
+  void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination);
+  //**自作メソッド start**/
 
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
   /// Nodes IP address
   Ipv4Address m_mainAddress;
   /// Raw unicast socket per each IP interface, map socket -> iface address (IP + mask)
-  std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
+  std::map<Ptr<Socket>, Ipv4InterfaceAddress> m_socketAddresses;
   /// Raw subnet directed broadcast socket per each IP interface, map socket -> iface address (IP + mask)
-  std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketSubnetBroadcastAddresses;
- 
+  std::map<Ptr<Socket>, Ipv4InterfaceAddress> m_socketSubnetBroadcastAddresses;
+
   Ptr<NetDevice> m_lo;
 
- 
   /// Provides uniform random variables.
   Ptr<UniformRandomVariable> m_uniformRandomVariable;
-
 };
 
-} //namespace sample
+} //namespace lsgo
 } //namespace ns3
 
-#endif /* SAMPLEROUTINGPROTOCOL_H */
+#endif /* LSGOROUTINGPROTOCOL_H */

@@ -19,7 +19,7 @@
 #define NS_LOG_APPEND_CONTEXT                                   \
   if (m_ipv4) { std::clog << "[node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; }
 
-#include "sample-routing-protocol.h"
+#include "exor-routing-protocol.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/random-variable-stream.h"
@@ -37,13 +37,13 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("SampleRoutingProtocol");
+NS_LOG_COMPONENT_DEFINE ("ExorRoutingProtocol");
 
-namespace sample {
+namespace exor {
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
-/// UDP Port for SAMPLE control traffic
-const uint32_t RoutingProtocol::SAMPLE_PORT = 654;
+/// UDP Port for EXOR control traffic
+const uint32_t RoutingProtocol::EXOR_PORT = 654;
 
 
 RoutingProtocol::RoutingProtocol ()
@@ -54,9 +54,9 @@ RoutingProtocol::RoutingProtocol ()
 TypeId
 RoutingProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::sample::RoutingProtocol")
+  static TypeId tid = TypeId ("ns3::exor::RoutingProtocol")
     .SetParent<Ipv4RoutingProtocol> ()
-    .SetGroupName ("Sample")
+    .SetGroupName ("Exor")
     .AddConstructor<RoutingProtocol> ()
     .AddAttribute ("UniformRv",
                    "Access to the underlying UniformRandomVariable",
@@ -85,7 +85,7 @@ RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit 
   *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
                         << "; Time: " << Now ().As (unit)
                         << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
-                        << ", SAMPLE Routing table" << std::endl;
+                        << ", EXOR Routing table" << std::endl;
 
   //Print routing table here.
   *stream->GetStream () << std::endl;
@@ -172,9 +172,9 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
 
   socket = Socket::CreateSocket (GetObject<Node> (),UdpSocketFactory::GetTypeId ());
   NS_ASSERT (socket != 0);
-  socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvSample,this));
+  socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvExor,this));
   socket->BindToNetDevice (l3->GetNetDevice (i));
-  socket->Bind (InetSocketAddress (iface.GetLocal (), SAMPLE_PORT));
+  socket->Bind (InetSocketAddress (iface.GetLocal (), EXOR_PORT));
   socket->SetAllowBroadcast (true);
   socket->SetIpRecvTtl (true);
   m_socketAddresses.insert (std::make_pair (socket,iface));
@@ -184,9 +184,9 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   socket = Socket::CreateSocket (GetObject<Node> (),
                                  UdpSocketFactory::GetTypeId ());
   NS_ASSERT (socket != 0);
-  socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvSample, this));
+  socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvExor, this));
   socket->BindToNetDevice (l3->GetNetDevice (i));
-  socket->Bind (InetSocketAddress (iface.GetBroadcast (), SAMPLE_PORT));
+  socket->Bind (InetSocketAddress (iface.GetBroadcast (), EXOR_PORT));
   socket->SetAllowBroadcast (true);
   socket->SetIpRecvTtl (true);
   m_socketSubnetBroadcastAddresses.insert (std::make_pair (socket, iface));
@@ -211,14 +211,14 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
               TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
               Ptr<Node> theNode = GetObject<Node> ();
               Ptr<Socket> socket = Socket::CreateSocket (theNode,tid);
-              InetSocketAddress inetAddr (m_ipv4->GetAddress (i, 0).GetLocal (), SAMPLE_PORT);
+              InetSocketAddress inetAddr (m_ipv4->GetAddress (i, 0).GetLocal (), EXOR_PORT);
               if (socket->Bind (inetAddr))
                 {
                   NS_FATAL_ERROR ("Failed to bind() ZEAL socket");
                 }
               socket->BindToNetDevice (m_ipv4->GetNetDevice (i));
               socket->SetAllowBroadcast (true);
-              socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvSample, this));
+              socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvExor, this));
               //socket->SetAttribute ("IpTtl",UintegerValue (1));
               socket->SetRecvPktInfo (true);
 
@@ -268,9 +268,9 @@ RoutingProtocol::DoInitialize (void)
 }
 
 void
-RoutingProtocol::RecvSample (Ptr<Socket> socket)
+RoutingProtocol::RecvExor (Ptr<Socket> socket)
 {
-  std::cout<<"In recv Sample(Node "<< m_ipv4->GetObject<Node> ()->GetId ()<<")\n";
+  std::cout<<"In recv Exor(Node "<< m_ipv4->GetObject<Node> ()->GetId ()<<")\n";
 }
 
 
@@ -288,7 +288,7 @@ RoutingProtocol::SendXBroadcast (void)
       RrepHeader rrepHeader(0,3,Ipv4Address("10.1.1.15"),5,Ipv4Address("10.1.1.13"),Seconds(3));
       packet->AddHeader (rrepHeader);
       
-      TypeHeader tHeader (SAMPLETYPE_RREP);
+      TypeHeader tHeader (EXORTYPE_RREP);
       packet->AddHeader (tHeader);
        
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
@@ -301,7 +301,7 @@ RoutingProtocol::SendXBroadcast (void)
         {
           destination = iface.GetBroadcast ();
         }
-      socket->SendTo (packet, 0, InetSocketAddress (destination, SAMPLE_PORT));
+      socket->SendTo (packet, 0, InetSocketAddress (destination, EXOR_PORT));
       std::cout<<"broadcast sent\n"; 
         
      }
@@ -310,5 +310,5 @@ RoutingProtocol::SendXBroadcast (void)
 
 
 
-} //namespace sample
+} //namespace exor
 } //namespace ns3

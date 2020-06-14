@@ -18,11 +18,11 @@
  * Author: Alberto Gallegos <ramonet@fc.ritsumei.ac.jp>
  *         Ritsumeikan University, Shiga, Japan
  */
-#ifndef SAMPLEROUTINGPROTOCOL_H
-#define SAMPLEROUTINGPROTOCOL_H
+#ifndef EXORROUTINGPROTOCOL_H
+#define EXORROUTINGPROTOCOL_H
 
 
-#include "sample-packet.h"
+#include "exor-packet.h"
 #include "ns3/node.h"
 #include "ns3/random-variable-stream.h"
 #include "ns3/output-stream-wrapper.h"
@@ -32,11 +32,11 @@
 #include <map>
 
 namespace ns3 {
-namespace sample {
+namespace exor {
 /**
- * \ingroup sample
+ * \ingroup exor
  *
- * \brief SAMPLE routing protocol
+ * \brief EXOR routing protocol
  */
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
@@ -46,7 +46,7 @@ public:
    * \return the object TypeId
    */
   static TypeId GetTypeId (void);
-  static const uint32_t SAMPLE_PORT;
+  static const uint32_t EXOR_PORT;
 
   /// constructor
   RoutingProtocol ();
@@ -82,7 +82,7 @@ protected:
 private:
 
   void SendXBroadcast(void);
-  void RecvSample (Ptr<Socket> socket);
+  void RecvExor (Ptr<Socket> socket);
 
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
@@ -101,7 +101,7 @@ private:
 
 };
 
-} //namespace sample
+} //namespace exor
 } //namespace ns3
 
-#endif /* SAMPLEROUTINGPROTOCOL_H */
+#endif /* EXORROUTINGPROTOCOL_H */

@@ -2354,6 +2354,7 @@ VanetRoutingExperiment::SetupScenario ()
 
   //m_scenario = 3;      //obstacle   無理やり2にかえる
   //m_loadBuildings = 1;   //obstacle   無理やり
+
   if (m_loadBuildings != 0)
     {
       std::cout << "obstacle debug -------------------------------------building loading"
