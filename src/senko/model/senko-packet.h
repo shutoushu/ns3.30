@@ -57,7 +57,7 @@ public:
    */
   //TypeHeader (MessageType t = SENKOTYPE_RREQ);
   //TypeHeader (MessageType t = SENKOTYPE_DANGER);
-  TypeHeader (MessageType t = SENKOTYPE_HELLOID);
+  TypeHeader (MessageType t = SENKOTYPE_HELLOID); //routing protocol recv のデフォルト
   /**
    * \brief Get the type ID.
    * \return the object TypeId

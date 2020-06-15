@@ -36,10 +36,10 @@ namespace lsgo {
 * \brief MessageType enumeration
 */
 enum MessageType {
-  LSGOTYPE_RREQ = 1, //!< LSGOTYPE_RREQ
-  LSGOTYPE_RREP = 2, //!< LSGOTYPE_RREP
-  LSGOTYPE_RERR = 3, //!< LSGOTYPE_RERR
-  LSGOTYPE_RREP_ACK = 4, //!< LSGOTYPE_RREP_ACK
+  // LSGOTYPE_RREQ = 1, //!< LSGOTYPE_RREQ
+  // LSGOTYPE_RREP = 2, //!< LSGOTYPE_RREP
+  // LSGOTYPE_RERR = 3, //!< LSGOTYPE_RERR
+  // LSGOTYPE_RREP_ACK = 4, //!< LSGOTYPE_RREP_ACK
   LSGOTYPE_HELLO = 5 //LSGO HELLO
 };
 
@@ -54,7 +54,7 @@ public:
    * constructor
    * \param t the LSGO RREQ type
    */
-  TypeHeader (MessageType t = LSGOTYPE_RREQ);
+  //TypeHeader (MessageType t = LSGOTYPE_RREQ);
   TypeHeader (MessageType t = LSGOTYPE_HELLO);
   /**
    * \brief Get the type ID.
