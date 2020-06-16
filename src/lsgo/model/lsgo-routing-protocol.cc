@@ -302,7 +302,7 @@ RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
 void
 RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
 {
-  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Address sourceAddress;
   Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
   TypeHeader tHeader (LSGOTYPE_HELLO);
@@ -326,9 +326,9 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
 
         // ////*********recv hello packet log*****************////////////////
-        // std::cout << "Node ID " << id << "が受信したHello packetは"
-        //           << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
-        //           << recv_hello_posy << "\n";
+        std::cout << "Node ID " << id << "が受信したHello packetは"
+                  << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
+                  << recv_hello_posy << "\n";
         // ////*********************************************////////////////
         SaveXpoint (recv_hello_id, recv_hello_posx);
         SaveYpoint (recv_hello_id, recv_hello_posy);
@@ -358,48 +358,24 @@ RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
 void
 RoutingProtocol::SendXBroadcast (void)
 {
-  //int32_t id =m_ipv4->GetObject<Node> ()->GetId ();
-  // for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
-  //      j != m_socketAddresses.end (); ++j)
-  //   {
-
-  //     Ptr<Socket> socket = j->first;
-  //     Ipv4InterfaceAddress iface = j->second;
-  //     Ptr<Packet> packet = Create<Packet> ();
-
-  //     RrepHeader rrepHeader (0, 3, Ipv4Address ("10.1.1.15"), 5, Ipv4Address ("10.1.1.13"),
-  //                            Seconds (3));
-  //     packet->AddHeader (rrepHeader);
-
-  //     TypeHeader tHeader (LSGOTYPE_RREP);
-  //     packet->AddHeader (tHeader);
-
-  //     //std::cout<<"time"<<Simulator::Now().GetSeconds()<<"\n";
-
-  //     // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
-  //     Ipv4Address destination;
-  //     if (iface.GetMask () == Ipv4Mask::GetOnes ())
-  //       {
-  //         destination = Ipv4Address ("255.255.255.255");
-  //       }
-  //     else
-  //       {
-  //         destination = iface.GetBroadcast ();
-  //       }
-  //     socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
-  //     //std::cout<<"broadcast sent\n";
-  //   }
 }
 // シミュレーション結果の出力関数
 void
 RoutingProtocol::SimulationResult (void) //
 {
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   if (Simulator::Now ().GetSeconds () == SimTime - 1)
     {
+      std::cout << "id=" << id << "の\n";
       for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++)
         {
           std::cout << "recv hello packet id = " << itr->first // キーを表示
                     << ", x座標 = " << itr->second << "\n"; // 値を表示
+        }
+      for (auto itr = m_ypoint.begin (); itr != m_ypoint.end (); itr++)
+        {
+          std::cout << "recv hello packet id = " << itr->first // キーを表示
+                    << ", y座標 = " << itr->second << "\n"; // 値を表示
         }
     }
 }
