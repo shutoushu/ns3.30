@@ -234,16 +234,17 @@ void
 RoutingProtocol::DoInitialize (void)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //int32_t time = Simulator::Now ().GetMicroSeconds ();
 
   for (int i = 1; i < SimTime; i++)
     {
       if (id == 1)
         Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
     }
-
-  if (id == 1)
-    Simulator::Schedule (Seconds (SimTime - 1), &RoutingProtocol::SimulationResult,
-                         this); //シミュレーション結果出力関数
+  for (int i = 1; i < SimTime; i++)
+    {
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult, this);
+    }
 }
 
 void
@@ -293,7 +294,7 @@ void
 RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  std::cout << " id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
+  std::cout << " send id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
   socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
 }
 //** End SendToHello **///
@@ -301,7 +302,7 @@ RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
 void
 RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
 {
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Address sourceAddress;
   Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
   TypeHeader tHeader (LSGOTYPE_HELLO);
@@ -316,20 +317,42 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
     }
   switch (tHeader.Get ())
     {
-      case LSGOTYPE_HELLO: {
+      case LSGOTYPE_HELLO: { //hello message を受け取った場合
         HelloHeader helloheader;
         packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
         int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
         int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
         int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
+        int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
 
         // ////*********recv hello packet log*****************////////////////
-        std::cout << "Node ID " << id << "が受信したHello packetは"
-                  << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
-                  << recv_hello_posy << "\n";
+        // std::cout << "Node ID " << id << "が受信したHello packetは"
+        //           << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
+        //           << recv_hello_posy << "\n";
         // ////*********************************************////////////////
+        SaveXpoint (recv_hello_id, recv_hello_posx);
+        SaveYpoint (recv_hello_id, recv_hello_posy);
+        SaveRecvTime (recv_hello_id, recv_hello_time);
       }
     }
+}
+
+void
+RoutingProtocol::SaveXpoint (int32_t map_id, int32_t map_xpoint)
+{
+  m_xpoint[map_id] = map_xpoint;
+}
+
+void
+RoutingProtocol::SaveYpoint (int32_t map_id, int32_t map_ypoint)
+{
+  m_ypoint[map_id] = map_ypoint;
+}
+
+void
+RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
+{
+  m_recvtime.insert (std::make_pair (map_id, map_recvtime));
 }
 
 void
@@ -371,6 +394,14 @@ RoutingProtocol::SendXBroadcast (void)
 void
 RoutingProtocol::SimulationResult (void) //
 {
+  if (Simulator::Now ().GetSeconds () == SimTime - 1)
+    {
+      for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++)
+        {
+          std::cout << "recv hello packet id = " << itr->first // キーを表示
+                    << ", x座標 = " << itr->second << "\n"; // 値を表示
+        }
+    }
 }
 
 } //namespace lsgo

@@ -146,93 +146,6 @@ operator<< (std::ostream & os, TypeHeader const & h)
 
 
 
-//----------------------------------------------------------------------------
-//ID
-//----------------------------------------------------------------------------
-
-
-
-IdHeader::IdHeader (uint32_t id ,uint32_t xpoint,uint32_t ypoint)
-: m_helloid (id),
-  m_helloxpoint(xpoint),
-  m_helloypoint(ypoint)
-{
- 
-}
-
-
-NS_OBJECT_ENSURE_REGISTERED (IdHeader);
-
-TypeId
-IdHeader::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::shuto::IdHeader")
-    .SetParent<Header> ()
-    .SetGroupName ("Shuto")
-    .AddConstructor<IdHeader> ()
-  ;
-  return tid;
-}
-
-TypeId
-IdHeader::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-IdHeader::GetSerializedSize () const
-{
-  //return 10;
-  return 12;
-}
-
-void
-IdHeader::Serialize (Buffer::Iterator i) const  //シリアル化
-{
-  i.WriteHtonU32 (m_helloid);
-  i.WriteHtonU32 (m_helloxpoint);
-  i.WriteHtonU32 (m_helloypoint);
-  //std::cout<<"serialize"<<"\n\n";
-
-}
-
-uint32_t
-IdHeader::Deserialize (Buffer::Iterator start)   //逆シリアル化
-{
-  Buffer::Iterator i = start;
-
-  m_helloid = i.ReadNtohU32 ();
-  m_helloxpoint = i.ReadNtohU32 ();
-  m_helloypoint = i.ReadNtohU32 ();
-  //std::cout <<"deserialize m_helloid"<<m_helloid<<"\n\n";
-
-  uint32_t dist3 = i.GetDistanceFrom (start);
-
-  //std::cout<< "   Id   header       getdistanceFrom  dst3="<<dist3<<"\n\n";
-  NS_ASSERT (dist3 == GetSerializedSize ());
-  return dist3;
-}
-
-void
-IdHeader::Print (std::ostream &os) const
-{
-  os << "m_helloid " << m_helloid ;
-  os << "m_helloxpoint " << m_helloxpoint ;
-  os << "m_helloypoint " << m_helloypoint ;
-  
-}
-std::ostream &
-operator<< (std::ostream & os, IdHeader const & h)
-{
-  h.Print (os);
-  return os;
-}
-
-
-
-
-
 
 
 
@@ -244,28 +157,21 @@ operator<< (std::ostream & os, IdHeader const & h)
 //danger
 //----------------------------------------------------------------------------
 
-DangerHeader::DangerHeader (uint32_t nodeid, uint32_t posx, uint32_t posy, uint8_t hopcount, uint32_t recvtime, uint8_t danger)
+DangerHeader::DangerHeader (int32_t nodeid, int32_t posx, int32_t posy, 
+int8_t hopcount, int32_t recvtime, int8_t danger,int32_t myposx, 
+int32_t myposy, int32_t pastmyposx, int32_t pastmyposy)
    : m_nodeid(nodeid),
      m_posx(posx),
      m_posy(posy),
-     m_hopcount((unsigned)hopcount),
+     m_hopcount((signed)hopcount),
      m_recvtime(recvtime),
-     m_danger((unsigned)danger) 
+     m_danger((signed)danger),
+     m_myposx(myposx),
+     m_myposy(myposy),
+     m_pastmyposx(pastmyposx),
+     m_pastmyposy(pastmyposy)
 {
-  
-  //std::cout<<"danger = "<<(unsigned)m_danger<<"\n";
-  //std::cout<<"hopcount = "<<(unsigned)m_hopcount<<"\n";
-  //std::cout<<"recvtime = "<<m_recvtime<<"\n";
 
-  //uint8_t test = 1;
-   //std::cout<<"test = "<<(unsigned)test<<"\n";
-
-  /*std::cout<<"constrouctor-------------------------------------------------------\n";
-  std::cout<<"constrouctor m_point"<<m_point<<"\n";
-  std::cout<<"constrouctor m_hopcount"<<m_hopcount<<"\n";
-  std::cout<<"constrouctor m_danger"<<m_danger<<"\n";
-  std::cout<<"constrouctor-------------------------------------------------------\n";
-  */
 }
 NS_OBJECT_ENSURE_REGISTERED (DangerHeader);
 
@@ -291,7 +197,8 @@ DangerHeader::GetSerializedSize () const
 {
  // return 19;
   //return 14;
-  return  18;
+  //return  26;
+  return 34;
  // return 24;
 }
 
@@ -304,9 +211,10 @@ DangerHeader::Serialize (Buffer::Iterator i) const  //シリアル化
   i.WriteU8(m_hopcount);
   i.WriteU8 (m_danger);
   i.WriteHtonU32 (m_recvtime);
-  
-
-  
+  i.WriteHtonU32 (m_myposx);
+  i.WriteHtonU32 (m_myposy);
+  i.WriteHtonU32 (m_pastmyposx);
+  i.WriteHtonU32 (m_pastmyposy);
   //std::cout<<"     DangerHeader               serialize \n";
 }
 
@@ -321,6 +229,10 @@ DangerHeader::Deserialize (Buffer::Iterator start)   //逆シリアル化
   m_hopcount = i.ReadU8 ();
   m_danger = i.ReadU8 ();
   m_recvtime = i.ReadNtohU32 ();
+  m_myposx = i.ReadNtohU32 ();
+  m_myposy = i.ReadNtohU32 ();
+  m_pastmyposx = i.ReadNtohU32 ();
+  m_pastmyposy = i.ReadNtohU32 ();
 
   uint32_t dist2 = i.GetDistanceFrom (start);
 
@@ -334,6 +246,9 @@ DangerHeader::Print (std::ostream &os) const
   os << "NodeId " << m_nodeid << "NodePointX " <<m_posx;
   os << "NodePointY" << m_posy << "HopValue" << m_hopcount;
   os <<  "ReceiveTime" << m_recvtime<< "DangerValue" << m_danger;
+  os << "NodeMyPointX" << m_myposx << "NodeMyPointY" << m_myposy;
+  os << "NodePastMyPointX" << m_pastmyposx << "NodePastMyPointY" << m_pastmyposy;
+  std::cout<<"print\n";
 }
 /*
 void

@@ -89,6 +89,16 @@ private:
   void SendHelloPacket (void); //hello packet を broadcast するメソッド
   void SimulationResult (void); //シミュレーション結果を出力する
   void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination);
+  void SaveXpoint (int32_t map_id, int32_t map_xpoint);
+  void SaveYpoint (int32_t map_id, int32_t map_ypoint);
+  void SaveRecvTime (int32_t map_id, int32_t map_recvtime);
+
+  //**map**//
+  std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
+  std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
+  std::multimap<int, int>
+      m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
+
   //**自作メソッド start**/
 
   /// IP protocol

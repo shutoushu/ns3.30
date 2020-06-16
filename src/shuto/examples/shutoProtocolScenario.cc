@@ -54,7 +54,7 @@ int
 main (int argc, char *argv[])
 {
 
-   int numNodes = 120;
+   int numNodes = 15;
    double heightField = 200;
    double widthField = 400;
 
