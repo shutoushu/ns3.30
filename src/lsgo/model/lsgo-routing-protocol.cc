@@ -377,6 +377,23 @@ RoutingProtocol::SimulationResult (void) //
           std::cout << "recv hello packet id = " << itr->first // キーを表示
                     << ", y座標 = " << itr->second << "\n"; // 値を表示
         }
+
+      std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
+
+      auto itr = m_recvtime.find (1);
+      if (itr != m_recvtime.end ())
+        { // 見つかった場合
+
+          for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
+            {
+              std::cout << itr->first << " " << itr->second << "\n"; //  キー、値を表示
+            }
+        }
+      itr = m_recvtime.find (1);
+      if (itr == m_recvtime.end ())
+        { // 見つからなかった場合
+          std::cout << "not found.\n";
+        }
     }
 }
 
