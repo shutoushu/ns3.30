@@ -36,11 +36,9 @@ namespace lsgo {
 * \brief MessageType enumeration
 */
 enum MessageType {
-  // LSGOTYPE_RREQ = 1, //!< LSGOTYPE_RREQ
-  // LSGOTYPE_RREP = 2, //!< LSGOTYPE_RREP
-  // LSGOTYPE_RERR = 3, //!< LSGOTYPE_RERR
-  // LSGOTYPE_RREP_ACK = 4, //!< LSGOTYPE_RREP_ACK
-  LSGOTYPE_HELLO = 5 //LSGO HELLO
+  LSGOTYPE_SEND = 1, //LSGO SEND
+  LSGOTYPE_HELLO = 2 //LSGO HELLO
+
 };
 
 /**
@@ -54,7 +52,6 @@ public:
    * constructor
    * \param t the LSGO RREQ type
    */
-  //TypeHeader (MessageType t = LSGOTYPE_RREQ);
   TypeHeader (MessageType t = LSGOTYPE_HELLO);
   /**
    * \brief Get the type ID.
@@ -181,45 +178,39 @@ private:
 
 //*******************************end Hello LSGO***********************************************/
 
+//*******************************start send LSGO*********************************************/
 /**
 * \ingroup lsgo
-* \brief Route Reply (RREP) Message Format
+* \brief sendheader
   \verbatim
   0                   1                   2                   3
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |     Type      |R|A|    Reserved     |Prefix Sz|   Hop Count   |
+  |                       Destination Id                          |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                     Destination IP address                    |
+  |                     Destination X position                    |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                  Destination Sequence Number                  |
+  |                     Destination Y position                    |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                    Originator IP address                      |
+  |                         Priority1 Id                          |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                           Lifetime                            |
+  |                         Priority2 Id                          |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                         Priority3 Id                          |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                         Priority4 Id                          |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                         Priority5 Id                          |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   \endverbatim
 */
-class RrepHeader : public Header
+
+class SendHeader : public Header
 {
 public:
-  /**
-   * constructor
-   *
-   * \param prefixSize the prefix size (0)
-   * \param hopCount the hop count (0)
-   * \param dst the destination IP address
-   * \param dstSeqNo the destination sequence number
-   * \param origin the origin IP address
-   * \param lifetime the lifetime
-   */
-  RrepHeader (uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst = Ipv4Address (),
-              uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address (),
-              Time lifetime = MilliSeconds (0));
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
+  SendHeader (int32_t des_id = 0, int32_t posx = 0, int32_t posy = 0, int32_t pri1_id = 0,
+              int32_t pri2_id = 0, int32_t pri3_id = 0, int32_t pri4_id = 0, int32_t pri5_id = 0);
+
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
@@ -227,144 +218,121 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
 
-  // Fields
-  /**
-   * \brief Set the hop count
-   * \param count the hop count
-   */
   void
-  SetHopCount (uint8_t count)
+  SetDesId (uint32_t id) //IDをセットする
   {
-    m_hopCount = count;
+    m_des_id = id;
   }
-  /**
-   * \brief Get the hop count
-   * \return the hop count
-   */
-  uint8_t
-  GetHopCount () const
-  {
-    return m_hopCount;
-  }
-  /**
-   * \brief Set the destination address
-   * \param a the destination address
-   */
-  void
-  SetDst (Ipv4Address a)
-  {
-    m_dst = a;
-  }
-  /**
-   * \brief Get the destination address
-   * \return the destination address
-   */
-  Ipv4Address
-  GetDst () const
-  {
-    return m_dst;
-  }
-  /**
-   * \brief Set the destination sequence number
-   * \param s the destination sequence number
-   */
-  void
-  SetDstSeqno (uint32_t s)
-  {
-    m_dstSeqNo = s;
-  }
-  /**
-   * \brief Get the destination sequence number
-   * \return the destination sequence number
-   */
-  uint32_t
-  GetDstSeqno () const
-  {
-    return m_dstSeqNo;
-  }
-  /**
-   * \brief Set the origin address
-   * \param a the origin address
-   */
-  void
-  SetOrigin (Ipv4Address a)
-  {
-    m_origin = a;
-  }
-  /**
-   * \brief Get the origin address
-   * \return the origin address
-   */
-  Ipv4Address
-  GetOrigin () const
-  {
-    return m_origin;
-  }
-  /**
-   * \brief Set the lifetime
-   * \param t the lifetime
-   */
-  void SetLifeTime (Time t);
-  /**
-   * \brief Get the lifetime
-   * \return the lifetime
-   */
-  Time GetLifeTime () const;
 
-  // Flags
-  /**
-   * \brief Set the ack required flag
-   * \param f the ack required flag
-   */
-  void SetAckRequired (bool f);
-  /**
-   * \brief get the ack required flag
-   * \return the ack required flag
-   */
-  bool GetAckRequired () const;
-  /**
-   * \brief Set the prefix size
-   * \param sz the prefix size
-   */
-  void SetPrefixSize (uint8_t sz);
-  /**
-   * \brief Set the pefix size
-   * \return the prefix size
-   */
-  uint8_t GetPrefixSize () const;
+  int32_t
+  GetDesId () const //IDを返す
+  {
+    return m_des_id;
+  }
+  void
+  SetPosX (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_posx = p;
+  }
 
-  /**
-   * Configure RREP to be a Hello message
-   *
-   * \param src the source IP address
-   * \param srcSeqNo the source sequence number
-   * \param lifetime the lifetime of the message
-   */
-  void SetHello (Ipv4Address src, uint32_t srcSeqNo, Time lifetime);
+  int32_t
+  GetPosX () //座標の値を返す
+  {
+    return m_posx;
+  }
+  void
+  SetPosY (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_posy = p;
+  }
 
-  /**
-   * \brief Comparison operator
-   * \param o RREP header to compare
-   * \return true if the RREP headers are equal
-   */
-  bool operator== (RrepHeader const &o) const;
+  int32_t
+  GetPosY () //座標の値を返す
+  {
+    return m_posy;
+  }
+
+  void
+  SetId1 (int32_t id1)
+  {
+    m_pri1_id = id1;
+  }
+
+  //Time GetRecvTime () const;
+  int32_t
+  GetId1 ()
+  {
+    return m_pri1_id;
+  }
+
+  void
+  SetId2 (int32_t id2)
+  {
+    m_pri2_id = id2;
+  }
+
+  //Time GetRecvTime () const;
+  int32_t
+  GetId2 ()
+  {
+    return m_pri2_id;
+  }
+
+  void
+  SetId3 (int32_t id3)
+  {
+    m_pri3_id = id3;
+  }
+
+  //Time GetRecvTime () const;
+  int32_t
+  GetId3 ()
+  {
+    return m_pri3_id;
+  }
+
+  void
+  SetId4 (int32_t id4)
+  {
+    m_pri4_id = id4;
+  }
+
+  //Time GetRecvTime () const;
+  int32_t
+  GetId4 ()
+  {
+    return m_pri4_id;
+  }
+
+  void
+  SetId5 (int32_t id5)
+  {
+    m_pri5_id = id5;
+  }
+
+  //Time GetRecvTime () const;
+  int32_t
+  GetId5 ()
+  {
+    return m_pri5_id;
+  }
+
+  bool operator== (SendHeader const &o);
 
 private:
-  uint8_t m_flags; ///< A - acknowledgment required flag
-  uint8_t m_prefixSize; ///< Prefix Size
-  uint8_t m_hopCount; ///< Hop Count
-  Ipv4Address m_dst; ///< Destination IP Address
-  uint32_t m_dstSeqNo; ///< Destination Sequence Number
-  Ipv4Address m_origin; ///< Source IP Address
-  uint32_t m_lifeTime; ///< Lifetime (in milliseconds)
+  int32_t m_des_id; //目的ノードID
+  int32_t m_posx; //座標
+  int32_t m_posy;
+  int32_t m_pri1_id; //優先度１
+  int32_t m_pri2_id; //優先度２
+  int32_t m_pri3_id; //優先度３
+  int32_t m_pri4_id; //優先度４
+  int32_t m_pri5_id; //優先度５
 };
 
-/**
-  * \brief Stream output operator
-  * \param os output stream
-  * \return updated stream
-  */
-std::ostream &operator<< (std::ostream &os, RrepHeader const &);
+std::ostream &operator<< (std::ostream &os, SendHeader const &);
+
+/********************************finish send LSGO*******************************************/
 
 } // namespace lsgo
 } // namespace ns3

@@ -194,160 +194,90 @@ operator<< (std::ostream &os, HelloHeader const &h)
 
 // ***********************end LSGO_HELLO*************************************//
 
+//***********************start LSGO Send*************************************//
 
+SendHeader::SendHeader (int32_t des_id, int32_t posx, int32_t posy, int32_t pri1_id,
+                        int32_t pri2_id, int32_t pri3_id, int32_t pri4_id, int32_t pri5_id)
+    : m_des_id (des_id), //目的ノードID
+      m_posx (posx), //座標
+      m_posy (posy),
+      m_pri1_id (pri1_id), //優先度１
+      m_pri2_id (pri2_id), //優先度２
+      m_pri3_id (pri3_id), //優先度３
+      m_pri4_id (pri4_id), //優先度４
+      m_pri5_id (pri5_id) //優先度５
+{
+}
+NS_OBJECT_ENSURE_REGISTERED (SendHeader);
 
-//-----------------------------------------------------------------------------
-// RREP
-//-----------------------------------------------------------------------------
+TypeId
+SendHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::lsgo::SendHeader")
+                          .SetParent<Header> ()
+                          .SetGroupName ("Lsgo")
+                          .AddConstructor<SendHeader> ();
+  return tid;
+}
 
-// RrepHeader::RrepHeader (uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst, uint32_t dstSeqNo,
-//                         Ipv4Address origin, Time lifeTime)
-//     : m_flags (0),
-//       m_prefixSize (prefixSize),
-//       m_hopCount (hopCount),
-//       m_dst (dst),
-//       m_dstSeqNo (dstSeqNo),
-//       m_origin (origin)
-// {
-//   m_lifeTime = uint32_t (lifeTime.GetMilliSeconds ());
-// }
+TypeId
+SendHeader::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
 
-// NS_OBJECT_ENSURE_REGISTERED (RrepHeader);
+uint32_t
+SendHeader::GetSerializedSize () const
+{
+  return 32;
+}
 
-// TypeId
-// RrepHeader::GetTypeId ()
-// {
-//   static TypeId tid = TypeId ("ns3::lsgo::RrepHeader")
-//                           .SetParent<Header> ()
-//                           .SetGroupName ("Lsgo")
-//                           .AddConstructor<RrepHeader> ();
-//   return tid;
-// }
+void
+SendHeader::Serialize (Buffer::Iterator i) const //シリアル化
+{
+  i.WriteHtonU32 (m_des_id);
+  i.WriteHtonU32 (m_posx);
+  i.WriteHtonU32 (m_posy);
+  i.WriteHtonU32 (m_pri1_id);
+  i.WriteHtonU32 (m_pri2_id);
+  i.WriteHtonU32 (m_pri3_id);
+  i.WriteHtonU32 (m_pri4_id);
+  i.WriteHtonU32 (m_pri5_id);
+}
 
-// TypeId
-// RrepHeader::GetInstanceTypeId () const
-// {
-//   return GetTypeId ();
-// }
+uint32_t
+SendHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
+{
+  Buffer::Iterator i = start;
 
-// uint32_t
-// RrepHeader::GetSerializedSize () const
-// {
-//   return 19;
-// }
+  m_des_id = i.ReadNtohU32 ();
+  m_posx = i.ReadNtohU32 ();
+  m_posy = i.ReadNtohU32 ();
+  m_pri1_id = i.ReadNtohU32 ();
+  m_pri2_id = i.ReadNtohU32 ();
+  m_pri3_id = i.ReadNtohU32 ();
+  m_pri4_id = i.ReadNtohU32 ();
+  m_pri5_id = i.ReadNtohU32 ();
 
-// void
-// RrepHeader::Serialize (Buffer::Iterator i) const
-// {
-//   i.WriteU8 (m_flags);
-//   i.WriteU8 (m_prefixSize);
-//   i.WriteU8 (m_hopCount);
-//   WriteTo (i, m_dst);
-//   i.WriteHtonU32 (m_dstSeqNo);
-//   WriteTo (i, m_origin);
-//   i.WriteHtonU32 (m_lifeTime);
-// }
+  uint32_t dist = i.GetDistanceFrom (start);
 
-// uint32_t
-// RrepHeader::Deserialize (Buffer::Iterator start)
-// {
-//   Buffer::Iterator i = start;
+  NS_ASSERT (dist == GetSerializedSize ());
+  return dist;
+}
 
-//   m_flags = i.ReadU8 ();
-//   m_prefixSize = i.ReadU8 ();
-//   m_hopCount = i.ReadU8 ();
-//   ReadFrom (i, m_dst);
-//   m_dstSeqNo = i.ReadNtohU32 ();
-//   ReadFrom (i, m_origin);
-//   m_lifeTime = i.ReadNtohU32 ();
+void
+SendHeader::Print (std::ostream &os) const
+{
+}
 
-//   uint32_t dist = i.GetDistanceFrom (start);
-//   NS_ASSERT (dist == GetSerializedSize ());
-//   return dist;
-// }
+std::ostream &
+operator<< (std::ostream &os, SendHeader const &h)
+{
+  h.Print (os);
+  return os;
+}
 
-// void
-// RrepHeader::Print (std::ostream &os) const
-// {
-//   os << "destination: ipv4 " << m_dst << " sequence number " << m_dstSeqNo;
-//   if (m_prefixSize != 0)
-//     {
-//       os << " prefix size " << m_prefixSize;
-//     }
-//   os << " source ipv4 " << m_origin << " lifetime " << m_lifeTime
-//      << " acknowledgment required flag " << (*this).GetAckRequired ();
-// }
-
-// void
-// RrepHeader::SetLifeTime (Time t)
-// {
-//   m_lifeTime = t.GetMilliSeconds ();
-// }
-
-// Time
-// RrepHeader::GetLifeTime () const
-// {
-//   Time t (MilliSeconds (m_lifeTime));
-//   return t;
-// }
-
-// void
-// RrepHeader::SetAckRequired (bool f)
-// {
-//   if (f)
-//     {
-//       m_flags |= (1 << 6);
-//     }
-//   else
-//     {
-//       m_flags &= ~(1 << 6);
-//     }
-// }
-
-// bool
-// RrepHeader::GetAckRequired () const
-// {
-//   return (m_flags & (1 << 6));
-// }
-
-// void
-// RrepHeader::SetPrefixSize (uint8_t sz)
-// {
-//   m_prefixSize = sz;
-// }
-
-// uint8_t
-// RrepHeader::GetPrefixSize () const
-// {
-//   return m_prefixSize;
-// }
-
-// bool
-// RrepHeader::operator== (RrepHeader const &o) const
-// {
-//   return (m_flags == o.m_flags && m_prefixSize == o.m_prefixSize && m_hopCount == o.m_hopCount &&
-//           m_dst == o.m_dst && m_dstSeqNo == o.m_dstSeqNo && m_origin == o.m_origin &&
-//           m_lifeTime == o.m_lifeTime);
-// }
-
-// void
-// RrepHeader::SetHello (Ipv4Address origin, uint32_t srcSeqNo, Time lifetime)
-// {
-//   m_flags = 0;
-//   m_prefixSize = 0;
-//   m_hopCount = 0;
-//   m_dst = origin;
-//   m_dstSeqNo = srcSeqNo;
-//   m_origin = origin;
-//   m_lifeTime = lifetime.GetMilliSeconds ();
-// }
-
-// std::ostream &
-// operator<< (std::ostream &os, RrepHeader const &h)
-// {
-//   h.Print (os);
-//   return os;
-// }
+//**********************end LSGO Send***************************************//
 
 } // namespace lsgo
 } // namespace ns3

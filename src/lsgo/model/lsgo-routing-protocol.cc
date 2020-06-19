@@ -334,6 +334,8 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         SaveYpoint (recv_hello_id, recv_hello_posy);
         SaveRecvTime (recv_hello_id, recv_hello_time);
       }
+      case LSGOTYPE_SEND: {
+      }
     }
 }
 
