@@ -237,10 +237,10 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   //
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  // wifiChannel.AddPropagationLoss  ("ns3::LogDistancePropagationLossModel",
-  // 	"Exponent", DoubleValue(6.0),
-  // 	"ReferenceDistance", DoubleValue(1.0),///伝搬距離１メートル
-  // 	"ReferenceLoss", DoubleValue(46.6777));
+  wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
+                                  DoubleValue (6.0), "ReferenceDistance",
+                                  DoubleValue (35.0), /// 謎に35.0で250M
+                                  "ReferenceLoss", DoubleValue (46.6777));
 
   // wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   //wifiChannel.AddPropagationLoss ("ns3::RandomPropagationLossModel",
@@ -248,7 +248,7 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   // MakePointerAccessor (&RandomPropagationLossModel::90));
 
   //wifiChannel.AddPropagationLoss  ("ns3::LogDistancePropagationLossModel");
-  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (200));
+  //wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (250));
   //wifiChannel.AddPropagationLoss("ns3::NakagamiPropagationLossModel","m0",
   //DoubleValue(1),"m1", DoubleValue(1),"m2", DoubleValue(1));
 
@@ -349,9 +349,9 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   Ptr<WaypointMobilityModel> m_mob9;
   m_mob9 = CreateObject<WaypointMobilityModel> ();
   mn9->AggregateObject (m_mob9);
-  Waypoint wpt_start9 (Seconds (0.0), Vector (240.0, 0.0, 0.0));
+  Waypoint wpt_start9 (Seconds (0.0), Vector (260.0, 0.0, 0.0));
   m_mob9->AddWaypoint (wpt_start9);
-  Waypoint wpt_stop9 (Seconds (40), Vector (240.0, 1000.0, 0.0));
+  Waypoint wpt_stop9 (Seconds (40), Vector (260.0, 1000.0, 0.0));
   m_mob9->AddWaypoint (wpt_stop9);
 }
 

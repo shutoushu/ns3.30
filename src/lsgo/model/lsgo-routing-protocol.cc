@@ -245,6 +245,9 @@ RoutingProtocol::DoInitialize (void)
     {
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult, this);
     }
+
+  //test sourse node
+  if (id == 1)
 }
 
 void
