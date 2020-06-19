@@ -299,6 +299,8 @@ RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   std::cout << " send id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
   socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
+
+  //test
 }
 //** End SendToHello **///
 
