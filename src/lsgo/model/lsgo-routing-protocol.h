@@ -88,10 +88,12 @@ private:
   //**自作メソッド start**/
   void SendHelloPacket (void); //hello packet を broadcast するメソッド
   void SimulationResult (void); //シミュレーション結果を出力する
-  void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination);
-  void SaveXpoint (int32_t map_id, int32_t map_xpoint);
-  void SaveYpoint (int32_t map_id, int32_t map_ypoint);
-  void SaveRecvTime (int32_t map_id, int32_t map_recvtime);
+  void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,
+                    Ipv4Address destination); //Hello packet の送信
+  void SaveXpoint (int32_t map_id, int32_t map_xpoint); //近隣ノードのHello packetの情報を
+  void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
+  void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
+  void SendLsgoBroadcast (void); //候補ノードの優先順位を計算してpacketを送信する関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition

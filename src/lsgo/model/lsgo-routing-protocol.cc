@@ -248,6 +248,7 @@ RoutingProtocol::DoInitialize (void)
 
   //test sourse node
   if (id == 1)
+    Simulator::Schedule (Seconds (20), &RoutingProtocol::SendLsgoBroadcast, this);
 }
 
 void
@@ -304,6 +305,40 @@ RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
 }
 //** End SendToHello **///
 
+//** start SendLsgoBroadcast **//
+void
+RoutingProtocol::SendLsgoBroadcast (void)
+{
+  for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
+       j != m_socketAddresses.end (); ++j)
+    {
+
+      Ptr<Socket> socket = j->first;
+      Ipv4InterfaceAddress iface = j->second;
+      Ptr<Packet> packet = Create<Packet> ();
+
+      SendHeader sendHeader (1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000);
+      packet->AddHeader (sendHeader);
+
+      TypeHeader tHeader (LSGOTYPE_SEND);
+      packet->AddHeader (tHeader);
+
+      // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+      Ipv4Address destination;
+      if (iface.GetMask () == Ipv4Mask::GetOnes ())
+        {
+          destination = Ipv4Address ("255.255.255.255");
+        }
+      else
+        {
+          destination = iface.GetBroadcast ();
+        }
+      socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
+    }
+}
+
+//** end SendLsgoBroadcast **//
+
 void
 RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
 {
@@ -340,6 +375,26 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         SaveRecvTime (recv_hello_id, recv_hello_time);
       }
       case LSGOTYPE_SEND: {
+        SendHeader sendheader;
+        packet->RemoveHeader (sendheader);
+
+        // int32_t des_id = sendheader.GetDesId ();
+        // int32_t des_x = sendheader.GetPosX ();
+        // int32_t des_y = sendheader.GetPosY ();
+        // int32_t pri1_id = sendheader.GetId1 ();
+        // int32_t pri2_id = sendheader.GetId2 ();
+        // int32_t pri3_id = sendheader.GetId3 ();
+        // int32_t pri4_id = sendheader.GetId4 ();
+        // int32_t pri5_id = sendheader.GetId5 ();
+
+        // ////*********recv hello packet log*****************////////////////
+        // std::cout << " id " << id << "が受信したlsgo packetは"
+        //           << "id:" << des_id << "xposition" << des_x << "yposition" << des_y
+        //           << "priority 1 node id" << pri1_id << "priority 2 node id" << pri2_id
+        //           << "priority 3 node id" << pri3_id << "priority 4 node id" << pri4_id
+        //           << "priority 5 node id" << pri5_id << "\n";
+
+        // ////*********************************************////////////////
       }
     }
 }
