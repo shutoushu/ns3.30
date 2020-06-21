@@ -67,10 +67,11 @@ TypeHeader::Deserialize (Buffer::Iterator start)
   m_valid = true;
   switch (type)
     {
-      // case LSGOTYPE_RREQ:
-      // case LSGOTYPE_RREP:
-      // case LSGOTYPE_RERR:
-      // case LSGOTYPE_RREP_ACK:
+    // case LSGOTYPE_RREQ:
+    // case LSGOTYPE_RREP:
+    // case LSGOTYPE_RERR:
+    // case LSGOTYPE_RREP_ACK:
+    case LSGOTYPE_SEND:
       case LSGOTYPE_HELLO: {
         m_type = (MessageType) type;
         break;
@@ -104,6 +105,10 @@ TypeHeader::Print (std::ostream &os) const
       //   os << "RREP_ACK";
       //   break;
       // }
+      case LSGOTYPE_SEND: {
+        os << "SEND";
+        break;
+      }
       case LSGOTYPE_HELLO: {
         os << "HELLO";
         break;
@@ -172,18 +177,18 @@ HelloHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
   m_posx = i.ReadNtohU32 ();
   m_posy = i.ReadNtohU32 ();
 
-  uint32_t dist = i.GetDistanceFrom (start);
+  uint32_t dist2 = i.GetDistanceFrom (start);
 
-  NS_ASSERT (dist == GetSerializedSize ());
-  return dist;
+  NS_ASSERT (dist2 == GetSerializedSize ());
+  return dist2;
 }
 
 void
 HelloHeader::Print (std::ostream &os) const
 {
-  os << "NodeId " << m_nodeid;
-  os << "NodePointX " << m_posx;
-  os << "NodePointY" << m_posy;
+  // os << "NodeId " << m_nodeid;
+  // os << "NodePointX " << m_posx;
+  // os << "NodePointY" << m_posy;
 }
 std::ostream &
 operator<< (std::ostream &os, HelloHeader const &h)

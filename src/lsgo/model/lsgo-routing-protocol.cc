@@ -260,36 +260,32 @@ RoutingProtocol::SendHelloPacket (void)
       int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition ();
-      for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j =
-               m_socketAddresses.begin ();
-           j != m_socketAddresses.end (); ++j)
+
+      Ptr<Socket> socket = j->first;
+      Ipv4InterfaceAddress iface = j->second;
+      Ptr<Packet> packet = Create<Packet> ();
+
+      HelloHeader helloHeader (id, mypos.x, mypos.y);
+      packet->AddHeader (helloHeader);
+
+      TypeHeader tHeader (LSGOTYPE_HELLO);
+      packet->AddHeader (tHeader);
+
+      Ipv4Address destination;
+      if (iface.GetMask () == Ipv4Mask::GetOnes ())
         {
-
-          Ptr<Socket> socket = j->first;
-          Ipv4InterfaceAddress iface = j->second;
-          Ptr<Packet> packet = Create<Packet> ();
-
-          HelloHeader helloHeader (id, mypos.x, mypos.y);
-          packet->AddHeader (helloHeader);
-
-          TypeHeader tHeader (LSGOTYPE_HELLO);
-          packet->AddHeader (tHeader);
-
-          Ipv4Address destination;
-          if (iface.GetMask () == Ipv4Mask::GetOnes ())
-            {
-              destination = Ipv4Address ("255.255.255.255");
-            }
-          else
-            {
-              destination = iface.GetBroadcast ();
-            }
-
-          Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 1000)));
-          //socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
-          Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
-                               destination);
+          destination = Ipv4Address ("255.255.255.255");
         }
+      else
+        {
+          destination = iface.GetBroadcast ();
+        }
+
+      Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 1000)));
+      //socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
+      Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
+                           destination);
+      // }
     }
 } //End SendHelloPacket
 
@@ -300,8 +296,6 @@ RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   std::cout << " send id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
   socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
-
-  //test
 }
 //** End SendToHello **///
 
@@ -312,12 +306,24 @@ RoutingProtocol::SendLsgoBroadcast (void)
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
        j != m_socketAddresses.end (); ++j)
     {
+      //int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
+
+      int32_t dest_node_id = 10;
+      int32_t dest_posx = 200;
+      int32_t dest_posy = 400;
+      int32_t pri1_node_id = 3;
+      int32_t pri2_node_id = 4;
+      int32_t pri3_node_id = 5;
+      int32_t pri4_node_id = 6;
+      int32_t pri5_node_id = 7;
 
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      SendHeader sendHeader (1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000);
+      SendHeader sendHeader (dest_node_id, dest_posx, dest_posy, pri1_node_id, pri2_node_id,
+                             pri3_node_id, pri4_node_id, pri5_node_id);
+
       packet->AddHeader (sendHeader);
 
       TypeHeader tHeader (LSGOTYPE_SEND);
@@ -360,41 +366,40 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
       case LSGOTYPE_HELLO: { //hello message を受け取った場合
         HelloHeader helloheader;
         packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
-        int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
-        int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
-        int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
-        int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
+        // int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
+        // int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
+        // int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
+        // int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
 
-        // ////*********recv hello packet log*****************////////////////
-        std::cout << "Node ID " << id << "が受信したHello packetは"
-                  << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
-                  << recv_hello_posy << "\n";
-        // ////*********************************************////////////////
-        SaveXpoint (recv_hello_id, recv_hello_posx);
-        SaveYpoint (recv_hello_id, recv_hello_posy);
-        SaveRecvTime (recv_hello_id, recv_hello_time);
+        // // ////*********recv hello packet log*****************////////////////
+        // std::cout << "Node ID " << id << "が受信したHello packetは"
+        //           << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
+        //           << recv_hello_posy << "\n";
+        // // ////*********************************************////////////////
+        // SaveXpoint (recv_hello_id, recv_hello_posx);
+        // SaveYpoint (recv_hello_id, recv_hello_posy);
+        // SaveRecvTime (recv_hello_id, recv_hello_time);
       }
       case LSGOTYPE_SEND: {
         SendHeader sendheader;
         packet->RemoveHeader (sendheader);
 
-        // int32_t des_id = sendheader.GetDesId ();
-        // int32_t des_x = sendheader.GetPosX ();
-        // int32_t des_y = sendheader.GetPosY ();
-        // int32_t pri1_id = sendheader.GetId1 ();
-        // int32_t pri2_id = sendheader.GetId2 ();
-        // int32_t pri3_id = sendheader.GetId3 ();
-        // int32_t pri4_id = sendheader.GetId4 ();
-        // int32_t pri5_id = sendheader.GetId5 ();
+        int32_t des_id = sendheader.GetDesId ();
+        int32_t des_x = sendheader.GetPosX ();
+        int32_t des_y = sendheader.GetPosY ();
+        int32_t pri1_id = sendheader.GetId1 ();
+        int32_t pri2_id = sendheader.GetId2 ();
+        int32_t pri3_id = sendheader.GetId3 ();
+        int32_t pri4_id = sendheader.GetId4 ();
+        int32_t pri5_id = sendheader.GetId5 ();
 
-        // ////*********recv hello packet log*****************////////////////
-        // std::cout << " id " << id << "が受信したlsgo packetは"
-        //           << "id:" << des_id << "xposition" << des_x << "yposition" << des_y
-        //           << "priority 1 node id" << pri1_id << "priority 2 node id" << pri2_id
-        //           << "priority 3 node id" << pri3_id << "priority 4 node id" << pri4_id
-        //           << "priority 5 node id" << pri5_id << "\n";
-
-        // ////*********************************************////////////////
+        ////*********recv hello packet log*****************////////////////
+        std::cout << " id " << id << "が受信したlsgo packetは"
+                  << "id:" << des_id << "xposition" << des_x << "yposition" << des_y
+                  << "priority 1 node id" << pri1_id << "priority 2 node id" << pri2_id
+                  << "priority 3 node id" << pri3_id << "priority 4 node id" << pri4_id
+                  << "priority 5 node id" << pri5_id << "\n";
+        ////*********************************************////////////////
       }
     }
 }
