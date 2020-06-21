@@ -32,6 +32,8 @@
 
 #define NumNodes 12 //全ノード数
 #define SimTime 100 //シミュレーション時間
+#define WindowSize 10 //LSGOのウィンドウサイズ
+#define HelloInterval 1 //Hello packet のインターバル
 
 namespace ns3 {
 namespace lsgo {
@@ -94,6 +96,7 @@ private:
   void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
   void SendLsgoBroadcast (void); //候補ノードの優先順位を計算してpacketを送信する関数
+  void DeleteTimeMap (void); //window size より古いmapを削除していく関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition

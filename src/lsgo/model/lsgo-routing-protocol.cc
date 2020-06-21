@@ -238,12 +238,13 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < SimTime; i++)
     {
-      if (id == 1)
+      if (id == 1 || id == 2)
         Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
     }
   for (int i = 1; i < SimTime; i++)
     {
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult, this);
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::DeleteTimeMap, this); //time map削除関数
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult, this); //結果出力関数
     }
 
   //test sourse node
@@ -293,8 +294,8 @@ RoutingProtocol::SendHelloPacket (void)
 void
 RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination)
 {
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  std::cout << " send id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
+  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //std::cout << " send id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
   socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
 }
 //** End SendToHello **///
@@ -348,7 +349,7 @@ RoutingProtocol::SendLsgoBroadcast (void)
 void
 RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
 {
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Address sourceAddress;
   Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
   TypeHeader tHeader (LSGOTYPE_HELLO);
@@ -366,40 +367,43 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
       case LSGOTYPE_HELLO: { //hello message を受け取った場合
         HelloHeader helloheader;
         packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
-        // int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
-        // int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
-        // int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
-        // int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
+        int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
+        int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
+        int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
+        int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
 
         // // ////*********recv hello packet log*****************////////////////
         // std::cout << "Node ID " << id << "が受信したHello packetは"
         //           << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
         //           << recv_hello_posy << "\n";
         // // ////*********************************************////////////////
-        // SaveXpoint (recv_hello_id, recv_hello_posx);
-        // SaveYpoint (recv_hello_id, recv_hello_posy);
-        // SaveRecvTime (recv_hello_id, recv_hello_time);
+        SaveXpoint (recv_hello_id, recv_hello_posx);
+        SaveYpoint (recv_hello_id, recv_hello_posy);
+        SaveRecvTime (recv_hello_id, recv_hello_time);
+
+        break; //breakがないとエラー起きる
       }
       case LSGOTYPE_SEND: {
         SendHeader sendheader;
         packet->RemoveHeader (sendheader);
 
-        int32_t des_id = sendheader.GetDesId ();
-        int32_t des_x = sendheader.GetPosX ();
-        int32_t des_y = sendheader.GetPosY ();
-        int32_t pri1_id = sendheader.GetId1 ();
-        int32_t pri2_id = sendheader.GetId2 ();
-        int32_t pri3_id = sendheader.GetId3 ();
-        int32_t pri4_id = sendheader.GetId4 ();
-        int32_t pri5_id = sendheader.GetId5 ();
+        // int32_t des_id = sendheader.GetDesId ();
+        // int32_t des_x = sendheader.GetPosX ();
+        // int32_t des_y = sendheader.GetPosY ();
+        // int32_t pri1_id = sendheader.GetId1 ();
+        // int32_t pri2_id = sendheader.GetId2 ();
+        // int32_t pri3_id = sendheader.GetId3 ();
+        // int32_t pri4_id = sendheader.GetId4 ();
+        // int32_t pri5_id = sendheader.GetId5 ();
 
         ////*********recv hello packet log*****************////////////////
-        std::cout << " id " << id << "が受信したlsgo packetは"
-                  << "id:" << des_id << "xposition" << des_x << "yposition" << des_y
-                  << "priority 1 node id" << pri1_id << "priority 2 node id" << pri2_id
-                  << "priority 3 node id" << pri3_id << "priority 4 node id" << pri4_id
-                  << "priority 5 node id" << pri5_id << "\n";
+        // std::cout << " id " << id << "が受信したlsgo packetは"
+        //           << "id:" << des_id << "xposition" << des_x << "yposition" << des_y
+        //           << "priority 1 node id" << pri1_id << "priority 2 node id" << pri2_id
+        //           << "priority 3 node id" << pri3_id << "priority 4 node id" << pri4_id
+        //           << "priority 5 node id" << pri5_id << "\n";
         ////*********************************************////////////////
+        break;
       }
     }
 }
@@ -430,37 +434,41 @@ RoutingProtocol::SendXBroadcast (void)
 void
 RoutingProtocol::SimulationResult (void) //
 {
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   if (Simulator::Now ().GetSeconds () == SimTime - 1)
     {
-      std::cout << "id=" << id << "の\n";
-      for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++)
-        {
-          std::cout << "recv hello packet id = " << itr->first // キーを表示
-                    << ", x座標 = " << itr->second << "\n"; // 値を表示
-        }
-      for (auto itr = m_ypoint.begin (); itr != m_ypoint.end (); itr++)
-        {
-          std::cout << "recv hello packet id = " << itr->first // キーを表示
-                    << ", y座標 = " << itr->second << "\n"; // 値を表示
-        }
+      // //*******************************ノードが持つ座標の確認ログ***************************//
+      // std::cout << "id=" << id << "の\n";
+      // for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++)
+      //   {
+      //     std::cout << "recv hello packet id = " << itr->first // キーを表示
+      //               << ", x座標 = " << itr->second << "\n"; // 値を表示
+      //   }
+      // for (auto itr = m_ypoint.begin (); itr != m_ypoint.end (); itr++)
+      //   {
+      //     std::cout << "recv hello packet id = " << itr->first // キーを表示
+      //               << ", y座標 = " << itr->second << "\n"; // 値を表示
+      //   }
+      //**************************************************************************************//
 
-      std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
+      //*******************************ノードが持つ受信時刻ログ***************************//
+      // std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
 
-      auto itr = m_recvtime.find (1);
-      if (itr != m_recvtime.end ())
-        { // 見つかった場合
+      // auto itr = m_recvtime.find (1);
+      // if (itr != m_recvtime.end ())
+      //   { // 見つかった場合
 
-          for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
-            {
-              std::cout << itr->first << " " << itr->second << "\n"; //  キー、値を表示
-            }
-        }
-      itr = m_recvtime.find (1);
-      if (itr == m_recvtime.end ())
-        { // 見つからなかった場合
-          std::cout << "not found.\n";
-        }
+      //     for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
+      //       {
+      //         std::cout << itr->first << " " << itr->second << "\n"; //  キー、値を表示
+      //       }
+      //   }
+      // itr = m_recvtime.find (1);
+      // if (itr == m_recvtime.end ())
+      //   { // 見つからなかった場合
+      //     std::cout << "not found.\n";
+      //   }
+      //**************************************************************************************//
     }
 }
 
