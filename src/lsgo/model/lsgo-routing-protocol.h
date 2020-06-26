@@ -96,13 +96,15 @@ private:
   void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
   void SendLsgoBroadcast (void); //候補ノードの優先順位を計算してpacketを送信する関数
-  void DeleteTimeMap (void); //window size より古いmapを削除していく関数
+  void SetCountTimeMap (void); //window size より古いmapを削除していく関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
   std::multimap<int, int>
       m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
+  std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数
+  std::map<int, int> m_first_recv_time; //近隣ノードからのWINDOWSIZE内の最初の取得時間
 
   //**自作メソッド start**/
 

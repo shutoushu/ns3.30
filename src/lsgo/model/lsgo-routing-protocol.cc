@@ -243,13 +243,35 @@ RoutingProtocol::DoInitialize (void)
     }
   for (int i = 1; i < SimTime; i++)
     {
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::DeleteTimeMap, this); //time map削除関数
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult, this); //結果出力関数
     }
 
   //test sourse node
-  if (id == 1)
+  if (id == 0)
     Simulator::Schedule (Seconds (20), &RoutingProtocol::SendLsgoBroadcast, this);
+}
+
+void
+RoutingProtocol::SetCountTimeMap (void)
+{
+  //int32_t current_time = Simulator::Now ().GetMicroSeconds ();
+  int count = 0; //取得回数のカウント変数
+  int check_id = -1; //MAPのIDが変化するタイミングを調べる変数
+  for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
+    {
+      if (check_id != -1)
+        {
+        }
+      else
+        { //check_id = -1
+          check_id = itr->first;
+        }
+
+      int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+      std::cout << "id" << id;
+      std::cout << "send node has recvmap  = " << itr->first // キーを表示
+                << "time  = " << itr->second << "\n"; // 値を表示
+    }
 }
 
 void
@@ -308,6 +330,8 @@ RoutingProtocol::SendLsgoBroadcast (void)
        j != m_socketAddresses.end (); ++j)
     {
       //int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
+
+      SetCountTimeMap (); //
 
       int32_t dest_node_id = 10;
       int32_t dest_posx = 200;
