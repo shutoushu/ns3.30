@@ -275,83 +275,83 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   //ユーザがノードの位置を指定
   for (uint32_t i = 0; i < nWifiNodes; ++i) //nzwifiNode = x のとき０〜ｘ−３個生成
     {
-      positionAlloc->Add (Vector (i * 50.0, 0.0, 0.0)); // ni's position
+      positionAlloc->Add (Vector (100.0, 150.0, 0.0)); // ni's position id=0
     }
 
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (wlanNodes);
 
-  Ptr<WaypointMobilityModel> m_mob;
+  Ptr<WaypointMobilityModel> m_mob; //id=1
   m_mob = CreateObject<WaypointMobilityModel> ();
   mn->AggregateObject (m_mob);
-  Waypoint wpt_start (Seconds (0.0), Vector (10.0, 0.0, 0.0));
+  Waypoint wpt_start (Seconds (0.0), Vector (70.0, 50.0, 0.0));
   m_mob->AddWaypoint (wpt_start);
-  Waypoint wpt_stop (Seconds (40), Vector (10.0, 1000.0, 0.0));
+  Waypoint wpt_stop (Seconds (SIM_STOP), Vector (70.0, 10 * SIM_STOP + 50, 0.0));
   m_mob->AddWaypoint (wpt_stop);
 
   Ptr<WaypointMobilityModel> m_mob2;
   m_mob2 = CreateObject<WaypointMobilityModel> ();
   mn2->AggregateObject (m_mob2);
-  Waypoint wpt_start2 (Seconds (0.0), Vector (20.0, 0.0, 0.0));
+  Waypoint wpt_start2 (Seconds (0.0), Vector (100.0, 100.0, 0.0));
   m_mob2->AddWaypoint (wpt_start2);
-  Waypoint wpt_stop2 (Seconds (40), Vector (20.0, 1000.0, 0.0));
+  Waypoint wpt_stop2 (Seconds (SIM_STOP), Vector (100.0, 10 * SIM_STOP + 100, 0.0));
   m_mob2->AddWaypoint (wpt_stop2);
 
   Ptr<WaypointMobilityModel> m_mob3;
   m_mob3 = CreateObject<WaypointMobilityModel> ();
   mn3->AggregateObject (m_mob3);
-  Waypoint wpt_start3 (Seconds (0.0), Vector (40.0, 0.0, 0.0));
+  Waypoint wpt_start3 (Seconds (0.0), Vector (130.0, 200.0, 0.0));
   m_mob3->AddWaypoint (wpt_start3);
-  Waypoint wpt_stop3 (Seconds (40), Vector (40.0, 1000.0, 0.0));
+  Waypoint wpt_stop3 (Seconds (SIM_STOP), Vector (130.0, 10 * SIM_STOP + 200, 0.0));
   m_mob3->AddWaypoint (wpt_stop3);
 
   Ptr<WaypointMobilityModel> m_mob4;
   m_mob4 = CreateObject<WaypointMobilityModel> ();
   mn4->AggregateObject (m_mob4);
-  Waypoint wpt_start4 (Seconds (0.0), Vector (60.0, 0.0, 0.0));
+  Waypoint wpt_start4 (Seconds (0.0), Vector (130.0, 250.0, 0.0));
   m_mob4->AddWaypoint (wpt_start4);
-  Waypoint wpt_stop4 (Seconds (40), Vector (60.0, 1000.0, 0.0));
+  Waypoint wpt_stop4 (Seconds (SIM_STOP), Vector (130.0, 10 * SIM_STOP + 250, 0.0));
   m_mob4->AddWaypoint (wpt_stop4);
 
   Ptr<WaypointMobilityModel> m_mob5;
   m_mob5 = CreateObject<WaypointMobilityModel> ();
   mn5->AggregateObject (m_mob5);
-  Waypoint wpt_start5 (Seconds (0.0), Vector (80.0, 0.0, 0.0));
+  Waypoint wpt_start5 (Seconds (0.0), Vector (100.0, 300.0, 0.0));
   m_mob5->AddWaypoint (wpt_start5);
-  Waypoint wpt_stop5 (Seconds (40), Vector (80.0, 1000.0, 0.0));
+  Waypoint wpt_stop5 (Seconds (SIM_STOP), Vector (100.0, 10 * SIM_STOP + 300, 0.0));
   m_mob5->AddWaypoint (wpt_stop5);
 
   Ptr<WaypointMobilityModel> m_mob6;
   m_mob6 = CreateObject<WaypointMobilityModel> ();
   mn6->AggregateObject (m_mob6);
-  Waypoint wpt_start6 (Seconds (0.0), Vector (100.0, 0.0, 0.0));
+  Waypoint wpt_start6 (Seconds (0.0), Vector (70.0, 350.0, 0.0));
   m_mob6->AddWaypoint (wpt_start6);
-  Waypoint wpt_stop6 (Seconds (40), Vector (100.0, 1000.0, 0.0));
+  Waypoint wpt_stop6 (Seconds (SIM_STOP), Vector (70.0, 10 * SIM_STOP + 350, 0.0));
   m_mob6->AddWaypoint (wpt_stop6);
 
   Ptr<WaypointMobilityModel> m_mob7;
   m_mob7 = CreateObject<WaypointMobilityModel> ();
   mn7->AggregateObject (m_mob7);
-  Waypoint wpt_start7 (Seconds (0.0), Vector (120.0, 0.0, 0.0));
+  Waypoint wpt_start7 (Seconds (0.0), Vector (100.0, 450.0, 0.0));
   m_mob7->AddWaypoint (wpt_start7);
-  Waypoint wpt_stop7 (Seconds (40), Vector (120.0, 1000.0, 0.0));
+  Waypoint wpt_stop7 (Seconds (SIM_STOP), Vector (100.0, 10 * SIM_STOP + 450, 0.0));
   m_mob7->AddWaypoint (wpt_stop7);
 
   Ptr<WaypointMobilityModel> m_mob8;
   m_mob8 = CreateObject<WaypointMobilityModel> ();
   mn8->AggregateObject (m_mob8);
-  Waypoint wpt_start8 (Seconds (0.0), Vector (180.0, 0.0, 0.0));
+  Waypoint wpt_start8 (Seconds (0.0), Vector (130.0, 500.0, 0.0));
   m_mob8->AddWaypoint (wpt_start8);
-  Waypoint wpt_stop8 (Seconds (40), Vector (180.0, 1000.0, 0.0));
+  Waypoint wpt_stop8 (Seconds (SIM_STOP), Vector (130.0, 10 * SIM_STOP + 500, 0.0));
   m_mob8->AddWaypoint (wpt_stop8);
 
   Ptr<WaypointMobilityModel> m_mob9;
   m_mob9 = CreateObject<WaypointMobilityModel> ();
   mn9->AggregateObject (m_mob9);
-  Waypoint wpt_start9 (Seconds (0.0), Vector (260.0, 0.0, 0.0));
+  Waypoint wpt_start9 (Seconds (0.0), Vector (100.0, 600.0, 0.0));
   m_mob9->AddWaypoint (wpt_start9);
-  Waypoint wpt_stop9 (Seconds (40), Vector (260.0, 1000.0, 0.0));
+  Waypoint wpt_stop9 (Seconds (SIM_STOP), Vector (100.0, 10 * SIM_STOP + 600, 0.0));
   m_mob9->AddWaypoint (wpt_stop9);
 }
 

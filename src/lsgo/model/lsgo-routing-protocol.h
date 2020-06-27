@@ -32,7 +32,7 @@
 
 #define NumNodes 12 //全ノード数
 #define SimTime 100 //シミュレーション時間
-#define WindowSize 10 //LSGOのウィンドウサイズ
+#define WindowSize 10000000 //LSGOのウィンドウサイズ
 #define HelloInterval 1 //Hello packet のインターバル
 
 namespace ns3 {
@@ -97,16 +97,19 @@ private:
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
   void SendLsgoBroadcast (void); //候補ノードの優先順位を計算してpacketを送信する関数
   void SetCountTimeMap (void); //window size より古いmapを削除していく関数
+  void SetEtxMap (void); //etx map をセットする関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
+  ///以下のマップは使ったら消去する
   std::multimap<int, int>
       m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数
   std::map<int, int> m_first_recv_time; //近隣ノードからのWINDOWSIZE内の最初の取得時間
+  std::map<int, int> m_etx; //近隣ノードのkeyがIDでvalueがETX値
 
-  //**自作メソッド start**/
+  //**自作メソッド finish**/
 
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
