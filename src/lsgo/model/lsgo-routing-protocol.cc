@@ -238,12 +238,19 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < SimTime; i++)
     {
-      if (id == 1 || id == 2 || id == 3)
+      if (id == 1 || id == 2)
         Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
     }
   for (int i = 1; i < SimTime; i++)
     {
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult, this); //結果出力関数
+      if (id == 3)
+        Simulator::Schedule (Seconds (i * 4), &RoutingProtocol::SendHelloPacket, this);
+    }
+
+  for (int i = 1; i < SimTime; i++)
+    {
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
+                           this); //結果出力関数
     }
 
   //test sourse node
@@ -309,9 +316,28 @@ RoutingProtocol::SetCountTimeMap (void)
 void
 RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
 {
-  //int32_t current_time = Simulator::Now ().GetMicroSeconds ();
+  int32_t current_time = Simulator::Now ().GetMicroSeconds ();
+  current_time = current_time / 1000000; //secondになおす
+
   for (auto itr = m_first_recv_time.begin (); itr != m_first_recv_time.end (); itr++)
     {
+      int32_t diftime = 0; //論文のt-t0と同意
+      int32_t first_recv = itr->second / 1000000; //最初の取得時刻もsecondになおす
+      diftime = current_time - first_recv;
+      std::cout << "id" << itr->first << "dif_time" << diftime << "\n";
+      double rt = (double) m_recvcount[itr->first] / (double) diftime; //論文のrtの計算
+      std::cout << "id" << itr->first << "のrtは" << rt << "rt*rt" << rt * rt << "\n";
+      double etx = 1.000000 / (rt * rt);
+      m_etx[itr->first] = etx;
+      std::cout << "etx" << etx << "m_etx" << m_etx[itr->first] << "\n";
+    }
+}
+
+void
+RoutingProtocol::SetPriValueMap (void)
+{
+  for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
+    { ////next                  目的地までの距離とETX値から優先度を示す値をマップに保存する
     }
 }
 
@@ -385,11 +411,13 @@ RoutingProtocol::SendLsgoBroadcast (void)
                     << "からの最初のHellomessageの取得回数は  = " << itr->second
                     << "\n"; // 値を表示
         }
+
       SetEtxMap (); //EtX mapをセットする
+      SetPriValueMap (); //優先度を決める値をセットする関数
 
       int32_t dest_node_id = 10;
-      int32_t dest_posx = 200;
-      int32_t dest_posy = 400;
+      int32_t dest_posx = 100;
+      int32_t dest_posy = 1600;
       int32_t pri1_node_id = 3;
       int32_t pri2_node_id = 4;
       int32_t pri3_node_id = 5;

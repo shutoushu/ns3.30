@@ -98,16 +98,19 @@ private:
   void SendLsgoBroadcast (void); //候補ノードの優先順位を計算してpacketを送信する関数
   void SetCountTimeMap (void); //window size より古いmapを削除していく関数
   void SetEtxMap (void); //etx map をセットする関数
+  void SetPriValueMap (void); //優先度を決める値を格納する　関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
+
   ///以下のマップは使ったら消去する
   std::multimap<int, int>
       m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数
   std::map<int, int> m_first_recv_time; //近隣ノードからのWINDOWSIZE内の最初の取得時間
-  std::map<int, int> m_etx; //近隣ノードのkeyがIDでvalueがETX値
+  std::map<int, double> m_etx; //近隣ノードのkeyがIDでvalueがETX値
+  std::map<int, double> m_pri_value; //ノードの優先度を図る値　大きいほど優先度が高い
 
   //**自作メソッド finish**/
 
