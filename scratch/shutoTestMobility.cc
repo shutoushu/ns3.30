@@ -375,7 +375,7 @@ NetSim::ConfigureNetworkLayer ()
 
   Ipv4AddressHelper ipv4;
   NS_LOG_INFO ("aaaaaaaaaaaa");
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  ipv4.SetBase ("10.1.0.0", "255.255.0.0");
   Ipv4InterfaceContainer ifs = ipv4.Assign (devices);
 }
 

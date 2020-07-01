@@ -428,14 +428,71 @@ RoutingProtocol::SendLsgoBroadcast (void)
       SetEtxMap (); //EtX mapをセットする
       SetPriValueMap (); //優先度を決める値をセットする関数
 
-      int32_t dest_node_id = 10;
+      int32_t dest_node_id = 9;
       int32_t dest_posx = 100;
-      int32_t dest_posy = 1600;
-      int32_t pri1_node_id = 3;
-      int32_t pri2_node_id = 4;
-      int32_t pri3_node_id = 5;
-      int32_t pri4_node_id = 6;
-      int32_t pri5_node_id = 7;
+      int32_t dest_posy = 750;
+      int32_t pri1_node_id = 10000000; ///ダミーID
+      int32_t pri2_node_id = 10000000;
+      int32_t pri3_node_id = 10000000;
+      int32_t pri4_node_id = 10000000;
+      int32_t pri5_node_id = 10000000;
+
+      for (int i = 1; i < 6; i++) //5回回して、大きいものから取り出して削除する
+        {
+          int count = 1;
+          int max_id = 10000000;
+          double max_value = 0;
+          for (auto itr = m_pri_value.begin (); itr != m_pri_value.end (); itr++)
+            {
+
+              if (count == 1)
+                {
+                  max_value = m_pri_value[itr->first];
+                }
+              else
+                {
+                  if (max_value < m_pri_value[itr->first])
+                    {
+                      max_value = m_pri_value[itr->first];
+                    }
+                }
+              count++;
+            }
+
+          for (auto itr = m_pri_value.begin (); itr != m_pri_value.end (); itr++)
+            {
+
+              if (m_pri_value[itr->first] == max_value)
+                {
+                  max_id = itr->first;
+                }
+            }
+
+          m_pri_value.erase (max_id);
+
+          switch (i)
+            {
+            case 1:
+              pri1_node_id = max_id;
+              break;
+            case 2:
+              pri2_node_id = max_id;
+              break;
+            case 3:
+              pri3_node_id = max_id;
+              break;
+            case 4:
+              pri4_node_id = max_id;
+              break;
+            case 5:
+              pri5_node_id = max_id;
+              break;
+            }
+        }
+
+      std::cout << "優先度１のIdは " << pri1_node_id << "優先度2のIdは " << pri2_node_id
+                << "優先度3のIdは " << pri3_node_id << "優先度4のIdは " << pri4_node_id
+                << "優先度5のIdは " << pri5_node_id << "\n";
 
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
@@ -461,7 +518,7 @@ RoutingProtocol::SendLsgoBroadcast (void)
         }
       socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
     }
-}
+} // namespace lsgo
 
 void
 RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
@@ -598,5 +655,5 @@ RoutingProtocol::SimulationResult (void) //
     }
 }
 
-} //namespace lsgo
+} // namespace lsgo
 } // namespace ns3
