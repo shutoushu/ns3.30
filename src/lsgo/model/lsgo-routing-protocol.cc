@@ -489,6 +489,10 @@ RoutingProtocol::SendLsgoBroadcast (void)
               break;
             }
         }
+      m_recvcount.clear ();
+      m_first_recv_time.clear ();
+      m_etx.clear ();
+      m_pri_value.clear ();
 
       std::cout << "優先度１のIdは " << pri1_node_id << "優先度2のIdは " << pri2_node_id
                 << "優先度3のIdは " << pri3_node_id << "優先度4のIdは " << pri4_node_id
