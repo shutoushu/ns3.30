@@ -37,6 +37,7 @@
 #include "ns3/pointer.h"
 #include <algorithm>
 #include <limits>
+#include <math.h>
 
 #include "ns3/mobility-module.h"
 
@@ -336,8 +337,20 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
 void
 RoutingProtocol::SetPriValueMap (void)
 {
+  double Dsd; //ソースノードと目的地までの距離(sendLSGObroadcastするノード)
+  double Did; //候補ノードと目的地までの距離
+  int Distination_x = 100;
+  int Distination_y = 750;
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
+
   for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
     { ////next                  目的地までの距離とETX値から優先度を示す値をマップに保存する
+      Dsd = getDistance (mypos.x, mypos.y, Distination_x, Distination_y);
+      Did = getDistance (m_xpoint[itr->first], m_ypoint[itr->first], Distination_x, Distination_y);
+      std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
+      m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
+      std::cout << "m_pri_value " << m_pri_value[itr->first] << "\n";
     }
 }
 
@@ -533,6 +546,14 @@ RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
 void
 RoutingProtocol::SendXBroadcast (void)
 {
+}
+
+int
+RoutingProtocol::getDistance (double x, double y, double x2, double y2)
+{
+  double distance = std::sqrt ((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
+
+  return (int) distance;
 }
 
 // シミュレーション結果の出力関数
