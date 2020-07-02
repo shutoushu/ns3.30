@@ -241,8 +241,8 @@ RoutingProtocol::DoInitialize (void)
     {
       if (i < 10)
         continue;
-      if (id == 1 || id == 2 || id == 3 || id == 4 || id == 5)
-        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
+      // if (id == 1 || id == 2 || id == 3 || id == 4 || id == 5)
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
     }
   // for (int i = 1; i < SimTime; i++)
   //   {
@@ -628,6 +628,11 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         // int32_t pri3_id = sendheader.GetId3 ();
         // int32_t pri4_id = sendheader.GetId4 ();
         // int32_t pri5_id = sendheader.GetId5 ();
+        if (des_id == id) //宛先が自分だったら
+          {
+            std::cout << "id" << id << "受信しましたよ　成功しました-------------\n";
+            break;
+          }
 
         int32_t pri_id[] = {sendheader.GetId1 (), sendheader.GetId2 (), sendheader.GetId3 (),
                             sendheader.GetId4 (), sendheader.GetId5 ()};
