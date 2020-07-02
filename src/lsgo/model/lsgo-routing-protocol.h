@@ -31,9 +31,10 @@
 #include <map>
 
 #define NumNodes 12 //全ノード数
-#define SimTime 100 //シミュレーション時間
-#define WindowSize 10000000 //LSGOのウィンドウサイズ
+#define SimTime 100 //シミュレーション時間 second
+#define WindowSize 10000000 //LSGOのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
+#define WaitT 4000 //待ち時間の差 micro単位
 
 namespace ns3 {
 namespace lsgo {
@@ -96,7 +97,8 @@ private:
   void SaveXpoint (int32_t map_id, int32_t map_xpoint); //近隣ノードのHello packetの情報を
   void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
-  void SendLsgoBroadcast (void); //候補ノードの優先順位を計算してpacketを送信する関数
+  void SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x,
+                          int32_t des_y); //候補ノードの優先順位を計算してpacketを送信する関数
   void SetCountTimeMap (void); //window size より古いmapを削除していく関数
   void SetEtxMap (void); //etx map をセットする関数
   void SetPriValueMap (void); //優先度を決める値を格納する　関数
