@@ -237,10 +237,11 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   //
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
-                                  DoubleValue (6.0), "ReferenceDistance",
-                                  DoubleValue (35.0), /// 謎に35.0で250M
-                                  "ReferenceLoss", DoubleValue (46.6777));
+
+  // wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
+  //                                 DoubleValue (6.0), "ReferenceDistance",
+  //                                 DoubleValue (35.0), /// 謎に35.0で250M
+  //                                 "ReferenceLoss", DoubleValue (46.6777));
 
   // wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   //wifiChannel.AddPropagationLoss ("ns3::RandomPropagationLossModel",
@@ -248,7 +249,7 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   // MakePointerAccessor (&RandomPropagationLossModel::90));
 
   //wifiChannel.AddPropagationLoss  ("ns3::LogDistancePropagationLossModel");
-  //wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (250));
+  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (270));
   //wifiChannel.AddPropagationLoss("ns3::NakagamiPropagationLossModel","m0",
   //DoubleValue(1),"m1", DoubleValue(1),"m2", DoubleValue(1));
 

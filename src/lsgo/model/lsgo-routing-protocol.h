@@ -34,7 +34,7 @@
 #define SimTime 100 //シミュレーション時間 second
 #define WindowSize 10000000 //LSGOのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
-#define WaitT 4000 //待ち時間の差 micro単位
+#define WaitT 5000 //待ち時間の差 micro単位
 
 namespace ns3 {
 namespace lsgo {
@@ -94,6 +94,8 @@ private:
   void SimulationResult (void); //シミュレーション結果を出力する
   void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,
                     Ipv4Address destination); //Hello packet の送信
+  void SendToLsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination,
+                   int32_t des_id); //Lsgo broadcast の送信
   void SaveXpoint (int32_t map_id, int32_t map_xpoint); //近隣ノードのHello packetの情報を
   void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
@@ -114,6 +116,7 @@ private:
   std::map<int, int> m_first_recv_time; //近隣ノードからのWINDOWSIZE内の最初の取得時間
   std::map<int, double> m_etx; //近隣ノードのkeyがIDでvalueがETX値
   std::map<int, double> m_pri_value; //ノードの優先度を図る値　大きいほど優先度が高い
+  std::map<int, int> m_wait; //keyのIDを持つdestination向けパケットで待機中のとき 1
 
   //**自作メソッド finish**/
 
