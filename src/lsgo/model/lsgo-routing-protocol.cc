@@ -241,8 +241,8 @@ RoutingProtocol::DoInitialize (void)
     {
       if (i < 10)
         continue;
-      // if (id == 1 || id == 2 || id == 3 || id == 4 || id == 5)
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
+      if (id == 1 || id == 2 || id == 3 || id == 4 || id == 5)
+        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
     }
   // for (int i = 1; i < SimTime; i++)
   //   {
@@ -290,6 +290,7 @@ RoutingProtocol::SetCountTimeMap (void)
                 }
               count = 1; //カウント変数の初期化
               check_id = itr->first; //新しいkeyを代入
+              m_recvcount[check_id] = count; //カウント変数を代入
             }
           else
             {
@@ -311,9 +312,9 @@ RoutingProtocol::SetCountTimeMap (void)
         }
 
       // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-      // std::cout << "id" << id;
-      // std::cout << "send node has recvmap  = " << itr->first // キーを表示
-      //           << "time  = " << itr->second << "\n"; // 値を表示
+      // std::cout << "id" << id << "    current time" << current_time;
+      // std::cout << " send node has recvmap  = " << itr->first // キーを表示
+      //           << " time  = " << itr->second << "\n"; // 値を表示
     }
 }
 
