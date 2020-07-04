@@ -192,6 +192,8 @@ private:
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   |                     Destination Y position                    |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          source ID                           |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   |                         Priority1 Id                          |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   |                         Priority2 Id                          |
@@ -208,8 +210,9 @@ private:
 class SendHeader : public Header
 {
 public:
-  SendHeader (int32_t des_id = 0, int32_t posx = 0, int32_t posy = 0, int32_t pri1_id = 0,
-              int32_t pri2_id = 0, int32_t pri3_id = 0, int32_t pri4_id = 0, int32_t pri5_id = 0);
+  SendHeader (int32_t des_id = 0, int32_t posx = 0, int32_t posy = 0, int32_t source_id = 0,
+              int32_t pri1_id = 0, int32_t pri2_id = 0, int32_t pri3_id = 0, int32_t pri4_id = 0,
+              int32_t pri5_id = 0);
 
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
@@ -250,6 +253,18 @@ public:
   GetPosY () //座標の値を返す
   {
     return m_posy;
+  }
+
+  void
+  SetSourceId (int32_t id) //座標をセットする
+  { //座標をセットする
+    m_source_id = id;
+  }
+
+  int32_t
+  GetSourceId () //座標の値を返す
+  {
+    return m_source_id;
   }
 
   void
@@ -323,6 +338,7 @@ private:
   int32_t m_des_id; //目的ノードID
   int32_t m_posx; //座標
   int32_t m_posy;
+  int32_t m_source_id;
   int32_t m_pri1_id; //優先度１
   int32_t m_pri2_id; //優先度２
   int32_t m_pri3_id; //優先度３
