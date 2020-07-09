@@ -35,7 +35,7 @@
 #define WindowSize 10000000 //LSGOのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
 #define WaitT 4000 //待ち時間の差 micro単位
-
+#define ProcessTime 0 //擬似的処理時間
 namespace ns3 {
 namespace lsgo {
 /**

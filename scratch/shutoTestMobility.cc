@@ -249,7 +249,7 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   // MakePointerAccessor (&RandomPropagationLossModel::90));
 
   //wifiChannel.AddPropagationLoss  ("ns3::LogDistancePropagationLossModel");
-  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (270));
+  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (250));
   //wifiChannel.AddPropagationLoss("ns3::NakagamiPropagationLossModel","m0",
   //DoubleValue(1),"m1", DoubleValue(1),"m2", DoubleValue(1));
 
