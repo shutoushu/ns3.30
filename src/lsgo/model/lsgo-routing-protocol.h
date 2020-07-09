@@ -43,6 +43,7 @@ namespace lsgo {
  *
  * \brief LSGO routing protocol
  */
+
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
@@ -52,6 +53,9 @@ public:
    */
   static TypeId GetTypeId (void);
   static const uint32_t LSGO_PORT;
+
+  //自作グローバル変数
+  static std::map<int, int> broadcount; //key 0 value ブロードキャスト数
 
   /// constructor
   RoutingProtocol ();

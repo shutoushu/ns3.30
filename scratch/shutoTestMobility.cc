@@ -431,7 +431,7 @@ main (int argc, char *argv[])
   bool verbose = false;
   bool sendFlag = false; // send pkts with dataRate
   DataRate dataRate = DataRate ("512Kbps");
-  uint32_t packetSize = 1024; // bytes
+  uint32_t packetSize = 512; // bytes
   uint32_t numPackets = 10;
   double distance = 150.0; // distance from mobile node
   double interval = 0.1; // seconds

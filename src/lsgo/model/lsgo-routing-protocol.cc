@@ -254,8 +254,9 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < SimTime; i++)
     {
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
-                           this); //結果出力関数
+      if (id == 0)
+        Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
+                             this); //結果出力関数
     }
 
   //test sourse node**********************source node は優先度0
@@ -434,6 +435,7 @@ RoutingProtocol::SendToLsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address
                 << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
       socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
       m_wait.clear ();
+      broadcount[0] = broadcount[0] + 1;
     }
   else
     {
@@ -775,8 +777,12 @@ RoutingProtocol::SimulationResult (void) //
       //     std::cout << "not found.\n";
       //   }
       //**************************************************************************************//
+      std::cout << "\n\n\n結果出力----------------------------------\n\n";
+      std::cout << "総lsgo broadcast数" << broadcount[0] << "\n";
     }
 }
+
+std::map<int, int> RoutingProtocol::broadcount;
 
 } // namespace lsgo
 } // namespace ns3
