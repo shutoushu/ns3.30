@@ -201,13 +201,13 @@ operator<< (std::ostream &os, HelloHeader const &h)
 
 //***********************start LSGO Send*************************************//
 
-SendHeader::SendHeader (int32_t des_id, int32_t posx, int32_t posy, int32_t source_id,
+SendHeader::SendHeader (int32_t des_id, int32_t posx, int32_t posy, int32_t hopcount,
                         int32_t pri1_id, int32_t pri2_id, int32_t pri3_id, int32_t pri4_id,
                         int32_t pri5_id)
     : m_des_id (des_id), //目的ノードID
       m_posx (posx), //座標
       m_posy (posy),
-      m_source_id (source_id),
+      m_hopcount (hopcount),
       m_pri1_id (pri1_id), //優先度１
       m_pri2_id (pri2_id), //優先度２
       m_pri3_id (pri3_id), //優先度３
@@ -245,7 +245,7 @@ SendHeader::Serialize (Buffer::Iterator i) const //シリアル化
   i.WriteHtonU32 (m_des_id);
   i.WriteHtonU32 (m_posx);
   i.WriteHtonU32 (m_posy);
-  i.WriteHtonU32 (m_source_id);
+  i.WriteHtonU32 (m_hopcount);
   i.WriteHtonU32 (m_pri1_id);
   i.WriteHtonU32 (m_pri2_id);
   i.WriteHtonU32 (m_pri3_id);
@@ -261,7 +261,7 @@ SendHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
   m_des_id = i.ReadNtohU32 ();
   m_posx = i.ReadNtohU32 ();
   m_posy = i.ReadNtohU32 ();
-  m_source_id = i.ReadNtohU32 ();
+  m_hopcount = i.ReadNtohU32 ();
   m_pri1_id = i.ReadNtohU32 ();
   m_pri2_id = i.ReadNtohU32 ();
   m_pri3_id = i.ReadNtohU32 ();

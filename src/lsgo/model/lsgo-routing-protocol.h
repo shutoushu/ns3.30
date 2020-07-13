@@ -56,6 +56,8 @@ public:
 
   //自作グローバル変数
   static std::map<int, int> broadcount; //key 0 value ブロードキャスト数
+  static std::map<int, int> m_start_time; //key destination_id value　送信時間
+  static std::map<int, int> m_finish_time; //key destination_id value 受信時間
 
   /// constructor
   RoutingProtocol ();
@@ -99,15 +101,15 @@ private:
   void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,
                     Ipv4Address destination); //Hello packet の送信
   void SendToLsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination,
-                   int32_t source_id); //Lsgo broadcast の送信
+                   int32_t hopcount, int32_t des_id); //Lsgo broadcast の送信
   void SaveXpoint (int32_t map_id, int32_t map_xpoint); //近隣ノードのHello packetの情報を
   void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
   void SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
-                          int32_t source_id); //候補ノードの優先順位を計算してpacketを送信する関数
+                          int32_t hopcount); //候補ノードの優先順位を計算してpacketを送信する関数
   void SetCountTimeMap (void); //window size より古いmapを削除していく関数
   void SetEtxMap (void); //etx map をセットする関数
-  void SetPriValueMap (void); //優先度を決める値を格納する　関数
+  void SetPriValueMap (int32_t des_x, int32_t des_y); //優先度を決める値を格納する　関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
@@ -120,7 +122,8 @@ private:
   std::map<int, int> m_first_recv_time; //近隣ノードからのWINDOWSIZE内の最初の取得時間
   std::map<int, double> m_etx; //近隣ノードのkeyがIDでvalueがETX値
   std::map<int, double> m_pri_value; //ノードの優先度を図る値　大きいほど優先度が高い
-  std::map<int, int> m_wait; //ソースIDがkey　待ち状態１　初期値０
+  std::map<int, int> m_wait; //key destination_id value ホップカウント
+  //destination に対してこのホップカウントで送信待機している状態を表す
   //**自作メソッド finish**/
 
   /// IP protocol
