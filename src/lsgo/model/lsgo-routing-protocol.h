@@ -36,6 +36,7 @@
 #define HelloInterval 1 //Hello packet のインターバル
 #define WaitT 4000 //待ち時間の差 micro単位
 #define ProcessTime 0 //擬似的処理時間
+#define transTime 10 // 10秒以上静止していた場合通信の許可を剥奪する
 namespace ns3 {
 namespace lsgo {
 /**
@@ -58,6 +59,9 @@ public:
   static std::map<int, int> broadcount; //key 0 value ブロードキャスト数
   static std::map<int, int> m_start_time; //key destination_id value　送信時間
   static std::map<int, int> m_finish_time; //key destination_id value 受信時間
+  static std::map<int, int> m_my_posx; // key node id value position x
+  static std::map<int, int> m_my_posy; // key node id value position y
+  static std::map<int, int> m_trans; //key node id 初期値０　＝　通信不可　VALUE＝１　通信可
 
   /// constructor
   RoutingProtocol ();
@@ -110,6 +114,8 @@ private:
   void SetCountTimeMap (void); //window size より古いmapを削除していく関数
   void SetEtxMap (void); //etx map をセットする関数
   void SetPriValueMap (int32_t des_x, int32_t des_y); //優先度を決める値を格納する　関数
+
+  void SetMyPos (void); //自分の位置情報を１秒ずつ保存
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition

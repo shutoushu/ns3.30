@@ -239,10 +239,11 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < SimTime; i++)
     {
-      if (i < 10)
-        continue;
+      //if (i < 10)
+      //continue;
       // if (id == 3 || id == 4 || id == 5)
       //   {
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
       //}
     }
@@ -776,6 +777,31 @@ RoutingProtocol::getDistance (double x, double y, double x2, double y2)
   return (int) distance;
 }
 
+void
+RoutingProtocol::SetMyPos (void)
+{
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
+  if (m_my_posx[id] == 0 && m_my_posy[id] == 0)
+    {
+      m_my_posx[id] = mypos.x;
+      m_my_posy[id] = mypos.y;
+    }
+  else
+    {
+      double distance = 0; //1秒前の自分の位置との距離の差
+      distance = getDistance ((double) m_my_posx[id], (double) m_my_posy[id], (double) mypos.x,
+                              (double) mypos.y);
+      if (m_trans[id] == 0 && distance > 0) //動き出したら
+        {
+          m_trans[id] = 1; //通信可能設定にする
+          std::cout << "id" << id << "が通信可能になりました time "
+                    << Simulator::Now ().GetMicroSeconds () << "\n";
+        }
+    }
+}
+
 // シミュレーション結果の出力関数
 void
 RoutingProtocol::SimulationResult (void) //
@@ -831,6 +857,9 @@ RoutingProtocol::SimulationResult (void) //
 std::map<int, int> RoutingProtocol::broadcount; //key 0 value broudcast数
 std::map<int, int> RoutingProtocol::m_start_time; //key destination_id value　送信時間
 std::map<int, int> RoutingProtocol::m_finish_time; //key destination_id value 受信時間
+std::map<int, int> RoutingProtocol::m_my_posx; // key node id value position x
+std::map<int, int> RoutingProtocol::m_my_posy; // key node id value position y
+std::map<int, int> RoutingProtocol::m_trans; //key node id value　通信可能かどうか1or0
 
 } // namespace lsgo
 } // namespace ns3
