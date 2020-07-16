@@ -241,11 +241,11 @@ RoutingProtocol::DoInitialize (void)
     {
       //if (i < 10)
       //continue;
-      // if (id == 3 || id == 4 || id == 5)
+      // if (id == 2 || id == 3 || id == 4 || id == 5 || id == 6)
       //   {
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
-      //}
+      // }
     }
   // for (int i = 1; i < SimTime; i++)
   //   {
@@ -267,9 +267,10 @@ RoutingProtocol::DoInitialize (void)
   //   Simulator::Schedule (Seconds (15), &RoutingProtocol::SendLsgoBroadcast, this, 0, 9, 100, 750,
   //                        1);
 
-  m_start_time[0] = 40000000; //50second
-  if (id == 9)
-    Simulator::Schedule (Seconds (40), &RoutingProtocol::SendLsgoBroadcast, this, 0, 0, 70, 450, 1);
+  m_start_time[9] = 20000000; //50second
+  if (id == 0)
+    Simulator::Schedule (Seconds (20), &RoutingProtocol::SendLsgoBroadcast, this, 0, 9, 100, 760,
+                         1);
 }
 
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
@@ -347,7 +348,7 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
       double first_recv = (double) itr->second;
       diftime = (current_time - first_recv) / 1000000;
       //difftime = difftime / 1000000;
-      std::cout << "id" << itr->first << "dif_time" << diftime << "\n";
+      //std::cout << "id" << itr->first << "dif_time" << diftime << "\n";
       double rt = (double) m_recvcount[itr->first] / diftime; //論文のrtの計算
       //std::cout << "id" << itr->first << "のrtは" << rt << "rt*rt" << rt * rt << "\n";
       double etx = 1.000000 / (rt * rt);
@@ -355,8 +356,8 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
         etx = 1;
       m_etx[itr->first] = etx;
 
-      std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
-      std::cout << "\n";
+      //std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
+      //std::cout << "\n";
     }
 }
 
@@ -381,10 +382,10 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
         {
           continue;
         }
-      std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
+      //std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
 
       m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
-      std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
+      //std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
     }
 }
 
@@ -418,7 +419,7 @@ RoutingProtocol::SendHelloPacket (void)
           destination = iface.GetBroadcast ();
         }
 
-      Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 5000)));
+      Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 50000)));
       //socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
       Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
                            destination);
@@ -440,7 +441,8 @@ RoutingProtocol::SendToLsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   int32_t current_time = Simulator::Now ().GetMicroSeconds ();
-  std::cout << "send lsgo m_wait" << m_wait[id] << "\n";
+  std::cout << "send lsgo m_wait" << m_wait[des_id] << "\n";
+  std::cout << "send Lsgo hopcount" << hopcount << "\n";
 
   if (m_wait[des_id] == hopcount) //送信するhopcount がまだ待機中だったら
     {
@@ -471,18 +473,18 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       SetCountTimeMap (); //window sizeないの最初のhelloを受け取った時間と回数をマップに格納する関数
       for (auto itr = m_first_recv_time.begin (); itr != m_first_recv_time.end (); itr++)
         {
-          int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-          std::cout << "id" << id;
-          std::cout << "が持つ近隣ノードID  = " << itr->first // キーを表示
-                    << "からの最初のHellomessage取得時間は  = " << itr->second << "\n"; // 値を表示
+          //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+          // std::cout << "id" << id;
+          // std::cout << "が持つ近隣ノードID  = " << itr->first // キーを表示
+          //           << "からの最初のHellomessage取得時間は  = " << itr->second << "\n"; // 値を表示
         }
       for (auto itr = m_recvcount.begin (); itr != m_recvcount.end (); itr++)
         {
-          int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-          std::cout << "id" << id;
-          std::cout << "が持つ近隣ノードID  = " << itr->first // キーを表示
-                    << "からの最初のHellomessageの取得回数は  = " << itr->second
-                    << "\n"; // 値を表示
+          //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+          // std::cout << "id" << id;
+          // std::cout << "が持つ近隣ノードID  = " << itr->first // キーを表示
+          //           << "からの最初のHellomessageの取得回数は  = " << itr->second
+          //           << "\n"; // 値を表示
         }
 
       SetEtxMap (); //EtX mapをセットする
@@ -593,8 +595,8 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       m_wait[des_id] = hopcount; //今から待機するホップカウント
 
       std::cout << " id " << send_node_id << "の待ち時間は  " << wait_time << "\n";
-      std::cout << "pri value" << pri_value << "\n";
-      std::cout << "m_wait" << m_wait[hopcount] << "\n";
+      std::cout << "自身の優先度pri value" << pri_value << "\n";
+      std::cout << "m_wait(hopcount)" << m_wait[des_id] << "\n";
       std::cout << "-------------------------------------------\n";
 
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
@@ -661,6 +663,9 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         break; //breakがないとエラー起きる
       }
       case LSGOTYPE_SEND: {
+        std::cout << "\n\n--------------------------------------------------------\n";
+        std::cout << "recv id" << id << "time------------------------------------------"
+                  << Simulator::Now ().GetMicroSeconds () << "\n";
 
         SendHeader sendheader;
         packet->RemoveHeader (sendheader);
@@ -713,8 +718,8 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
               {
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
-                    std::cout << "\n--------------------------------------------------------\n";
-                    std::cout << "recv id" << id << "time------------------------------\n"
+                    //std::cout << "\n--------------------------------------------------------\n";
+                    std::cout << "関係あるrecv id" << id << "time------------------------------\n"
                               << Simulator::Now ().GetMicroSeconds ();
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
@@ -730,9 +735,9 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
               {
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
-                    std::cout << "\n--------------------------------------------------------\n";
-                    std::cout << "recv id" << id << "time------------------------------"
-                              << Simulator::Now ().GetMicroSeconds ();
+                    //std::cout << "\n--------------------------------------------------------\n";
+                    std::cout << "関係あるrecv id" << id << "time------------------------------"
+                              << Simulator::Now ().GetMicroSeconds () << "\n";
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
