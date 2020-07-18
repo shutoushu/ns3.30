@@ -239,13 +239,8 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < SimTime; i++)
     {
-      //if (i < 10)
-      //continue;
-      // if (id == 2 || id == 3 || id == 4 || id == 5 || id == 6)
-      //   {
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
-      // }
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
     }
   // for (int i = 1; i < SimTime; i++)
   //   {
@@ -268,7 +263,7 @@ RoutingProtocol::DoInitialize (void)
   //                        1);
 
   m_start_time[9] = 20000000; //50second
-  if (id == 0)
+  if (id == 1)
     Simulator::Schedule (Seconds (20), &RoutingProtocol::SendLsgoBroadcast, this, 0, 9, 100, 760,
                          1);
 }
@@ -421,9 +416,11 @@ RoutingProtocol::SendHelloPacket (void)
 
       Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 50000)));
       //socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
-      Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
-                           destination);
-      // }
+      if (m_trans[id] == 1) //通信可能ノードのみ
+        {
+          Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
+                               destination);
+        }
     }
 }
 
@@ -465,10 +462,14 @@ void
 RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
                                     int32_t hopcount)
 {
+
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
        j != m_socketAddresses.end (); ++j)
     {
       int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
+
+      if (m_trans[send_node_id] == 0) //通信許可がないノードならbreakする
+        break;
 
       SetCountTimeMap (); //window sizeないの最初のhelloを受け取った時間と回数をマップに格納する関数
       for (auto itr = m_first_recv_time.begin (); itr != m_first_recv_time.end (); itr++)
@@ -644,6 +645,10 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
   switch (tHeader.Get ())
     {
       case LSGOTYPE_HELLO: { //hello message を受け取った場合
+
+        if (m_trans[id] == 0)
+          break;
+
         HelloHeader helloheader;
         packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
         int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
@@ -663,6 +668,9 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         break; //breakがないとエラー起きる
       }
       case LSGOTYPE_SEND: {
+        if (m_trans[id] == 0)
+          break;
+
         std::cout << "\n\n--------------------------------------------------------\n";
         std::cout << "recv id" << id << "time------------------------------------------"
                   << Simulator::Now ().GetMicroSeconds () << "\n";
@@ -798,12 +806,45 @@ RoutingProtocol::SetMyPos (void)
       double distance = 0; //1秒前の自分の位置との距離の差
       distance = getDistance ((double) m_my_posx[id], (double) m_my_posy[id], (double) mypos.x,
                               (double) mypos.y);
-      if (m_trans[id] == 0 && distance > 0) //動き出したら
+
+      if (id == 11)
         {
-          m_trans[id] = 1; //通信可能設定にする
-          std::cout << "id" << id << "が通信可能になりました time "
-                    << Simulator::Now ().GetMicroSeconds () << "\n";
+          std::cout << "distance" << distance << "\n";
+          std::cout << "m_my_posx" << m_my_posx[id] << "mypos.x" << mypos.x << "\n";
         }
+
+      if (m_trans[id] == 1)
+        {
+          //std::cout << "id " << id << "distance" << distance << "\n";
+          if (m_stop_count[id] > StopTransTime)
+            {
+              m_trans[id] = 0; //通信不可能にする
+              std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
+                        << "は通信不可能になりました\n";
+            }
+
+          if (distance == 0)
+            {
+              m_stop_count[id]++; //静止してる時ストップタイムを加算
+              //std::cout << "id " << id << "静止しとる\n";
+            }
+
+          if (distance > 0)
+            m_stop_count[id] = 0; //初期値に戻す
+        }
+      else //m_transs[id] == 0
+        {
+          if (distance > 0)
+            {
+              m_trans[id] = 1; //動き出し通信可能に
+              m_stop_count[id] = 0;
+              std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
+                        << "は通信可能になりました\n";
+            }
+        }
+
+      m_my_posx[id] = mypos.x;
+      m_my_posy[id] = mypos.y;
     }
 }
 
@@ -815,7 +856,7 @@ RoutingProtocol::SimulationResult (void) //
   if (Simulator::Now ().GetSeconds () == SimTime - 1)
     {
       // //*******************************ノードが持つ座標の確認ログ***************************//
-      // std::cout << "id=" << id << "の\n";
+      //std::cout << "id=" << id << "の\n";
       // for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++)
       //   {
       //     std::cout << "recv hello packet id = " << itr->first // キーを表示
@@ -829,7 +870,7 @@ RoutingProtocol::SimulationResult (void) //
       //**************************************************************************************//
 
       //*******************************ノードが持つ受信時刻ログ***************************//
-      // std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
+      //std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
 
       // auto itr = m_recvtime.find (1);
       // if (itr != m_recvtime.end ())
@@ -862,9 +903,10 @@ RoutingProtocol::SimulationResult (void) //
 std::map<int, int> RoutingProtocol::broadcount; //key 0 value broudcast数
 std::map<int, int> RoutingProtocol::m_start_time; //key destination_id value　送信時間
 std::map<int, int> RoutingProtocol::m_finish_time; //key destination_id value 受信時間
-std::map<int, int> RoutingProtocol::m_my_posx; // key node id value position x
-std::map<int, int> RoutingProtocol::m_my_posy; // key node id value position y
+std::map<int, double> RoutingProtocol::m_my_posx; // key node id value position x
+std::map<int, double> RoutingProtocol::m_my_posy; // key node id value position y
 std::map<int, int> RoutingProtocol::m_trans; //key node id value　通信可能かどうか1or0
+std::map<int, int> RoutingProtocol::m_stop_count; //key node id value 止まっている時間カウント
 
 } // namespace lsgo
 } // namespace ns3

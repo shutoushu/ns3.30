@@ -2194,7 +2194,7 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
                                       DoubleValue (6.0), "ReferenceDistance",
-                                      DoubleValue (400.0), ///伝搬距離１メートル
+                                      DoubleValue (35.0), ///伝搬距離１メートル
                                       "ReferenceLoss", DoubleValue (46.6777));
 
       std::cout << "obstacle debug  -------------------------------------------------------set "

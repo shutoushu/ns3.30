@@ -30,13 +30,13 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
-#define NumNodes 12 //全ノード数
-#define SimTime 100 //シミュレーション時間 second
+#define NumNodes 455 //全ノード数
+#define SimTime 200 //シミュレーション時間 second
 #define WindowSize 10000000 //LSGOのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
 #define WaitT 4000 //待ち時間の差 micro単位
 #define ProcessTime 0 //擬似的処理時間
-#define transTime 10 // 10秒以上静止していた場合通信の許可を剥奪する
+#define StopTransTime 15 // 10秒以上静止していた場合通信の許可を剥奪する
 namespace ns3 {
 namespace lsgo {
 /**
@@ -59,9 +59,10 @@ public:
   static std::map<int, int> broadcount; //key 0 value ブロードキャスト数
   static std::map<int, int> m_start_time; //key destination_id value　送信時間
   static std::map<int, int> m_finish_time; //key destination_id value 受信時間
-  static std::map<int, int> m_my_posx; // key node id value position x
-  static std::map<int, int> m_my_posy; // key node id value position y
+  static std::map<int, double> m_my_posx; // key node id value position x
+  static std::map<int, double> m_my_posy; // key node id value position y
   static std::map<int, int> m_trans; //key node id 初期値０　＝　通信不可　VALUE＝１　通信可
+  static std::map<int, int> m_stop_count; //key node id value 止まっている時間の蓄積
 
   /// constructor
   RoutingProtocol ();
