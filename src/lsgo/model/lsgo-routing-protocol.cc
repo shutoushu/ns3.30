@@ -236,11 +236,12 @@ RoutingProtocol::DoInitialize (void)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   //int32_t time = Simulator::Now ().GetMicroSeconds ();
+  m_trans[id] = 1;
 
   for (int i = 1; i < SimTime; i++)
     {
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
+      //Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
     }
   // for (int i = 1; i < SimTime; i++)
   //   {
@@ -257,15 +258,51 @@ RoutingProtocol::DoInitialize (void)
     }
 
   //sourse node**********************source node は優先度0 hopcount = 1*************************
-  // m_start_time[9] = 15000000; //15second
-  // if (id == 0)
-  //   Simulator::Schedule (Seconds (15), &RoutingProtocol::SendLsgoBroadcast, this, 0, 9, 100, 750,
-  //                        1);
-
-  m_start_time[9] = 20000000; //50second
+  m_start_time[9] = 15000000; //15second
   if (id == 1)
-    Simulator::Schedule (Seconds (20), &RoutingProtocol::SendLsgoBroadcast, this, 0, 9, 100, 760,
+    Simulator::Schedule (Seconds (15), &RoutingProtocol::SendLsgoBroadcast, this, 0, 9, 100, 750,
                          1);
+
+  m_start_time[314] = 140000000; //140second key = destination
+  if (id == 311)
+    Simulator::Schedule (Seconds (140), &RoutingProtocol::SendLsgoBroadcast, this, 0, 314, 2515,
+                         2200, 1);
+  m_start_time[362] = 145000000; //50second
+  if (id == 360)
+    Simulator::Schedule (Seconds (145), &RoutingProtocol::SendLsgoBroadcast, this, 0, 362, 3100,
+                         2600, 1);
+  m_start_time[229] = 150000000; //50second
+  if (id == 245)
+    Simulator::Schedule (Seconds (150), &RoutingProtocol::SendLsgoBroadcast, this, 0, 229, 2675,
+                         2442, 1);
+  m_start_time[655] = 155000000; //50second
+  if (id == 566)
+    Simulator::Schedule (Seconds (155), &RoutingProtocol::SendLsgoBroadcast, this, 0, 2183, 2675,
+                         1888, 1);
+  m_start_time[450] = 16000000; //50second
+  if (id == 455)
+    Simulator::Schedule (Seconds (160), &RoutingProtocol::SendLsgoBroadcast, this, 0, 450, 3432,
+                         2687, 1);
+  m_start_time[368] = 165000000; //50second
+  if (id == 387)
+    Simulator::Schedule (Seconds (165), &RoutingProtocol::SendLsgoBroadcast, this, 0, 368, 3207,
+                         1872, 1);
+  m_start_time[395] = 170000000; //50second
+  if (id == 383)
+    Simulator::Schedule (Seconds (170), &RoutingProtocol::SendLsgoBroadcast, this, 0, 395, 2702,
+                         2507, 1);
+  m_start_time[223] = 180000000; //50second
+  if (id == 407)
+    Simulator::Schedule (Seconds (180), &RoutingProtocol::SendLsgoBroadcast, this, 0, 223, 3147,
+                         1832, 1);
+  m_start_time[63] = 185000000; //50second
+  if (id == 657)
+    Simulator::Schedule (Seconds (185), &RoutingProtocol::SendLsgoBroadcast, this, 0, 63, 3049,
+                         2499, 1);
+  m_start_time[849] = 190000000; //50second
+  if (id == 859)
+    Simulator::Schedule (Seconds (190), &RoutingProtocol::SendLsgoBroadcast, this, 0, 849, 2081,
+                         2770, 1);
 }
 
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
@@ -469,7 +506,13 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
 
       if (m_trans[send_node_id] == 0) //通信許可がないノードならbreakする
-        break;
+        {
+          std::cout << "通信許可が得られていないノードが　sendlsgo broadcast id" << send_node_id
+                    << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
+
+          std::cout << "m_trans = " << m_trans[send_node_id] << "\n";
+          break;
+        }
 
       SetCountTimeMap (); //window sizeないの最初のhelloを受け取った時間と回数をマップに格納する関数
       for (auto itr = m_first_recv_time.begin (); itr != m_first_recv_time.end (); itr++)
@@ -671,9 +714,9 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         if (m_trans[id] == 0)
           break;
 
-        std::cout << "\n\n--------------------------------------------------------\n";
-        std::cout << "recv id" << id << "time------------------------------------------"
-                  << Simulator::Now ().GetMicroSeconds () << "\n";
+        //std::cout << "\n\n--------------------------------------------------------\n";
+        //std::cout << "recv id" << id << "time------------------------------------------"
+        // << Simulator::Now ().GetMicroSeconds () << "\n";
 
         SendHeader sendheader;
         packet->RemoveHeader (sendheader);
@@ -807,30 +850,24 @@ RoutingProtocol::SetMyPos (void)
       distance = getDistance ((double) m_my_posx[id], (double) m_my_posy[id], (double) mypos.x,
                               (double) mypos.y);
 
-      if (id == 11)
-        {
-          std::cout << "distance" << distance << "\n";
-          std::cout << "m_my_posx" << m_my_posx[id] << "mypos.x" << mypos.x << "\n";
-        }
-
       if (m_trans[id] == 1)
         {
           //std::cout << "id " << id << "distance" << distance << "\n";
-          if (m_stop_count[id] > StopTransTime)
-            {
-              m_trans[id] = 0; //通信不可能にする
-              std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
-                        << "は通信不可能になりました\n";
-            }
+          // if (m_stop_count[id] > StopTransTime)
+          //   {
+          //     m_trans[id] = 0; //通信不可能にする
+          //     std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
+          //               << "は通信不可能になりました\n";
+          //   }
 
-          if (distance == 0)
-            {
-              m_stop_count[id]++; //静止してる時ストップタイムを加算
-              //std::cout << "id " << id << "静止しとる\n";
-            }
+          // if (distance == 0)
+          //   {
+          //     m_stop_count[id]++; //静止してる時ストップタイムを加算
+          //     //std::cout << "id " << id << "静止しとる\n";
+          //   }
 
-          if (distance > 0)
-            m_stop_count[id] = 0; //初期値に戻す
+          // if (distance > 0)
+          //   m_stop_count[id] = 0; //初期値に戻す
         }
       else //m_transs[id] == 0
         {
@@ -852,8 +889,9 @@ RoutingProtocol::SetMyPos (void)
 void
 RoutingProtocol::SimulationResult (void) //
 {
+  std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
   //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (Simulator::Now ().GetSeconds () == SimTime - 1)
+  if (Simulator::Now ().GetSeconds () == SimTime - 2)
     {
       // //*******************************ノードが持つ座標の確認ログ***************************//
       //std::cout << "id=" << id << "の\n";

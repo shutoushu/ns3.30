@@ -55,7 +55,7 @@
 #include <iomanip>
 
 #define DIS_TIME 20.0
-#define SIM_STOP 100.0
+#define SIM_STOP 200.0
 #define TH_INTERVAL 0.1
 //#define NumNodes 10
 
@@ -238,10 +238,9 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
 
-  // wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
-  //                                 DoubleValue (6.0), "ReferenceDistance",
-  //                                 DoubleValue (35.0), /// 謎に35.0で250M
-  //                                 "ReferenceLoss", DoubleValue (46.6777));
+  wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
+                                  DoubleValue (6.0), "ReferenceDistance", DoubleValue (250.0),
+                                  "ReferenceLoss", DoubleValue (46.6777));
 
   // wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   //wifiChannel.AddPropagationLoss ("ns3::RandomPropagationLossModel",
