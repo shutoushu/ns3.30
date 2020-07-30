@@ -19,7 +19,6 @@
  *         Ritsumeikan University, Shiga, Japan
  */
 
-
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
@@ -30,99 +29,82 @@
 #include "ns3/applications-module.h"
 #include "ns3/netanim-module.h"
 
-
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
 
-
-
-
 NS_LOG_COMPONENT_DEFINE ("SampleProtocolMinimum");
 
 using namespace ns3;
 
-
 uint16_t port = 625;
 Ptr<ConstantVelocityMobilityModel> cvmm;
-
-
-
 
 int
 main (int argc, char *argv[])
 {
 
-   int numNodes = 120;
-   double heightField = 200;
-   double widthField = 400;
+  int numNodes = 120;
+  double heightField = 200;
+  double widthField = 400;
 
+  //int pktSize = 1024;  //packet Size in bytes
 
-   //int pktSize = 1024;  //packet Size in bytes
+  RngSeedManager::SetSeed (15);
+  RngSeedManager::SetRun (7);
 
+  ////////////////////// CREATE NODES ////////////////////////////////////
+  NodeContainer staticNodes;
+  staticNodes.Create (numNodes);
+  std::cout << "Nodes created\n";
 
-   RngSeedManager::SetSeed(15);
-   RngSeedManager::SetRun (7);
+  ///////////////////// CREATE DEVICES ////////////////////////////////////
 
-   ////////////////////// CREATE NODES ////////////////////////////////////
-   NodeContainer staticNodes;
-   staticNodes.Create(numNodes);
-   std::cout<<"Nodes created\n";
+  UintegerValue ctsThr = (true ? UintegerValue (100) : UintegerValue (2200));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", ctsThr);
 
-   ///////////////////// CREATE DEVICES ////////////////////////////////////
+  // A high number avoid drops in packet due to arp traffic.
+  Config::SetDefault ("ns3::ArpCache::PendingQueueSize", UintegerValue (400));
 
-   UintegerValue ctsThr = (true ? UintegerValue (100) : UintegerValue (2200));
-   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", ctsThr);
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+  //wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
 
-   // A high number avoid drops in packet due to arp traffic.
-   Config::SetDefault ("ns3::ArpCache::PendingQueueSize", UintegerValue (400));
+  //PHYSICAL LAYER configuration
+  YansWifiPhyHelper wifiPhyHelper = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper wifiChannelHelper;
+  wifiChannelHelper.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
+  wifiChannelHelper.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange",
+                                        DoubleValue (52));
+  Ptr<YansWifiChannel> pchan = wifiChannelHelper.Create ();
+  wifiPhyHelper.SetChannel (pchan);
 
-   WifiHelper wifi;
-   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
-   //wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", UintegerValue (0));
+  //MAC LAYER configuration
+  WifiMacHelper wifiMacHelper;
+  wifiMacHelper.SetType ("ns3::AdhocWifiMac");
 
+  NetDeviceContainer nodeDevices;
+  nodeDevices = wifi.Install (wifiPhyHelper, wifiMacHelper, staticNodes);
 
-   //PHYSICAL LAYER configuration
-   YansWifiPhyHelper wifiPhyHelper =  YansWifiPhyHelper::Default ();
-   YansWifiChannelHelper wifiChannelHelper;
-   wifiChannelHelper.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-   wifiChannelHelper.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue(52));
-   Ptr<YansWifiChannel> pchan = wifiChannelHelper.Create ();
-   wifiPhyHelper.SetChannel (pchan);
-   
-   //MAC LAYER configuration
-   WifiMacHelper wifiMacHelper;
-   wifiMacHelper.SetType ("ns3::AdhocWifiMac");
+  std::cout << "Devices installed\n";
 
- 
-   NetDeviceContainer nodeDevices;
-   nodeDevices = wifi.Install (wifiPhyHelper, wifiMacHelper, staticNodes);
+  ////////////////////////   MOBILITY  ///////////////////////////////////////////
 
+  /////// 1- Random in a rectangle Topology
 
+  Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
+  x->SetAttribute ("Min", DoubleValue (0));
+  x->SetAttribute ("Max", DoubleValue (widthField));
 
-   std::cout<<"Devices installed\n";
+  Ptr<UniformRandomVariable> y = CreateObject<UniformRandomVariable> ();
+  y->SetAttribute ("Min", DoubleValue (0));
+  y->SetAttribute ("Max", DoubleValue (heightField));
 
-   ////////////////////////   MOBILITY  ///////////////////////////////////////////
-
-   /////// 1- Random in a rectangle Topology
-
-   Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable>();
-   x->SetAttribute ("Min", DoubleValue (0));
-   x->SetAttribute ("Max", DoubleValue (widthField));
-
-
-   Ptr<UniformRandomVariable> y = CreateObject<UniformRandomVariable>();
-   y->SetAttribute ("Min", DoubleValue (0));
-   y->SetAttribute ("Max", DoubleValue (heightField));
-
-
-
-   Ptr<RandomRectanglePositionAllocator> alloc = CreateObject<RandomRectanglePositionAllocator>();
-   alloc->SetX (x);
-   alloc->SetY (y);
-   alloc->AssignStreams(3);
-
+  Ptr<RandomRectanglePositionAllocator> alloc = CreateObject<RandomRectanglePositionAllocator> ();
+  alloc->SetX (x);
+  alloc->SetY (y);
+  alloc->AssignStreams (3);
 
   ///////// 2- Grid Topology
   /*
@@ -140,31 +122,28 @@ main (int argc, char *argv[])
   mobilityFixedNodes.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobilityFixedNodes.Install (staticNodes);
 
-
-  std::cout<<"mobility set \n";
-
+  std::cout << "mobility set \n";
 
   ////////////////////////   INTERNET STACK /////////////////////////
 
-   SampleHelper sampleProtocol;
+  SampleHelper sampleProtocol;
 
-   Ipv4ListRoutingHelper listrouting;
-   listrouting.Add(sampleProtocol, 10);
+  Ipv4ListRoutingHelper listrouting;
+  listrouting.Add (sampleProtocol, 10);
 
-   InternetStackHelper internet;
-   internet.SetRoutingHelper(listrouting);
-   internet.Install (staticNodes);
-  
-   Ipv4AddressHelper ipv4;
-   NS_LOG_INFO ("Assign IP Addresses.");
-   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-   Ipv4InterfaceContainer interfaces;
-   interfaces = ipv4.Assign (nodeDevices);
-   std::cout<<"Internet Stack installed\n";
+  InternetStackHelper internet;
+  internet.SetRoutingHelper (listrouting);
+  internet.Install (staticNodes);
 
-   
-	//////////////////// APPLICATIONS ////////////////////////////////
-/*	uint16_t sinkPort = 9;
+  Ipv4AddressHelper ipv4;
+  NS_LOG_INFO ("Assign IP Addresses.");
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer interfaces;
+  interfaces = ipv4.Assign (nodeDevices);
+  std::cout << "Internet Stack installed\n";
+
+  //////////////////// APPLICATIONS ////////////////////////////////
+  /*	uint16_t sinkPort = 9;
 	PacketSinkHelper sink ("ns3::UdpSocketFactory",
 	InetSocketAddress (Ipv4Address::GetAny (),sinkPort));
 	ApplicationContainer sinkApps = sink.Install (mobileNode);
@@ -196,19 +175,15 @@ main (int argc, char *argv[])
 
 */
 
+   Simulator::Stop (Seconds (10));
 
-	Simulator::Stop(Seconds (10));
+  Simulator::Run ();
 
+  // clean variables
+  staticNodes = NodeContainer ();
+  interfaces = Ipv4InterfaceContainer ();
+  nodeDevices = NetDeviceContainer ();
 
-	Simulator::Run ();
-
-    // clean variables
-    staticNodes = NodeContainer();
-    interfaces = Ipv4InterfaceContainer ();
-    nodeDevices = NetDeviceContainer ();
-  
-
-
-    Simulator::Destroy ();
-    std::cout<<"end of simulation\n";
+  Simulator::Destroy ();
+  std::cout << "end of simulation\n";
 }

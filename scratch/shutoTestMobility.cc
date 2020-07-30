@@ -25,7 +25,7 @@
 #include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/shuto-module.h"
+//#include "ns3/shuto-module.h"
 #include "ns3/senko-module.h"
 #include "ns3/sample-module.h"
 #include "ns3/lsgo-module.h"
@@ -364,14 +364,14 @@ NetSim::ConfigureNetworkLayer ()
 {
   //ShutoHelper shutoProtocol;
   //SenkoHelper senkoProtocol;
-  //SampleHelper sampleProtocol;
-  LsgoHelper lsgoProtocol;
+  SampleHelper sampleProtocol;
+  //LsgoHelper lsgoProtocol;
 
   Ipv4ListRoutingHelper listrouting;
   //listrouting.Add(shutoProtocol, 10);
   //listrouting.Add(senkoProtocol, 10);
-  //listrouting.Add (sampleProtocol, 10);
-  listrouting.Add (lsgoProtocol, 10);
+  listrouting.Add (sampleProtocol, 10);
+  //listrouting.Add (lsgoProtocol, 10);
 
   InternetStackHelper internet;
   internet.SetRoutingHelper (listrouting);

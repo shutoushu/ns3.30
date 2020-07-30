@@ -16,8 +16,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#define NS_LOG_APPEND_CONTEXT                                   \
-  if (m_ipv4) { std::clog << "[node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; }
+#define NS_LOG_APPEND_CONTEXT                                                \
+  if (m_ipv4)                                                                \
+    {                                                                        \
+      std::clog << "[node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; \
+    }
 
 #include "sample-routing-protocol.h"
 #include "ns3/log.h"
@@ -45,29 +48,24 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 /// UDP Port for SAMPLE control traffic
 const uint32_t RoutingProtocol::SAMPLE_PORT = 654;
 
-
 RoutingProtocol::RoutingProtocol ()
 {
-  
 }
 
 TypeId
 RoutingProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::sample::RoutingProtocol")
-    .SetParent<Ipv4RoutingProtocol> ()
-    .SetGroupName ("Sample")
-    .AddConstructor<RoutingProtocol> ()
-    .AddAttribute ("UniformRv",
-                   "Access to the underlying UniformRandomVariable",
-                   StringValue ("ns3::UniformRandomVariable"),
-                   MakePointerAccessor (&RoutingProtocol::m_uniformRandomVariable),
-                   MakePointerChecker<UniformRandomVariable> ())
-  ;
+  static TypeId tid =
+      TypeId ("ns3::sample::RoutingProtocol")
+          .SetParent<Ipv4RoutingProtocol> ()
+          .SetGroupName ("Sample")
+          .AddConstructor<RoutingProtocol> ()
+          .AddAttribute ("UniformRv", "Access to the underlying UniformRandomVariable",
+                         StringValue ("ns3::UniformRandomVariable"),
+                         MakePointerAccessor (&RoutingProtocol::m_uniformRandomVariable),
+                         MakePointerChecker<UniformRandomVariable> ());
   return tid;
 }
-
-
 
 RoutingProtocol::~RoutingProtocol ()
 {
@@ -76,7 +74,6 @@ RoutingProtocol::~RoutingProtocol ()
 void
 RoutingProtocol::DoDispose ()
 {
-
 }
 
 void
@@ -99,54 +96,43 @@ RoutingProtocol::AssignStreams (int64_t stream)
   return 1;
 }
 
-
-
 Ptr<Ipv4Route>
-RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
-                              Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
+RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif,
+                              Socket::SocketErrno &sockerr)
 {
 
-  std::cout<<"Route Ouput Node: "<<m_ipv4->GetObject<Node> ()->GetId ()<<"\n";
+  //std::cout << "Route Ouput Node: " << m_ipv4->GetObject<Node> ()->GetId () << "\n";
   Ptr<Ipv4Route> route;
 
   if (!p)
     {
-	  std::cout << "loopback occured! in routeoutput";
-	  return route;// LoopbackRoute (header,oif);
-
-	}
+      std::cout << "loopback occured! in routeoutput";
+      return route; // LoopbackRoute (header,oif);
+    }
 
   if (m_socketAddresses.empty ())
     {
-	  sockerr = Socket::ERROR_NOROUTETOHOST;
-	  NS_LOG_LOGIC ("No zeal interfaces");
-	  std::cout << "RouteOutput No zeal interfaces!!, packet drop\n";
+      sockerr = Socket::ERROR_NOROUTETOHOST;
+      NS_LOG_LOGIC ("No zeal interfaces");
+      std::cout << "RouteOutput No zeal interfaces!!, packet drop\n";
 
-	  Ptr<Ipv4Route> route;
-	  return route;
+      Ptr<Ipv4Route> route;
+      return route;
     }
 
-
-
-
-
-  
   return route;
 }
-
-
 
 bool
 RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
                              Ptr<const NetDevice> idev, UnicastForwardCallback ucb,
-                             MulticastForwardCallback mcb, LocalDeliverCallback lcb, ErrorCallback ecb)
+                             MulticastForwardCallback mcb, LocalDeliverCallback lcb,
+                             ErrorCallback ecb)
 {
- 
-  std::cout<<"Route Input Node: "<<m_ipv4->GetObject<Node> ()->GetId ()<<"\n";
+
+  std::cout << "Route Input Node: " << m_ipv4->GetObject<Node> ()->GetId () << "\n";
   return true;
 }
-
-
 
 void
 RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
@@ -159,10 +145,9 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 void
 RoutingProtocol::NotifyInterfaceUp (uint32_t i)
 {
-  NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal ()
-                        << " interface is up");
+  NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal () << " interface is up");
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-  Ipv4InterfaceAddress iface = l3->GetAddress (i,0);
+  Ipv4InterfaceAddress iface = l3->GetAddress (i, 0);
   if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
     {
       return;
@@ -170,19 +155,17 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   // Create a socket to listen only on this interface
   Ptr<Socket> socket;
 
-  socket = Socket::CreateSocket (GetObject<Node> (),UdpSocketFactory::GetTypeId ());
+  socket = Socket::CreateSocket (GetObject<Node> (), UdpSocketFactory::GetTypeId ());
   NS_ASSERT (socket != 0);
-  socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvSample,this));
+  socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvSample, this));
   socket->BindToNetDevice (l3->GetNetDevice (i));
   socket->Bind (InetSocketAddress (iface.GetLocal (), SAMPLE_PORT));
   socket->SetAllowBroadcast (true);
   socket->SetIpRecvTtl (true);
-  m_socketAddresses.insert (std::make_pair (socket,iface));
+  m_socketAddresses.insert (std::make_pair (socket, iface));
 
-
-    // create also a subnet broadcast socket
-  socket = Socket::CreateSocket (GetObject<Node> (),
-                                 UdpSocketFactory::GetTypeId ());
+  // create also a subnet broadcast socket
+  socket = Socket::CreateSocket (GetObject<Node> (), UdpSocketFactory::GetTypeId ());
   NS_ASSERT (socket != 0);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvSample, this));
   socket->BindToNetDevice (l3->GetNetDevice (i));
@@ -191,7 +174,6 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   socket->SetIpRecvTtl (true);
   m_socketSubnetBroadcastAddresses.insert (std::make_pair (socket, iface));
 
-
   if (m_mainAddress == Ipv4Address ())
     {
       m_mainAddress = iface.GetLocal ();
@@ -199,8 +181,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
 
   NS_ASSERT (m_mainAddress != Ipv4Address ());
 
-
-/*  for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
+  /*  for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
         {
 
           // Use primary address, if multiple
@@ -230,67 +211,69 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
            
         }
 */
-
 }
 
 void
 RoutingProtocol::NotifyInterfaceDown (uint32_t i)
 {
-  
 }
 
 void
 RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address)
 {
- 
 }
 
 void
 RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
 {
- 
 }
-
-
 
 void
 RoutingProtocol::DoInitialize (void)
 {
 
-  int8_t id =m_ipv4->GetObject<Node> ()->GetId ();
-  if(id == 0)   //if Node ID = 0
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  if (id == 0) //if Node ID = 0
     {
-      std::cout<<"broadcast will be send\n";
-      SendXBroadcast();
-      //Simulator::Schedule(Seconds(2), &RoutingProtocol::SendXBroadcast, this);
-    } 
-
+      std::cout << "broadcast will be send\n";
+      //SendXBroadcast();
+      Simulator::Schedule (Seconds (11), &RoutingProtocol::SendXBroadcast, this);
+      Simulator::Schedule (Seconds (140), &RoutingProtocol::SendXBroadcast, this);
+      Simulator::Schedule (Seconds (141), &RoutingProtocol::SendXBroadcast, this);
+      Simulator::Schedule (Seconds (142), &RoutingProtocol::SendXBroadcast, this);
+      Simulator::Schedule (Seconds (143), &RoutingProtocol::SendXBroadcast, this);
+      Simulator::Schedule (Seconds (145), &RoutingProtocol::SendXBroadcast, this);
+      Simulator::Schedule (Seconds (146), &RoutingProtocol::SendXBroadcast, this);
+    }
 }
 
 void
 RoutingProtocol::RecvSample (Ptr<Socket> socket)
 {
-  std::cout<<"In recv Sample(Node "<< m_ipv4->GetObject<Node> ()->GetId ()<<")\n";
+  std::cout << "In recv Sample(Node " << m_ipv4->GetObject<Node> ()->GetId () << ")\n";
+  // Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  // Vector mypos = mobility->GetPosition ();
+  // std::cout << "x " << mypos.x << "y " << mypos.y << "\n";
 }
-
 
 void
 RoutingProtocol::SendXBroadcast (void)
 {
- for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin (); j
-       != m_socketAddresses.end (); ++j)
+  for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
+       j != m_socketAddresses.end (); ++j)
     {
 
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      RrepHeader rrepHeader(0,3,Ipv4Address("10.1.1.15"),5,Ipv4Address("10.1.1.13"),Seconds(3));
+      RrepHeader rrepHeader (0, 3, Ipv4Address ("10.1.1.15"), 5, Ipv4Address ("10.1.1.13"),
+                             Seconds (3));
       packet->AddHeader (rrepHeader);
-      
+
       TypeHeader tHeader (SAMPLETYPE_RREP);
       packet->AddHeader (tHeader);
-       
+
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
       Ipv4Address destination;
       if (iface.GetMask () == Ipv4Mask::GetOnes ())
@@ -302,13 +285,9 @@ RoutingProtocol::SendXBroadcast (void)
           destination = iface.GetBroadcast ();
         }
       socket->SendTo (packet, 0, InetSocketAddress (destination, SAMPLE_PORT));
-      std::cout<<"broadcast sent\n"; 
-        
-     }
+      std::cout << "broadcast sent\n";
+    }
 }
-
-
-
 
 } //namespace sample
 } //namespace ns3
