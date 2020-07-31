@@ -88,6 +88,9 @@ public:
   Ptr<Node> mn7;
   Ptr<Node> mn8;
   Ptr<Node> mn9;
+  Ptr<Node> mn10;
+  Ptr<Node> mn11;
+  Ptr<Node> mn12;
 
   uint32_t totalReceived;
   uint32_t totalSent;
@@ -211,6 +214,9 @@ NetSim::CreateNetworkTopology ()
   mn7 = CreateObject<Node> (); // create 1 mobile node
   mn8 = CreateObject<Node> (); // create 1 mobile node
   mn9 = CreateObject<Node> (); // create 1 mobile node
+  mn10 = CreateObject<Node> (); // create 1 mobile node
+  mn11 = CreateObject<Node> (); // create 1 mobile node
+  mn12 = CreateObject<Node> (); // create 1 mobile node
 
   allNodes.Add (wlanNodes);
   allNodes.Add (mn);
@@ -222,6 +228,9 @@ NetSim::CreateNetworkTopology ()
   allNodes.Add (mn7);
   allNodes.Add (mn8);
   allNodes.Add (mn9);
+  allNodes.Add (mn10);
+  allNodes.Add (mn11);
+  allNodes.Add (mn12);
 }
 
 void
@@ -298,6 +307,30 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   Waypoint wpt_stop2 (Seconds (SIM_STOP - 10), Vector (100.0, 10 * SIM_STOP + 100, 0.0));
   m_mob2->AddWaypoint (wpt_stop2);
 
+  Ptr<WaypointMobilityModel> m_mob10;
+  m_mob10 = CreateObject<WaypointMobilityModel> ();
+  mn10->AggregateObject (m_mob10);
+  Waypoint wpt_start10 (Seconds (5.0), Vector (120.0, 100.0, 0.0));
+  m_mob10->AddWaypoint (wpt_start10);
+  Waypoint wpt_stop10 (Seconds (SIM_STOP - 10), Vector (120.0, 10 * SIM_STOP + 100, 0.0));
+  m_mob10->AddWaypoint (wpt_stop10);
+
+  Ptr<WaypointMobilityModel> m_mob11;
+  m_mob11 = CreateObject<WaypointMobilityModel> ();
+  mn11->AggregateObject (m_mob11);
+  Waypoint wpt_start11 (Seconds (5.0), Vector (160.0, 100.0, 0.0));
+  m_mob11->AddWaypoint (wpt_start11);
+  Waypoint wpt_stop11 (Seconds (SIM_STOP - 10), Vector (160.0, 10 * SIM_STOP + 100, 0.0));
+  m_mob11->AddWaypoint (wpt_stop11);
+
+  Ptr<WaypointMobilityModel> m_mob12;
+  m_mob12 = CreateObject<WaypointMobilityModel> ();
+  mn12->AggregateObject (m_mob12);
+  Waypoint wpt_start12 (Seconds (5.0), Vector (140.0, 100.0, 0.0));
+  m_mob12->AddWaypoint (wpt_start2);
+  Waypoint wpt_stop12 (Seconds (SIM_STOP - 10), Vector (140.0, 10 * SIM_STOP + 100, 0.0));
+  m_mob12->AddWaypoint (wpt_stop12);
+
   Ptr<WaypointMobilityModel> m_mob3;
   m_mob3 = CreateObject<WaypointMobilityModel> ();
   mn3->AggregateObject (m_mob3);
@@ -353,10 +386,10 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   m_mob9->AddWaypoint (wpt_start9);
   Waypoint wpt_stop9 (Seconds (SIM_STOP - 20), Vector (100.0, 10 * SIM_STOP + 600, 0.0));
   m_mob9->AddWaypoint (wpt_stop9);
-  Waypoint wpt_start10 (Seconds (SIM_STOP - 10), Vector (100.0, 1600, 0.0));
-  m_mob9->AddWaypoint (wpt_start10);
-  Waypoint wpt_stop10 (Seconds (SIM_STOP - 8), Vector (100.0, 1800, 0.0));
-  m_mob9->AddWaypoint (wpt_stop10);
+  Waypoint wpt_start100 (Seconds (SIM_STOP - 10), Vector (100.0, 1600, 0.0));
+  m_mob9->AddWaypoint (wpt_start100);
+  Waypoint wpt_stop100 (Seconds (SIM_STOP - 8), Vector (100.0, 1800, 0.0));
+  m_mob9->AddWaypoint (wpt_stop100);
 }
 
 void
@@ -364,14 +397,14 @@ NetSim::ConfigureNetworkLayer ()
 {
   //ShutoHelper shutoProtocol;
   //SenkoHelper senkoProtocol;
-  SampleHelper sampleProtocol;
-  //LsgoHelper lsgoProtocol;
+  //SampleHelper sampleProtocol;
+  LsgoHelper lsgoProtocol;
 
   Ipv4ListRoutingHelper listrouting;
   //listrouting.Add(shutoProtocol, 10);
   //listrouting.Add(senkoProtocol, 10);
-  listrouting.Add (sampleProtocol, 10);
-  //listrouting.Add (lsgoProtocol, 10);
+  //listrouting.Add (sampleProtocol, 10);
+  listrouting.Add (lsgoProtocol, 10);
 
   InternetStackHelper internet;
   internet.SetRoutingHelper (listrouting);
@@ -428,7 +461,7 @@ main (int argc, char *argv[])
 {
   NetSim sim;
 
-  std::string animFile = "mobiiltytest"; //netanim
+  std::string animFile = "shutomobiiltytest"; //netanim
 
   std::string phyMode ("DsssRate1Mbps"); //?
   bool verbose = false;
@@ -476,7 +509,7 @@ main (int argc, char *argv[])
   Simulator::Stop (Seconds (SIM_STOP));
   AnimationInterface anim (animFile);
 
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 13; i++)
     {
       anim.UpdateNodeSize (i, 10, 1);
     }

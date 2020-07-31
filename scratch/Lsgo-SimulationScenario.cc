@@ -2203,8 +2203,8 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
                                       DoubleValue (6.0), "ReferenceDistance",
-                                      //DoubleValue (35.0), ///伝搬距離１メートル
-                                      DoubleValue (85.0), ///伝搬距離１メートル
+                                      DoubleValue (35.0), ///伝搬距離１メートル
+                                      //DoubleValue (150.0), ///伝搬距離１メートル
                                       "ReferenceLoss", DoubleValue (46.6777));
 
       std::cout << "obstacle debug  -------------------------------------------------------set "
@@ -2373,7 +2373,7 @@ VanetRoutingExperiment::SetupScenario ()
       //std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";//デフォルトのbuildingモデル
 
       std::string bldgFile =
-          "./src/wave/examples/LSGO_Grid/test.add.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
+          "./src/wave/examples/LSGO_Grid/test.poly.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
 
       std::cout << "building ファイルを入力しましたそのファイルは " << bldgFile << "\n";
 

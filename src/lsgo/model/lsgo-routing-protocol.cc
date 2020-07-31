@@ -236,12 +236,12 @@ RoutingProtocol::DoInitialize (void)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   //int32_t time = Simulator::Now ().GetMicroSeconds ();
-  m_trans[id] = 1;
+  //m_trans[id] = 1;
 
   for (int i = 1; i < SimTime; i++)
     {
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
-      //Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
     }
   // for (int i = 1; i < SimTime; i++)
   //   {
@@ -258,75 +258,76 @@ RoutingProtocol::DoInitialize (void)
     }
 
   //sourse node**********************source node は優先度0 hopcount = 1*************************
-  // m_start_time[9] = 15000000; //15second
-  // if (id == 1)
-  //   Simulator::Schedule (Seconds (15), &RoutingProtocol::SendLsgoBroadcast, this, 0, 9, 100, 750,
+  m_start_time[9] = 15000000; //15second
+  if (id == 1)
+    Simulator::Schedule (Seconds (15), &RoutingProtocol::SendLsgoBroadcast, this, 0, 9, 100, 750,
+                         1);
+
+  //--------------------------LSGO Grid　用---------------------------------------//
+  // m_start_time[246] = 140000000; //140second key = destination
+  // if (id == 222)
+  //   Simulator::Schedule (Seconds (140), &RoutingProtocol::SendLsgoBroadcast, this, 0, 246, 1156,
+  //                        301, 1);
+
+  // m_start_time[312] = 145000000; //50second
+  // if (id == 360)
+  //   Simulator::Schedule (Seconds (145), &RoutingProtocol::SendLsgoBroadcast, this, 0, 312, 2073,
+  //                        901, 1);
+
+  // m_start_time[377] = 150000000; //50second
+  // if (id == 402)
+  //   Simulator::Schedule (Seconds (150), &RoutingProtocol::SendLsgoBroadcast, this, 0, 377, 422,
+  //                        1498, 1);
+
+  // m_start_time[473] = 155000000; //50second
+  // if (id == 484)
+  //   Simulator::Schedule (Seconds (155), &RoutingProtocol::SendLsgoBroadcast, this, 0, 473, 601,
+  //                        2009, 1);
+
+  // m_start_time[488] = 16000000; //50second
+  // if (id == 471)
+  //   Simulator::Schedule (Seconds (160), &RoutingProtocol::SendLsgoBroadcast, this, 0, 488, 2101,
+  //                        576, 1);
+
+  // m_start_time[139] = 165000000; //50second
+  // if (id == 172)
+  //   Simulator::Schedule (Seconds (165), &RoutingProtocol::SendLsgoBroadcast, this, 0, 139, 1208,
+  //                        2101, 1);
+
+  // m_start_time[395] = 170000000; //50second
+  // if (id == 40)
+  //   Simulator::Schedule (Seconds (170), &RoutingProtocol::SendLsgoBroadcast, this, 0, 395, 898,
+  //                        1589, 1);
+
+  // m_start_time[558] = 175000000; //50second
+  // if (id == 58)
+  //   Simulator::Schedule (Seconds (175), &RoutingProtocol::SendLsgoBroadcast, this, 0, 558, 1371,
+  //                        1201, 1);
+
+  // m_start_time[633] = 180000000; //50second
+  // if (id == 64)
+  //   Simulator::Schedule (Seconds (180), &RoutingProtocol::SendLsgoBroadcast, this, 0, 633, 601, 293,
   //                        1);
 
-  m_start_time[246] = 140000000; //140second key = destination
-  if (id == 222)
-    Simulator::Schedule (Seconds (140), &RoutingProtocol::SendLsgoBroadcast, this, 0, 246, 1156,
-                         301, 1);
+  // m_start_time[223] = 185000000; //50second
+  // if (id == 407)
+  //   Simulator::Schedule (Seconds (180), &RoutingProtocol::SendLsgoBroadcast, this, 0, 223, 3147,
+  //                        1832, 1);
 
-  m_start_time[312] = 145000000; //50second
-  if (id == 360)
-    Simulator::Schedule (Seconds (145), &RoutingProtocol::SendLsgoBroadcast, this, 0, 312, 2073,
-                         901, 1);
+  // m_start_time[846] = 185000000; //50second
+  // if (id == 840)
+  //   Simulator::Schedule (Seconds (185), &RoutingProtocol::SendLsgoBroadcast, this, 0, 846, 601, 759,
+  //                        1);
 
-  m_start_time[377] = 150000000; //50second
-  if (id == 402)
-    Simulator::Schedule (Seconds (150), &RoutingProtocol::SendLsgoBroadcast, this, 0, 377, 422,
-                         1498, 1);
+  // m_start_time[640] = 190000000; //50second
+  // if (id == 644)
+  //   Simulator::Schedule (Seconds (190), &RoutingProtocol::SendLsgoBroadcast, this, 0, 640, 1501,
+  //                        338, 1);
 
-  m_start_time[473] = 155000000; //50second
-  if (id == 484)
-    Simulator::Schedule (Seconds (155), &RoutingProtocol::SendLsgoBroadcast, this, 0, 473, 601,
-                         2009, 1);
-
-  m_start_time[488] = 16000000; //50second
-  if (id == 471)
-    Simulator::Schedule (Seconds (160), &RoutingProtocol::SendLsgoBroadcast, this, 0, 488, 2101,
-                         576, 1);
-
-  m_start_time[139] = 165000000; //50second
-  if (id == 172)
-    Simulator::Schedule (Seconds (165), &RoutingProtocol::SendLsgoBroadcast, this, 0, 139, 1208,
-                         2101, 1);
-
-  m_start_time[395] = 170000000; //50second
-  if (id == 40)
-    Simulator::Schedule (Seconds (170), &RoutingProtocol::SendLsgoBroadcast, this, 0, 395, 898,
-                         1589, 1);
-
-  m_start_time[558] = 175000000; //50second
-  if (id == 58)
-    Simulator::Schedule (Seconds (175), &RoutingProtocol::SendLsgoBroadcast, this, 0, 558, 1371,
-                         1201, 1);
-
-  m_start_time[633] = 180000000; //50second
-  if (id == 64)
-    Simulator::Schedule (Seconds (180), &RoutingProtocol::SendLsgoBroadcast, this, 0, 633, 601, 293,
-                         1);
-
-  m_start_time[223] = 185000000; //50second
-  if (id == 407)
-    Simulator::Schedule (Seconds (180), &RoutingProtocol::SendLsgoBroadcast, this, 0, 223, 3147,
-                         1832, 1);
-
-  m_start_time[846] = 185000000; //50second
-  if (id == 840)
-    Simulator::Schedule (Seconds (185), &RoutingProtocol::SendLsgoBroadcast, this, 0, 846, 601, 759,
-                         1);
-
-  m_start_time[640] = 190000000; //50second
-  if (id == 644)
-    Simulator::Schedule (Seconds (190), &RoutingProtocol::SendLsgoBroadcast, this, 0, 640, 1501,
-                         338, 1);
-
-  m_start_time[268] = 195000000; //50second
-  if (id == 243)
-    Simulator::Schedule (Seconds (195), &RoutingProtocol::SendLsgoBroadcast, this, 0, 268, 1501,
-                         926, 1);
+  // m_start_time[268] = 195000000; //50second
+  // if (id == 243)
+  //   Simulator::Schedule (Seconds (195), &RoutingProtocol::SendLsgoBroadcast, this, 0, 268, 1501,
+  //                        926, 1);
 }
 
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
@@ -412,8 +413,8 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
         etx = 1;
       m_etx[itr->first] = etx;
 
-      //std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
-      //std::cout << "\n";
+      std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
+      std::cout << "\n";
     }
 }
 
@@ -426,8 +427,8 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
   int Distination_y = des_y;
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
-  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  //std::cout << "id" << id << "が持つ\n";
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  std::cout << "id" << id << "が持つ\n";
 
   for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
     { ////next                  目的地までの距離とETX値から優先度を示す値をマップに保存する
@@ -438,10 +439,10 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
         {
           continue;
         }
-      //std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
+      std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
 
       m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
-      //std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
+      std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
     }
 }
 

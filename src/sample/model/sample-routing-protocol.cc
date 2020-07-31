@@ -235,9 +235,9 @@ RoutingProtocol::DoInitialize (void)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   if (id == 0) //if Node ID = 0
     {
-      std::cout << "broadcast will be send\n";
+      //std::cout << "broadcast will be send\n";
       //SendXBroadcast();
-      Simulator::Schedule (Seconds (11), &RoutingProtocol::SendXBroadcast, this);
+      Simulator::Schedule (Seconds (15), &RoutingProtocol::SendXBroadcast, this);
       Simulator::Schedule (Seconds (140), &RoutingProtocol::SendXBroadcast, this);
       Simulator::Schedule (Seconds (141), &RoutingProtocol::SendXBroadcast, this);
       Simulator::Schedule (Seconds (142), &RoutingProtocol::SendXBroadcast, this);
@@ -262,6 +262,9 @@ RoutingProtocol::SendXBroadcast (void)
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
        j != m_socketAddresses.end (); ++j)
     {
+      int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+      std::cout << "id" << id << "broadcast"
+                << "\n";
 
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;

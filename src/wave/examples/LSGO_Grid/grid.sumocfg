@@ -6,7 +6,7 @@
     <input>
         <net-file value="grid.net.xml"/>
         <route-files value="grid.rou.xml"/>
-	<additional-files value="test.add.xml"/>
+	<additional-files value="test.poly.xml"/>
     </input>
 
     <report>

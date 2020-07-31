@@ -39,14 +39,14 @@ ObstacleShadowingPropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ObstacleShadowingPropagationLossModel")
 
-  .SetParent<PropagationLossModel> ()
-  .AddConstructor<ObstacleShadowingPropagationLossModel> ();
+                          .SetParent<PropagationLossModel> ()
+                          .AddConstructor<ObstacleShadowingPropagationLossModel> ();
 
   return tid;
 }
 
 ObstacleShadowingPropagationLossModel::ObstacleShadowingPropagationLossModel ()
-  : PropagationLossModel ()
+    : PropagationLossModel ()
 {
 }
 
@@ -64,10 +64,10 @@ ObstacleShadowingPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobili
   double L_obs = 0.0;
 
   // get the topology instance, to search for obstacles
-  Topology * topology = Topology::GetTopology();
-  NS_ASSERT(topology != 0);
+  Topology *topology = Topology::GetTopology ();
+  NS_ASSERT (topology != 0);
 
-  if (topology->HasObstacles() == true)
+  if (topology->HasObstacles () == true)
     {
       // additional loss for obstacles
       double p1_x = a->GetPosition ().x;
@@ -75,36 +75,37 @@ ObstacleShadowingPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobili
       double p2_x = b->GetPosition ().x;
       double p2_y = b->GetPosition ().y;
       // for two points, p1 and p2
-      Point p1(p1_x, p1_y);
-      Point p2(p2_x, p2_y);
+      Point p1 (p1_x, p1_y);
+      Point p2 (p2_x, p2_y);
       // and testing for obstacles within r=200m
       double r = 200.0;
 
       // get the obstructed loss, from the topology class
-      L_obs = topology->GetObstructedLossBetween(p1, p2, r);
+      L_obs = topology->GetObstructedLossBetween (p1, p2, r);
       // std::cout<<"p1_x"<<p1_x<<"\n";
       // std::cout<<"p1_y"<<p1_y<<"\n";
       // std::cout<<"p2_x"<<p2_x<<"\n";
       // std::cout<<"p2_y"<<p2_y<<"\n";
-
     }
-    // std::cout<<"L_obs の値は"<<L_obs<<"\n";
-    // std::cout<<"L_obs"<<L_obs<<"\n";
+  // std::cout<<"L_obs の値は"<<L_obs<<"\n";
+  // std::cout<<"L_obs"<<L_obs<<"\n";
 
   return L_obs;
 }
 
-double 
-ObstacleShadowingPropagationLossModel::DoCalcRxPower (double txPowerDbm,
-						Ptr<MobilityModel> a,
-						Ptr<MobilityModel> b) const
+double
+ObstacleShadowingPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a,
+                                                      Ptr<MobilityModel> b) const
 {
   double retVal = 0.0;
   double loss = GetLoss (a, b);
   retVal = txPowerDbm - loss;
   // std::cout<<"txPowerDbm"<<txPowerDbm<<"\n";
   // std::cout<<"-----"<<"\n";
-  // std::cout<<"loss"<<loss<<"\n";
+
+  // if (loss != 0)
+  //   std::cout << "loss" << loss << "\n";
+
   // std::cout<<"==";
   // std::cout<<"retVal"<<"\n";
   return (retVal);
