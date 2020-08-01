@@ -38,7 +38,7 @@
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
-#define InterPoint 0.1 //交差点ノードの与えるポイントの重み付け
+#define InterPoint 0.6 //交差点ノードの与えるポイントの重み付け
 namespace ns3 {
 namespace shutoushu {
 /**
@@ -58,7 +58,7 @@ public:
   static const uint32_t SHUTOUSHU_PORT;
 
   //自作グローバル変数
-  static std::map<int, int> broadcount; //key 0 value ブロードキャスト数
+  static std::map<int, int> broadcount; //key destination id value ブロードキャスト数
   static std::map<int, int> m_start_time; //key destination_id value　送信時間
   static std::map<int, int> m_finish_time; //key destination_id value 受信時間
   static std::map<int, double> m_my_posx; // key node id value position x
