@@ -29,6 +29,7 @@
 #include "ns3/senko-module.h"
 #include "ns3/sample-module.h"
 #include "ns3/lsgo-module.h"
+#include "ns3/shutoushu-module.h"
 #include "ns3/exor-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/netanim-module.h"
@@ -310,25 +311,25 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   Ptr<WaypointMobilityModel> m_mob10;
   m_mob10 = CreateObject<WaypointMobilityModel> ();
   mn10->AggregateObject (m_mob10);
-  Waypoint wpt_start10 (Seconds (5.0), Vector (120.0, 100.0, 0.0));
+  Waypoint wpt_start10 (Seconds (5.0), Vector (0.0, 100.0, 0.0));
   m_mob10->AddWaypoint (wpt_start10);
-  Waypoint wpt_stop10 (Seconds (SIM_STOP - 10), Vector (120.0, 10 * SIM_STOP + 100, 0.0));
+  Waypoint wpt_stop10 (Seconds (SIM_STOP - 10), Vector (0.0, 10 * SIM_STOP + 100, 0.0));
   m_mob10->AddWaypoint (wpt_stop10);
 
   Ptr<WaypointMobilityModel> m_mob11;
   m_mob11 = CreateObject<WaypointMobilityModel> ();
   mn11->AggregateObject (m_mob11);
-  Waypoint wpt_start11 (Seconds (5.0), Vector (160.0, 100.0, 0.0));
+  Waypoint wpt_start11 (Seconds (5.0), Vector (0.0, 100.0, 0.0));
   m_mob11->AddWaypoint (wpt_start11);
-  Waypoint wpt_stop11 (Seconds (SIM_STOP - 10), Vector (160.0, 10 * SIM_STOP + 100, 0.0));
+  Waypoint wpt_stop11 (Seconds (SIM_STOP - 10), Vector (0.0, 10 * SIM_STOP + 100, 0.0));
   m_mob11->AddWaypoint (wpt_stop11);
 
   Ptr<WaypointMobilityModel> m_mob12;
   m_mob12 = CreateObject<WaypointMobilityModel> ();
   mn12->AggregateObject (m_mob12);
-  Waypoint wpt_start12 (Seconds (5.0), Vector (140.0, 100.0, 0.0));
+  Waypoint wpt_start12 (Seconds (5.0), Vector (0.0, 100.0, 0.0));
   m_mob12->AddWaypoint (wpt_start2);
-  Waypoint wpt_stop12 (Seconds (SIM_STOP - 10), Vector (140.0, 10 * SIM_STOP + 100, 0.0));
+  Waypoint wpt_stop12 (Seconds (SIM_STOP - 10), Vector (0.0, 10 * SIM_STOP + 100, 0.0));
   m_mob12->AddWaypoint (wpt_stop12);
 
   Ptr<WaypointMobilityModel> m_mob3;
@@ -398,13 +399,15 @@ NetSim::ConfigureNetworkLayer ()
   //ShutoHelper shutoProtocol;
   //SenkoHelper senkoProtocol;
   //SampleHelper sampleProtocol;
-  LsgoHelper lsgoProtocol;
+  //LsgoHelper lsgoProtocol;
+  ShutoushuHelper shutoushuProtocol;
 
   Ipv4ListRoutingHelper listrouting;
   //listrouting.Add(shutoProtocol, 10);
   //listrouting.Add(senkoProtocol, 10);
   //listrouting.Add (sampleProtocol, 10);
-  listrouting.Add (lsgoProtocol, 10);
+  //listrouting.Add (lsgoProtocol, 10);
+  listrouting.Add (shutoushuProtocol, 10);
 
   InternetStackHelper internet;
   internet.SetRoutingHelper (listrouting);
