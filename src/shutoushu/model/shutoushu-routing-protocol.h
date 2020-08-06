@@ -38,7 +38,8 @@
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
-#define InterPoint 0.6 //交差点ノードの与えるポイントの重み付け
+#define InterPoint 0 //交差点ノードの与えるポイントの重み付け
+#define NodeNum 200
 namespace ns3 {
 namespace shutoushu {
 /**
@@ -65,8 +66,8 @@ public:
   static std::map<int, double> m_my_posy; // key node id value position y
   static std::map<int, int> m_trans; //key node id 初期値０　＝　通信不可　VALUE＝１　通信可
   static std::map<int, int> m_stop_count; //key node id value 止まっている時間の蓄積
-  static std::vector<int> intersection_x; //key 0~intersection数 交差点のx座標
-  static std::vector<int> intersection_y; //key 0~intersection数 交差点のy座標
+  static std::map<int, int> m_node_start_time; //key id value nodeの発車時刻（秒）
+  static std::map<int, int> m_node_finish_time; //key id value nodeの到着時刻（秒）
 
   /// constructor
   RoutingProtocol ();
@@ -86,20 +87,6 @@ public:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
-  void
-  SetPushBack ()
-  {
-    for (int i = 0; i < NumInter; i++)
-      {
-        intersection_x.push_back (0);
-        intersection_y.push_back (0);
-      }
-  }
-
-  void
-  SetInterSection ()
-  {
-  }
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
@@ -137,6 +124,9 @@ private:
   void SetPriValueMap (int32_t des_x, int32_t des_y); //優先度を決める値を格納する　関数
 
   void SetMyPos (void); //自分の位置情報を１秒ずつ保存
+  void ReadFile (void); //mobility fileの読み取り
+  void Trans (void); //通信許可を与える関数
+  void NoTrans (void); //通信不許可を与える関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
