@@ -125,8 +125,8 @@ private:
 
   void SetMyPos (void); //自分の位置情報を１秒ずつ保存
   void ReadFile (void); //mobility fileの読み取り
-  void Trans (void); //通信許可を与える関数
-  void NoTrans (void); //通信不許可を与える関数
+  void Trans (int node_id); //通信許可を与える関数
+  void NoTrans (int node_id); //通信不許可を与える関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition

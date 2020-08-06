@@ -247,6 +247,11 @@ RoutingProtocol::DoInitialize (void)
   if (id == 0)
     {
       ReadFile ();
+      for (int i = 0; i < NodeNum; i++) //id分回す
+        {
+          Simulator::Schedule (Seconds (m_node_start_time[i]), &RoutingProtocol::Trans, this, i);
+          Simulator::Schedule (Seconds (m_node_finish_time[i]), &RoutingProtocol::NoTrans, this, i);
+        }
     }
 
   for (int i = 1; i < SimTime; i++)
@@ -941,50 +946,50 @@ RoutingProtocol::SetMyPos (void)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
-  if (m_my_posx[id] == 0 && m_my_posy[id] == 0)
-    {
-      m_my_posx[id] = mypos.x;
-      m_my_posy[id] = mypos.y;
-    }
-  else
-    {
-      double distance = 0; //1秒前の自分の位置との距離の差
-      distance = getDistance ((double) m_my_posx[id], (double) m_my_posy[id], (double) mypos.x,
-                              (double) mypos.y);
+  // if (m_my_posx[id] == 0 && m_my_posy[id] == 0)
+  //   {
+  //     m_my_posx[id] = mypos.x;
+  //     m_my_posy[id] = mypos.y;
+  //   }
+  // else
+  //   {
+  //     double distance = 0; //1秒前の自分の位置との距離の差
+  //     distance = getDistance ((double) m_my_posx[id], (double) m_my_posy[id], (double) mypos.x,
+  //                             (double) mypos.y);
 
-      if (m_trans[id] == 1)
-        {
-          //std::cout << "id " << id << "distance" << distance << "\n";
-          // if (m_stop_count[id] > StopTransTime)
-          //   {
-          //     m_trans[id] = 0; //通信不可能にする
-          //     std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
-          //               << "は通信不可能になりました\n";
-          //   }
+  //     if (m_trans[id] == 1)
+  //       {
+  //         //std::cout << "id " << id << "distance" << distance << "\n";
+  //         // if (m_stop_count[id] > StopTransTime)
+  //         //   {
+  //         //     m_trans[id] = 0; //通信不可能にする
+  //         //     std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
+  //         //               << "は通信不可能になりました\n";
+  //         //   }
 
-          // if (distance == 0)
-          //   {
-          //     m_stop_count[id]++; //静止してる時ストップタイムを加算
-          //     //std::cout << "id " << id << "静止しとる\n";
-          //   }
+  //         // if (distance == 0)
+  //         //   {
+  //         //     m_stop_count[id]++; //静止してる時ストップタイムを加算
+  //         //     //std::cout << "id " << id << "静止しとる\n";
+  //         //   }
 
-          // if (distance > 0)
-          //   m_stop_count[id] = 0; //初期値に戻す
-        }
-      else //m_transs[id] == 0
-        {
-          if (distance > 0)
-            {
-              m_trans[id] = 1; //動き出し通信可能に
-              m_stop_count[id] = 0;
-              std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
-                        << "は通信可能になりました\n";
-            }
-        }
+  //         // if (distance > 0)
+  //         //   m_stop_count[id] = 0; //初期値に戻す
+  //       }
+  //     else //m_transs[id] == 0
+  //       {
+  //         if (distance > 0)
+  //           {
+  //             m_trans[id] = 1; //動き出し通信可能に
+  //             m_stop_count[id] = 0;
+  //             std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
+  //                       << "は通信可能になりました\n";
+  //           }
+  //       }
 
-      m_my_posx[id] = mypos.x;
-      m_my_posy[id] = mypos.y;
-    }
+  m_my_posx[id] = mypos.x;
+  m_my_posy[id] = mypos.y;
+  // }
 }
 
 ///SUMO問題解決のためmobility.tclファイルを読み込み→ノードの発車時刻と到着時刻を知る
@@ -1052,13 +1057,19 @@ RoutingProtocol::ReadFile (void)
 }
 
 void
-RoutingProtocol::Trans (void)
+RoutingProtocol::Trans (int node_id)
 {
+  m_trans[node_id] = 1;
+  std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
+            << "が通信可能になりました\n";
 }
 
 void
-RoutingProtocol::NoTrans (void)
+RoutingProtocol::NoTrans (int node_id)
 {
+  m_trans[node_id] = 0;
+  std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
+            << "が通信不可能になりました\n";
 }
 // シミュレーション結果の出力関数
 void
