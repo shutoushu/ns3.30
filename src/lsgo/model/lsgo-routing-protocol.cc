@@ -38,6 +38,12 @@
 #include <algorithm>
 #include <limits>
 #include <math.h>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
 
 #include "ns3/mobility-module.h"
 
@@ -237,6 +243,15 @@ RoutingProtocol::DoInitialize (void)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   //int32_t time = Simulator::Now ().GetMicroSeconds ();
   //m_trans[id] = 1;
+  if (id == 0)
+    {
+      ReadFile ();
+      for (int i = 0; i < NodeNum; i++) //id分回す
+        {
+          Simulator::Schedule (Seconds (m_node_start_time[i]), &RoutingProtocol::Trans, this, i);
+          Simulator::Schedule (Seconds (m_node_finish_time[i]), &RoutingProtocol::NoTrans, this, i);
+        }
+    }
 
   for (int i = 1; i < SimTime; i++)
     {
@@ -413,8 +428,8 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
         etx = 1;
       m_etx[itr->first] = etx;
 
-      std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
-      std::cout << "\n";
+      // std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
+      // std::cout << "\n";
     }
 }
 
@@ -857,59 +872,96 @@ RoutingProtocol::getDistance (double x, double y, double x2, double y2)
 
   return (int) distance;
 }
-
 void
 RoutingProtocol::SetMyPos (void)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
-  if (m_my_posx[id] == 0 && m_my_posy[id] == 0)
+
+  m_my_posx[id] = mypos.x;
+  m_my_posy[id] = mypos.y;
+}
+
+///SUMO問題解決のためmobility.tclファイルを読み込み→ノードの発車時刻と到着時刻を知る
+void
+RoutingProtocol::ReadFile (void)
+{
+  std::vector<std::string> v;
+  std::ifstream ifs ("src/wave/examples/LSGO_Grid/mobility.tcl");
+  if (!ifs)
     {
-      m_my_posx[id] = mypos.x;
-      m_my_posy[id] = mypos.y;
+      std::cerr << "ファイルオープンに失敗" << std::endl;
+      std::exit (1);
     }
-  else
+
+  std::string tmp;
+  std::string str;
+  int time, node_id;
+  int row_count = 1; //何列目かを判断するカウンター　atが１列目 time が２列目 $nodeが３列め
+
+  // getline()で1行ずつ読み込む
+  while (getline (ifs, tmp, ' '))
     {
-      double distance = 0; //1秒前の自分の位置との距離の差
-      distance = getDistance ((double) m_my_posx[id], (double) m_my_posy[id], (double) mypos.x,
-                              (double) mypos.y);
-
-      if (m_trans[id] == 1)
+      //std::cout << "row_cout=" << row_count << "\n";
+      // ここでtmpを煮るなり焼くなりする
+      //std::cout << tmp << "\n"; // そのまま出力
+      if (tmp.find ("at") != std::string::npos)
         {
-          //std::cout << "id " << id << "distance" << distance << "\n";
-          // if (m_stop_count[id] > StopTransTime)
-          //   {
-          //     m_trans[id] = 0; //通信不可能にする
-          //     std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
-          //               << "は通信不可能になりました\n";
-          //   }
-
-          // if (distance == 0)
-          //   {
-          //     m_stop_count[id]++; //静止してる時ストップタイムを加算
-          //     //std::cout << "id " << id << "静止しとる\n";
-          //   }
-
-          // if (distance > 0)
-          //   m_stop_count[id] = 0; //初期値に戻す
+          //puts ("文字列atが見つかりました");
+          row_count = 1; //at は１列目
         }
-      else //m_transs[id] == 0
+      if (row_count == 2)
         {
-          if (distance > 0)
+          time = atoi (tmp.c_str ());
+          //std::cout << "time" << time << "\n";
+        }
+      if (row_count == 3)
+        {
+          tmp.replace (0, 1, "a"); //１番目の文字 " をaに変換
+          //std::cout << "node id string test " << tmp << "\n";
+          sscanf (tmp.c_str (), "a$node_(%d", &node_id); //文字列から数字だけをnode_idに代入
+          //printf ("nodeid = %d\n", node_id);
+          if (m_node_start_time[node_id] == 0)
             {
-              m_trans[id] = 1; //動き出し通信可能に
-              m_stop_count[id] = 0;
-              std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
-                        << "は通信可能になりました\n";
+              if (time > 0 && time < 1000)
+                {
+                  m_node_start_time[node_id] = time;
+                }
+            }
+          if (time != 0)
+            {
+              m_node_finish_time[node_id] = time; //常に更新させた最終更新時間が到着時間
             }
         }
 
-      m_my_posx[id] = mypos.x;
-      m_my_posy[id] = mypos.y;
+      row_count++;
     }
+
+  if (!ifs.eof ())
+    {
+      std::cerr << "読み込みに失敗" << std::endl;
+      std::exit (1);
+    }
+
+  std::cout << std::flush;
 }
 
+void
+RoutingProtocol::Trans (int node_id)
+{
+  m_trans[node_id] = 1;
+  std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
+            << "が通信可能になりました\n";
+}
+
+void
+RoutingProtocol::NoTrans (int node_id)
+{
+  m_trans[node_id] = 0;
+  std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
+            << "が通信不可能になりました\n";
+}
 // シミュレーション結果の出力関数
 void
 RoutingProtocol::SimulationResult (void) //
@@ -974,6 +1026,8 @@ std::map<int, double> RoutingProtocol::m_my_posx; // key node id value position 
 std::map<int, double> RoutingProtocol::m_my_posy; // key node id value position y
 std::map<int, int> RoutingProtocol::m_trans; //key node id value　通信可能かどうか1or0
 std::map<int, int> RoutingProtocol::m_stop_count; //key node id value 止まっている時間カウント
+std::map<int, int> RoutingProtocol::m_node_start_time; //key node id value 止まっている時間カウント
+std::map<int, int> RoutingProtocol::m_node_finish_time; //key node id value 止まっている時間カウント
 
 } // namespace lsgo
 } // namespace ns3

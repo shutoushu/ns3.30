@@ -38,8 +38,8 @@
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
-#define InterPoint 0 //交差点ノードの与えるポイントの重み付け
-#define NodeNum 200
+#define InterPoint 0.01 //交差点ノードの与えるポイントの重み付け
+#define NodeNum 990
 namespace ns3 {
 namespace shutoushu {
 /**

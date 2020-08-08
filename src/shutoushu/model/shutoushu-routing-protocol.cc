@@ -946,50 +946,8 @@ RoutingProtocol::SetMyPos (void)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
-  // if (m_my_posx[id] == 0 && m_my_posy[id] == 0)
-  //   {
-  //     m_my_posx[id] = mypos.x;
-  //     m_my_posy[id] = mypos.y;
-  //   }
-  // else
-  //   {
-  //     double distance = 0; //1秒前の自分の位置との距離の差
-  //     distance = getDistance ((double) m_my_posx[id], (double) m_my_posy[id], (double) mypos.x,
-  //                             (double) mypos.y);
-
-  //     if (m_trans[id] == 1)
-  //       {
-  //         //std::cout << "id " << id << "distance" << distance << "\n";
-  //         // if (m_stop_count[id] > StopTransTime)
-  //         //   {
-  //         //     m_trans[id] = 0; //通信不可能にする
-  //         //     std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
-  //         //               << "は通信不可能になりました\n";
-  //         //   }
-
-  //         // if (distance == 0)
-  //         //   {
-  //         //     m_stop_count[id]++; //静止してる時ストップタイムを加算
-  //         //     //std::cout << "id " << id << "静止しとる\n";
-  //         //   }
-
-  //         // if (distance > 0)
-  //         //   m_stop_count[id] = 0; //初期値に戻す
-  //       }
-  //     else //m_transs[id] == 0
-  //       {
-  //         if (distance > 0)
-  //           {
-  //             m_trans[id] = 1; //動き出し通信可能に
-  //             m_stop_count[id] = 0;
-  //             std::cout << "id " << id << "time" << Simulator::Now ().GetMicroSeconds ()
-  //                       << "は通信可能になりました\n";
-  //           }
-  //       }
-
   m_my_posx[id] = mypos.x;
   m_my_posy[id] = mypos.y;
-  // }
 }
 
 ///SUMO問題解決のためmobility.tclファイルを読み込み→ノードの発車時刻と到着時刻を知る
@@ -1111,23 +1069,7 @@ RoutingProtocol::SimulationResult (void) //
       //     std::cout << "not found.\n";
       //   }
       //**************************************************************************************//
-      // for (int i = 0; i < 200; i++)
-      //   {
-      //     std::cout << "id" << i << "の発車時刻は" << m_node_start_time[i] << "\n";
-      //   }
 
-      // for (int i = 0; i < 200; i++)
-      //   {
-      //     std::cout << "id" << i << "の到着時刻は" << m_node_finish_time[i] << "\n";
-      //   }
-      // for (auto itr = m_start_time.begin (); itr != m_start_time.end (); itr++)
-      //   {
-      //     std::cout << "nodeid " << itr->first << "出発時間　" << m_start_time[itr->first] << "\n";
-      //   }
-      // for (auto itr = m_finish_time.begin (); itr != m_finish_time.end (); itr++)
-      //   {
-      //     std::cout << "nodeid " << itr->first << "到着時間　" << m_finish_time[itr->first] << "\n";
-      //   }
       std::cout << "\n\n\n結果出力----------------------------------\n\n";
       for (auto itr = broadcount.begin (); itr != broadcount.end (); itr++)
         {
