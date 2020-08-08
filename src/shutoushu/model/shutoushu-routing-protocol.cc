@@ -259,11 +259,6 @@ RoutingProtocol::DoInitialize (void)
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
     }
-  // for (int i = 1; i < SimTime; i++)
-  //   {
-  //     if (id == 3)
-  //       Simulator::Schedule (Seconds (i * 4), &RoutingProtocol::SendHelloPacket, this);
-  //   }
 
   //**結果出力******************************************//
   for (int i = 1; i < SimTime; i++)
@@ -274,86 +269,52 @@ RoutingProtocol::DoInitialize (void)
     }
 
   //sourse node**********************source node は優先度0 hopcount = 1*************************
-  // m_start_time[9] = 24000000; //15second
   // if (id == 1)
-  //   Simulator::Schedule (Seconds (24), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 9, 100,
-  //                        830, 1);
+  //   Simulator::Schedule (Seconds (15), &RoutingProtocol::Send, this, 9);
 
-  // m_start_time[8] = 26000000; //15second
-  // if (id == 1)
-  //   Simulator::Schedule (Seconds (26), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 8, 130,
-  //                        730, 1);
+  if (id == 222) //
+    Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 246); //
 
-  // m_start_time[7] = 28000000; //15second
-  // if (id == 1)
-  //   Simulator::Schedule (Seconds (28), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 7, 100,
-  //                        680, 1);
+  if (id == 360) //
+    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 312); //
 
-  //--------------------------SHUTOUSHU Grid　用---------------------------------------//
-  m_start_time[246] = 140000000; //140second key = destination
-  if (id == 222)
-    Simulator::Schedule (Seconds (140), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 246,
-                         1156, 301, 1);
+  if (id == 300) //
+    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 377); //
 
-  m_start_time[312] = 145000000; //50second
-  if (id == 360)
-    Simulator::Schedule (Seconds (145), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 312,
-                         2073, 901, 1);
+  if (id == 17) //
+    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 50); //
 
-  m_start_time[377] = 150000000; //50second
-  if (id == 402)
-    Simulator::Schedule (Seconds (150), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 377, 422,
-                         1498, 1);
+  if (id == 35)
+    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 371); //
 
-  m_start_time[473] = 155000000; //50second
-  if (id == 484)
-    Simulator::Schedule (Seconds (155), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 473, 601,
-                         2009, 1);
-
-  m_start_time[488] = 16000000; //50second
-  if (id == 471)
-    Simulator::Schedule (Seconds (160), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 488,
-                         2101, 576, 1);
-
-  m_start_time[139] = 165000000; //50second
   if (id == 172)
-    Simulator::Schedule (Seconds (165), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 139,
-                         1208, 2101, 1);
+    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 139); //
 
-  m_start_time[395] = 170000000; //50second
-  if (id == 40)
-    Simulator::Schedule (Seconds (170), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 395, 898,
-                         1589, 1);
+  if (id == 40) //
+    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 395); //
 
-  m_start_time[558] = 175000000; //50second
-  if (id == 58)
-    Simulator::Schedule (Seconds (175), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 558,
-                         1371, 1201, 1);
+  if (id == 58) //
+    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 8); //
 
-  m_start_time[633] = 180000000; //50second
-  if (id == 64)
-    Simulator::Schedule (Seconds (180), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 633, 601,
-                         293, 1);
+  if (id == 64) //
+    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 164); //
 
-  m_start_time[223] = 185000000; //50second
-  if (id == 407)
-    Simulator::Schedule (Seconds (180), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 223,
-                         3147, 1832, 1);
+  if (id == 407) //
+    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 223); //
 
-  m_start_time[846] = 185000000; //50second
-  if (id == 840)
-    Simulator::Schedule (Seconds (185), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 846, 601,
-                         759, 1);
+} // namespace shutoushu
 
-  m_start_time[640] = 190000000; //50second
-  if (id == 644)
-    Simulator::Schedule (Seconds (190), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 640,
-                         1501, 338, 1);
+void
+RoutingProtocol::Send (int des_id)
+{
+  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //int Seconds = Simulator::Now ().GetSeconds (); //現在の時間　秒
+  int MicroSeconds = Simulator::Now ().GetMicroSeconds ();
 
-  m_start_time[268] = 195000000; //50second
-  if (id == 243)
-    Simulator::Schedule (Seconds (195), &RoutingProtocol::SendShutoushuBroadcast, this, 0, 268,
-                         1501, 926, 1);
+  m_start_time[des_id] = MicroSeconds;
+  SendShutoushuBroadcast (0, des_id, m_my_posx[des_id], m_my_posy[des_id], 1);
+  //std::cout << "id = " << id << "destination id" << des_id << "の座標" << m_my_posx[des_id]
+  //<< m_my_posy[des_id] << "\n";
 }
 
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
@@ -474,8 +435,8 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
           for (int y = 0; y < 2200;)
             {
               //std::cout << "x" << x << "y" << y << "\n";
-              int DisInter =
-                  getDistance (x, y, m_xpoint[itr->first], m_ypoint[itr->first]); //交差点までの距離
+              int DisInter = getDistance (x, y, m_xpoint[itr->first],
+                                          m_ypoint[itr->first]); //交差点までの距離
               if (DisInter < 8)
                 {
                   std::cout << "候補ノードid" << itr->first << "は交差点にいます\n";
@@ -1018,16 +979,16 @@ void
 RoutingProtocol::Trans (int node_id)
 {
   m_trans[node_id] = 1;
-  std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
-            << "が通信可能になりました\n";
+  //std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
+  //<< "が通信可能になりました\n";
 }
 
 void
 RoutingProtocol::NoTrans (int node_id)
 {
   m_trans[node_id] = 0;
-  std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
-            << "が通信不可能になりました\n";
+  //std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
+  //<< "が通信不可能になりました\n";
 }
 // シミュレーション結果の出力関数
 void
@@ -1035,7 +996,7 @@ RoutingProtocol::SimulationResult (void) //
 {
   std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
   //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (Simulator::Now ().GetSeconds () == SimTime - 2)
+  if (Simulator::Now ().GetSeconds () == SimStartTime + 21)
     {
       // //*******************************ノードが持つ座標の確認ログ***************************//
       //std::cout << "id=" << id << "の\n";
@@ -1085,6 +1046,7 @@ RoutingProtocol::SimulationResult (void) //
       double packet_recv_rate = (double) m_finish_time.size () / (double) m_start_time.size ();
       std::cout << "本シミュレーションのパケット到達率は" << packet_recv_rate << "\n";
       std::cout << "交差点ノードにおける重み付けは" << InterPoint << "\n";
+      std::cout << "本シミュレーションのシミュレーション開始時刻は" << SimStartTime << "\n";
     }
 }
 

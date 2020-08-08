@@ -30,7 +30,6 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
-//#define NumNodes 455 //全ノード数
 #define SimTime 200 //シミュレーション時間 second
 #define WindowSize 10000000 //SHUTOUSHUのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
@@ -38,8 +37,10 @@
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
-#define InterPoint 0.01 //交差点ノードの与えるポイントの重み付け
+#define InterPoint 0.07 //交差点ノードの与えるポイントの重み付け
 #define NodeNum 990
+#define SimStartMicro 170000000 //broadcast 開始時刻micro秒
+#define SimStartTime 170 //broadcast 開始時刻　秒
 namespace ns3 {
 namespace shutoushu {
 /**
@@ -127,6 +128,7 @@ private:
   void ReadFile (void); //mobility fileの読み取り
   void Trans (int node_id); //通信許可を与える関数
   void NoTrans (int node_id); //通信不許可を与える関数
+  void Send (int des_id); //シミュレーションソースIDとDestinationIDを指定する関数
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
