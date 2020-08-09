@@ -269,38 +269,69 @@ RoutingProtocol::DoInitialize (void)
     }
 
   //sourse node**********************source node は優先度0 hopcount = 1*************************
-  // if (id == 1)
+  // if (id == 0)
   //   Simulator::Schedule (Seconds (15), &RoutingProtocol::Send, this, 9);
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // if (id == 222) //
+  //   Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 246); //
 
-  if (id == 222) //
-    Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 246); //
+  // if (id == 360) //
+  //   Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 312); //
 
-  if (id == 360) //
-    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 312); //
+  // if (id == 300) //
+  //   Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 377); //
 
-  if (id == 300) //
-    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 377); //
+  // if (id == 17) //
+  //   Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 50); //
 
-  if (id == 17) //
-    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 50); //
+  // if (id == 35)
+  //   Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 371); //
 
-  if (id == 35)
-    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 371); //
+  // if (id == 172)
+  //   Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 139); //
 
-  if (id == 172)
-    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 139); //
+  // if (id == 40) //
+  //   Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 395); //
 
-  if (id == 40) //
-    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 395); //
+  // if (id == 58) //
+  //   Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 8); //
 
-  if (id == 58) //
-    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 8); //
+  // if (id == 64) //
+  //   Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 164); //
 
-  if (id == 64) //
-    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 164); //
+  // if (id == 407) //
+  //   Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 223); //
+  //////////////////////////////////////////////////////////////////////////////////////////
+  //170秒以降
+  if (id == 489) //
+    Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 485); //
 
-  if (id == 407) //
-    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 223); //
+  if (id == 189) //
+    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 2); //
+
+  if (id == 36) //
+    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 356); //
+
+  if (id == 672) //
+    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 694); //
+
+  if (id == 189) //
+    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 192); //
+
+  if (id == 869) //
+    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 872); //
+
+  if (id == 147) //
+    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 155); //
+
+  if (id == 211) //
+    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 244); //
+
+  if (id == 704) //
+    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 738); //
+
+  if (id == 590) //
+    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 596); //
 
 } // namespace shutoushu
 
@@ -553,8 +584,8 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
     {
       int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
 
-      if (m_trans[send_node_id] == 0) //通信許可がないノードならbreakする
-        {
+      if (m_trans[send_node_id] == 0 && pri_value != 0) //通信許可がないノードならbreakする
+        { //pri_value = 0 すなわち　source nodeのときはそのままbroadcast許可する
           std::cout << "通信許可が得られていないノードが　sendshutoushu broadcast id"
                     << send_node_id << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
 
@@ -759,8 +790,6 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
         break; //breakがないとエラー起きる
       }
       case SHUTOUSHUTYPE_SEND: {
-        if (m_trans[id] == 0)
-          break;
 
         //std::cout << "\n\n--------------------------------------------------------\n";
         //std::cout << "recv id" << id << "time------------------------------------------"
@@ -773,11 +802,6 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
         int32_t des_x = sendheader.GetPosX ();
         int32_t des_y = sendheader.GetPosY ();
         int32_t hopcount = sendheader.GetHopcount ();
-        // int32_t pri1_id = sendheader.GetId1 ();
-        // int32_t pri2_id = sendheader.GetId2 ();
-        // int32_t pri3_id = sendheader.GetId3 ();
-        // int32_t pri4_id = sendheader.GetId4 ();
-        // int32_t pri5_id = sendheader.GetId5 ();
 
         if (des_id == id) //宛先が自分だったら
           {
@@ -787,6 +811,14 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
               m_finish_time[des_id] = Simulator::Now ().GetMicroSeconds ();
             break;
           }
+
+        if (m_trans[id] == 0)
+          break;
+        // int32_t pri1_id = sendheader.GetId1 ();
+        // int32_t pri2_id = sendheader.GetId2 ();
+        // int32_t pri3_id = sendheader.GetId3 ();
+        // int32_t pri4_id = sendheader.GetId4 ();
+        // int32_t pri5_id = sendheader.GetId5 ();
 
         int32_t pri_id[] = {sendheader.GetId1 (), sendheader.GetId2 (), sendheader.GetId3 (),
                             sendheader.GetId4 (), sendheader.GetId5 ()};
