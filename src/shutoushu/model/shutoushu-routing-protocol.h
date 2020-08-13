@@ -30,7 +30,7 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
-#define SimTime 300 //シミュレーション時間 second
+#define SimTime 40 //シミュレーション時間 second
 #define WindowSize 10000000 //SHUTOUSHUのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
 #define WaitT 4000 //待ち時間の差 micro単位
@@ -38,9 +38,10 @@
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
 #define InterPoint 0.07 //交差点ノードの与えるポイントの重み付け
-#define NodeNum 1484
-#define SimStartMicro 200000000 //broadcast 開始時刻micro秒
-#define SimStartTime 200 //broadcast 開始時刻　秒
+#define NodeNum 1000
+#define SimStartMicro 100000000 //broadcast 開始時刻micro秒
+#define SimStartTime 10 //broadcast 開始時刻　秒
+#define InterArea 8
 namespace ns3 {
 namespace shutoushu {
 /**
@@ -69,6 +70,8 @@ public:
   static std::map<int, int> m_stop_count; //key node id value 止まっている時間の蓄積
   static std::map<int, int> m_node_start_time; //key id value nodeの発車時刻（秒）
   static std::map<int, int> m_node_finish_time; //key id value nodeの到着時刻（秒）
+  static std::map<int, int> m_source_id; //key 1~10 value sourceid
+  static std::map<int, int> m_des_id; //key 1~10 value sourceid
 
   /// constructor
   RoutingProtocol ();

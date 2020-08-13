@@ -639,7 +639,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
 
   if (m_log != 0)
     {
-      NS_LOG_UNCOND ("Routing Setup for " << m_protocolName);
+      NS_LOG_UNCOND ("\n\n\n\nRouting Setup for " << m_protocolName);
     }
 }
 
@@ -1295,6 +1295,7 @@ private:
   uint32_t m_80211mode; ///< 80211 mode
 
   std::string m_traceFile; ///< trace file
+  int LogDistanceValue; //LogDistance Value
   std::string m_logFile; ///< log file
   uint32_t m_mobility; ///< mobility
   uint32_t m_nNodes; ///< number of nodes
@@ -1364,6 +1365,7 @@ VanetRoutingExperiment::VanetRoutingExperiment ()
       // 1=802.11p
       m_80211mode (1),
       m_traceFile (""),
+      LogDistanceValue (35.0),
       m_logFile ("low99-ct-unterstrass-1day.filt.7.adj.log"),
       m_mobility (1),
       m_nNodes (156),
@@ -1708,6 +1710,9 @@ VanetRoutingExperiment::Run ()
   std::cout << "scenario  : " << m_scenario << std::endl;
   std::cout << "buildings  : " << m_loadBuildings << std::endl;
   std::cout << "protocol  : " << m_protocolName << std::endl;
+  std::cout << "protocol number :" << m_protocol << std::endl;
+  std::cout << "tcl file name :" << m_traceFile << std::endl;
+  std::cout << "Log Distance value" << LogDistanceValue << std::endl;
 }
 
 // Prints actual position and velocity when a course change event occurs
@@ -2000,6 +2005,7 @@ VanetRoutingExperiment::CommandSetup (int argc, char **argv)
   cmd.AddValue ("phyMode", "Wifi Phy mode", m_phyMode);
   cmd.AddValue ("80211Mode", "1=802.11p; 2=802.11b; 3=WAVE-PHY", m_80211mode);
   cmd.AddValue ("traceFile", "Ns2 movement trace file", m_traceFile);
+  cmd.AddValue ("Distance", "Log Distance Propagation Model value", LogDistanceValue);
   cmd.AddValue ("logFile", "Log file", m_logFile);
   cmd.AddValue ("mobility", "1=trace;2=RWP",
                 m_mobility); //1を選択すると trace ファイルを読み込むmobility 2ランダムトポロジ
@@ -2214,13 +2220,14 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
                                       DoubleValue (6.0), "ReferenceDistance",
-                                      DoubleValue (35.0), ///伝搬距離１メートル
+                                      DoubleValue (40.0), ///伝搬距離250メートル
                                       //DoubleValue (150.0), ///伝搬距離１メートル
                                       "ReferenceLoss", DoubleValue (46.6777));
 
       std::cout << "obstacle debug  -------------------------------------------------------set "
                    "propagation loss model logdistance propagation model"
                 << "\n";
+      LogDistanceValue = 40.0;
     }
   else
     {
@@ -2446,16 +2453,17 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
 
-      m_traceFile = "src/wave/examples/LSGO_Grid/mobility.tcl"; //モビリティ入力ファイル
+      m_traceFile = "src/wave/examples/LSGO_Grid/grid_1100.tcl"; //モビリティ入力ファイル
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 1484;
-      m_TotalSimTime = 301; //変更すべきところ
+      m_nNodes = 1100;
+      m_TotalSimTime = 31; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
+      std::cout << "\n\n\n\n\n\n\n tcl file = " << m_traceFile << "\n\n\n\n\n\n";
       // WAVE BSM only, no routing data
       // m_protocol = 0;////////////////////////////////////////////////////////////////////初期状態 なぜprotocolを0にするのか不明
       //m_lossModel = 3; // two-ray ground ///////////////////////////////////////////////初期状態　なぜ3にするのか不明
