@@ -466,7 +466,7 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
         {
           continue;
         }
-      //std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
+      std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
 
       ///交差点にいるか　いないかの場合分け
       for (int x = 0; x < 2200;)

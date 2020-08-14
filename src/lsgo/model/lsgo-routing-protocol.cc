@@ -489,7 +489,7 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
         {
           continue;
         }
-      //std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
+      std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
 
       m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
       std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
