@@ -276,46 +276,46 @@ RoutingProtocol::DoInitialize (void)
 
   //sourse node**********************source node は優先度0 hopcount = 1*************************
   //500~1000//////////////////////////////////////////////////////////////////////////////////
-  if (id == 50)
-    Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 100);
-  if (id == 150)
-    Simulator::Schedule (Seconds (SimStartTime + 1), &RoutingProtocol::Send, this, 200);
-  if (id == 250)
-    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 300);
-  if (id == 350)
-    Simulator::Schedule (Seconds (SimStartTime + 3), &RoutingProtocol::Send, this, 400);
-  if (id == 450)
-    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 20);
-  if (id == 40)
-    Simulator::Schedule (Seconds (SimStartTime + 5), &RoutingProtocol::Send, this, 60);
-  if (id == 80)
-    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 120);
-  if (id == 140)
-    Simulator::Schedule (Seconds (SimStartTime + 7), &RoutingProtocol::Send, this, 160);
-  if (id == 180)
-    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 220);
-  if (id == 240)
-    Simulator::Schedule (Seconds (SimStartTime + 9), &RoutingProtocol::Send, this, 260);
-  if (id == 37)
-    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 103);
-  if (id == 137)
-    Simulator::Schedule (Seconds (SimStartTime + 11), &RoutingProtocol::Send, this, 203);
-  if (id == 237)
-    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 303);
-  if (id == 337)
-    Simulator::Schedule (Seconds (SimStartTime + 13), &RoutingProtocol::Send, this, 403);
-  if (id == 447)
-    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 23);
-  if (id == 7)
-    Simulator::Schedule (Seconds (SimStartTime + 15), &RoutingProtocol::Send, this, 63);
-  if (id == 87)
-    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 123);
-  if (id == 147)
-    Simulator::Schedule (Seconds (SimStartTime + 17), &RoutingProtocol::Send, this, 163);
-  if (id == 187)
-    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 223);
-  if (id == 247)
-    Simulator::Schedule (Seconds (SimStartTime + 19), &RoutingProtocol::Send, this, 263);
+  if (id == 39)
+    Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 32);
+  if (id == 69)
+    Simulator::Schedule (Seconds (SimStartTime + 1), &RoutingProtocol::Send, this, 12);
+  if (id == 90)
+    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 92);
+  if (id == 129)
+    Simulator::Schedule (Seconds (SimStartTime + 3), &RoutingProtocol::Send, this, 32);
+  if (id == 159)
+    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 152);
+  if (id == 189)
+    Simulator::Schedule (Seconds (SimStartTime + 5), &RoutingProtocol::Send, this, 182);
+  if (id == 219)
+    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 212);
+  if (id == 249)
+    Simulator::Schedule (Seconds (SimStartTime + 7), &RoutingProtocol::Send, this, 22);
+  if (id == 279)
+    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 272);
+  if (id == 309)
+    Simulator::Schedule (Seconds (SimStartTime + 9), &RoutingProtocol::Send, this, 302);
+  if (id == 339)
+    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 332);
+  if (id == 369)
+    Simulator::Schedule (Seconds (SimStartTime + 11), &RoutingProtocol::Send, this, 362);
+  if (id == 399)
+    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 392);
+  if (id == 429)
+    Simulator::Schedule (Seconds (SimStartTime + 13), &RoutingProtocol::Send, this, 422);
+  if (id == 459)
+    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 452);
+  if (id == 489)
+    Simulator::Schedule (Seconds (SimStartTime + 15), &RoutingProtocol::Send, this, 11);
+  if (id == 481)
+    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 15);
+  if (id == 482)
+    Simulator::Schedule (Seconds (SimStartTime + 17), &RoutingProtocol::Send, this, 16);
+  if (id == 483)
+    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 17);
+  if (id == 484)
+    Simulator::Schedule (Seconds (SimStartTime + 19), &RoutingProtocol::Send, this, 18);
 
   //200~400/////////////////////////////////////////////////////////////////////////////////////
   // if (id == 50)
@@ -457,13 +457,13 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
       //difftime = difftime / 1000000;
       //std::cout << "id" << itr->first << "dif_time" << diftime << "\n";
       double rt = (double) m_recvcount[itr->first] / diftime; //論文のrtの計算
-      //std::cout << "id" << itr->first << "のrtは" << rt << "rt*rt" << rt * rt << "\n";
+      std::cout << "id" << itr->first << "のrtは" << rt << "rt*rt" << rt * rt << "\n";
       double etx = 1.000000 / (rt * rt);
       if (etx < 1)
         etx = 1;
       m_etx[itr->first] = etx;
 
-      // std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
+      std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
       // std::cout << "\n";
     }
 }
@@ -738,8 +738,9 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         }
       else
         {
-          Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToLsgo, this, socket,
-                               packet, destination, hopcount, des_id);
+          if (pri_id[1] != 10000000) //中継候補ノードをⅠ個も持っていないノードはbrさせない
+            Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToLsgo, this,
+                                 socket, packet, destination, hopcount, des_id);
         }
     }
 } // namespace lsgo
@@ -1045,7 +1046,7 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "\n\n\n結果出力----------------------------------\n\n";
       for (auto itr = broadcount.begin (); itr != broadcount.end (); itr++)
         {
-          std::cout << "des id " << itr->first << "shutoushu broadcast数" << broadcount[itr->first]
+          std::cout << "des id " << itr->first << "lsgo broadcast数" << broadcount[itr->first]
                     << "\n";
           sum_br += broadcount[itr->first];
         }
@@ -1067,6 +1068,9 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "本シミュレーションのパケットEnd to End遅延時間は" << average_end_time << "\n";
       std::cout << "本シミュレーションのパケット平均オーバーヘッドは" << average_overhead << "\n";
       std::cout << "本シミュレーションのシミュレーション開始時刻は" << SimStartTime << "\n";
+      std::cout << "送信数は" << m_start_time.size () << "\n";
+      std::cout << "受信数は" << m_finish_time.size () << "\n";
+      std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       //std::cout << "node 数は" << NodeNum << "\n";
     }
 }
