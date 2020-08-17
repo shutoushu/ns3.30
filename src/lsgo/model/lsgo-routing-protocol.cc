@@ -276,46 +276,46 @@ RoutingProtocol::DoInitialize (void)
 
   //sourse node**********************source node は優先度0 hopcount = 1*************************
   //500~1000//////////////////////////////////////////////////////////////////////////////////
-  if (id == 39)
-    Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 32);
-  if (id == 69)
-    Simulator::Schedule (Seconds (SimStartTime + 1), &RoutingProtocol::Send, this, 12);
-  if (id == 90)
-    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 92);
-  if (id == 129)
-    Simulator::Schedule (Seconds (SimStartTime + 3), &RoutingProtocol::Send, this, 32);
-  if (id == 159)
-    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 152);
-  if (id == 189)
-    Simulator::Schedule (Seconds (SimStartTime + 5), &RoutingProtocol::Send, this, 182);
-  if (id == 219)
-    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 212);
-  if (id == 249)
-    Simulator::Schedule (Seconds (SimStartTime + 7), &RoutingProtocol::Send, this, 22);
-  if (id == 279)
-    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 272);
-  if (id == 309)
-    Simulator::Schedule (Seconds (SimStartTime + 9), &RoutingProtocol::Send, this, 302);
-  if (id == 339)
-    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 332);
+  if (id == 242)
+    Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 98);
   if (id == 369)
-    Simulator::Schedule (Seconds (SimStartTime + 11), &RoutingProtocol::Send, this, 362);
-  if (id == 399)
-    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 392);
+    Simulator::Schedule (Seconds (SimStartTime + 1), &RoutingProtocol::Send, this, 466);
+  if (id == 447)
+    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 331);
+  if (id == 157)
+    Simulator::Schedule (Seconds (SimStartTime + 3), &RoutingProtocol::Send, this, 138);
+  if (id == 414)
+    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 182);
+  if (id == 64)
+    Simulator::Schedule (Seconds (SimStartTime + 5), &RoutingProtocol::Send, this, 245);
+  if (id == 111)
+    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 428);
+  if (id == 420)
+    Simulator::Schedule (Seconds (SimStartTime + 7), &RoutingProtocol::Send, this, 208);
+  if (id == 320)
+    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 32);
+  if (id == 390)
+    Simulator::Schedule (Seconds (SimStartTime + 9), &RoutingProtocol::Send, this, 36);
+  if (id == 200)
+    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 461);
+  if (id == 438)
+    Simulator::Schedule (Seconds (SimStartTime + 11), &RoutingProtocol::Send, this, 95);
+  if (id == 369)
+    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 235);
+  if (id == 244)
+    Simulator::Schedule (Seconds (SimStartTime + 13), &RoutingProtocol::Send, this, 70);
+  if (id == 167)
+    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 103);
   if (id == 429)
-    Simulator::Schedule (Seconds (SimStartTime + 13), &RoutingProtocol::Send, this, 422);
-  if (id == 459)
-    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 452);
-  if (id == 489)
-    Simulator::Schedule (Seconds (SimStartTime + 15), &RoutingProtocol::Send, this, 11);
-  if (id == 481)
-    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 15);
-  if (id == 482)
-    Simulator::Schedule (Seconds (SimStartTime + 17), &RoutingProtocol::Send, this, 16);
-  if (id == 483)
-    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 17);
-  if (id == 484)
-    Simulator::Schedule (Seconds (SimStartTime + 19), &RoutingProtocol::Send, this, 18);
+    Simulator::Schedule (Seconds (SimStartTime + 15), &RoutingProtocol::Send, this, 81);
+  if (id == 155)
+    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 42);
+  if (id == 208)
+    Simulator::Schedule (Seconds (SimStartTime + 17), &RoutingProtocol::Send, this, 461);
+  if (id == 478)
+    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 122);
+  if (id == 128)
+    Simulator::Schedule (Seconds (SimStartTime + 19), &RoutingProtocol::Send, this, 408);
 
   //200~400/////////////////////////////////////////////////////////////////////////////////////
   // if (id == 50)
