@@ -2458,7 +2458,7 @@ VanetRoutingExperiment::SetupScenario ()
 
       m_mobility = 1;
       m_nNodes = 500;
-      m_TotalSimTime = 31; //変更すべきところ
+      m_TotalSimTime = 33; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;
       m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";

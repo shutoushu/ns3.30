@@ -38,7 +38,7 @@
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
 #define InterPoint 0.03 //交差点ノードの与えるポイントの重み付け
-#define NodeNum 1000
+#define NodeNum 500
 #define SimStartMicro 100000000 //broadcast 開始時刻micro秒
 #define SimStartTime 10 //broadcast 開始時刻　秒
 #define InterArea 8

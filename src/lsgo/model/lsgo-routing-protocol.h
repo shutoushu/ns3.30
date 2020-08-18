@@ -36,7 +36,7 @@
 #define WaitT 4000 //待ち時間の差 micro単位
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
-#define NodeNum 1000
+#define NodeNum 500
 #define SimStartMicro_Time 1000000 //４０秒
 #define SimStartTime 10 //４０秒
 
