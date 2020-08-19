@@ -2436,6 +2436,7 @@ VanetRoutingExperiment::SetupScenario ()
     }
   else if (m_scenario == 3)
     {
+
       // Realistic vehicular trace in Downtown Raleigh, NC USA
       // 50 vehicles,
       // with buildings, for Obstacle Shadowing Model
