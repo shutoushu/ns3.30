@@ -321,7 +321,7 @@ RoutingProtocol::DoInitialize (void)
   if (id == 0)
     {
 
-      std::mt19937 rand_src (12222); //シード値
+      std::mt19937 rand_src (33333); //シード値
       std::uniform_int_distribution<int> rand_dist (0, NodeNum);
       for (int i = 0; i < 20; i++)
         {
