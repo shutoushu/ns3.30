@@ -548,7 +548,6 @@ void
 RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
                                     int32_t hopcount)
 {
-
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
        j != m_socketAddresses.end (); ++j)
     {
