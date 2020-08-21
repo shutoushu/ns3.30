@@ -39,6 +39,7 @@
 #define NodeNum 500
 #define SimStartMicro_Time 1000000 //４０秒
 #define SimStartTime 10 //４０秒
+#define Seed 11111
 
 namespace ns3 {
 namespace lsgo {

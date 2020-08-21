@@ -323,7 +323,7 @@ RoutingProtocol::DoInitialize (void)
 
   if (id == 0)
     {
-      std::mt19937 rand_src (33333); //シード値
+      std::mt19937 rand_src (Seed); //シード値
       std::uniform_int_distribution<int> rand_dist (0, NodeNum);
       for (int i = 0; i < 20; i++)
         {
@@ -1104,6 +1104,8 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "送信数は" << m_start_time.size () << "\n";
       std::cout << "受信数は" << m_finish_time.size () << "\n";
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
+      std::cout << "受信数は" << m_finish_time.size () << "\n";
+      std::cout << "Seed値は" << Seed << "\n";
 
       //std::cout << "node 数は" << NodeNum << "\n";
     }

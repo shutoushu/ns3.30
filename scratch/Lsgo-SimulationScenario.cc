@@ -1713,7 +1713,7 @@ VanetRoutingExperiment::Run ()
   std::cout << "protocol number :" << m_protocol << std::endl;
   std::cout << "tcl file name :" << m_traceFile << std::endl;
   std::cout << "Log Distance value" << LogDistanceValue << std::endl;
-  std::cout << "buildings FIle name " << bldgFile << std::endl;
+  std::cout << "buildings FIle name " << m_logFile << std::endl;
 }
 
 // Prints actual position and velocity when a course change event occurs
@@ -2455,11 +2455,11 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
 
-      m_traceFile = "src/wave/examples/LSGO_Grid/grid_200.tcl"; //モビリティ入力ファイル
+      m_traceFile = "src/wave/examples/LSGO_Grid/grid_600.tcl"; //モビリティ入力ファイル
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 200;
+      m_nNodes = 600;
       m_TotalSimTime = 33; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;
