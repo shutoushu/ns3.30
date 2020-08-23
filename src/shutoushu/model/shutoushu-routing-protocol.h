@@ -42,7 +42,7 @@
 #define SimStartMicro 100000000 //broadcast 開始時刻micro秒
 #define SimStartTime 10 //broadcast 開始時刻　秒
 #define InterArea 8
-#define Seed 11111
+#define Seed 12211
 
 namespace ns3 {
 namespace shutoushu {
