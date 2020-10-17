@@ -92,6 +92,7 @@ public:
   Ptr<Node> mn10;
   Ptr<Node> mn11;
   Ptr<Node> mn12;
+  Ptr<Node> mn13;
 
   uint32_t totalReceived;
   uint32_t totalSent;
@@ -218,6 +219,7 @@ NetSim::CreateNetworkTopology ()
   mn10 = CreateObject<Node> (); // create 1 mobile node
   mn11 = CreateObject<Node> (); // create 1 mobile node
   mn12 = CreateObject<Node> (); // create 1 mobile node
+  mn13 = CreateObject<Node> (); // create 1 mobile node
 
   allNodes.Add (wlanNodes);
   allNodes.Add (mn);
@@ -232,6 +234,7 @@ NetSim::CreateNetworkTopology ()
   allNodes.Add (mn10);
   allNodes.Add (mn11);
   allNodes.Add (mn12);
+  allNodes.Add (mn13);
 }
 
 void
@@ -248,9 +251,15 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
 
+  ///////////////////////////////////////distance 250 m faiding  あり
   wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
-                                  DoubleValue (6.0), "ReferenceDistance", DoubleValue (250.0),
+                                  DoubleValue (6.0), "ReferenceDistance", DoubleValue (35.0),
                                   "ReferenceLoss", DoubleValue (46.6777));
+
+  wifiChannel.AddPropagationLoss ("ns3::NakagamiPropagationLossModel", "m0", DoubleValue (1), "m1",
+                                  DoubleValue (1), "m2", DoubleValue (1));
+
+  ////////////////////////////////////////
 
   // wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   //wifiChannel.AddPropagationLoss ("ns3::RandomPropagationLossModel",
@@ -258,11 +267,9 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   // MakePointerAccessor (&RandomPropagationLossModel::90));
 
   //wifiChannel.AddPropagationLoss  ("ns3::LogDistancePropagationLossModel");
-  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (250));
-  //wifiChannel.AddPropagationLoss("ns3::NakagamiPropagationLossModel","m0",
-  //DoubleValue(1),"m1", DoubleValue(1),"m2", DoubleValue(1));
+  //wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (250));
 
-  //   wifiChannel.AddPropagationLoss ("ns3::ns3::TwoRayGroundPropagationLossModel");
+  // wifiChannel.AddPropagationLoss ("ns3::ns3::TwoRayGroundPropagationLossModel");
   //   wifiChannel.AddPropagationLoss ("ns3::NakagamiPropagationLossModel");
 
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
@@ -391,6 +398,14 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   m_mob9->AddWaypoint (wpt_start100);
   Waypoint wpt_stop100 (Seconds (SIM_STOP - 8), Vector (100.0, 1800, 0.0));
   m_mob9->AddWaypoint (wpt_stop100);
+
+  Ptr<WaypointMobilityModel> m_mob13;
+  m_mob13 = CreateObject<WaypointMobilityModel> ();
+  mn13->AggregateObject (m_mob13);
+  Waypoint wpt_start13 (Seconds (5.0), Vector (350.0, 150.0, 0.0));
+  m_mob13->AddWaypoint (wpt_start13);
+  Waypoint wpt_stop13 (Seconds (SIM_STOP - 20), Vector (350.0, 150.0, 0.0));
+  m_mob13->AddWaypoint (wpt_stop13);
 }
 
 void
@@ -512,7 +527,7 @@ main (int argc, char *argv[])
   Simulator::Stop (Seconds (SIM_STOP));
   AnimationInterface anim (animFile);
 
-  for (int i = 0; i < 13; i++)
+  for (int i = 0; i < 14; i++)
     {
       anim.UpdateNodeSize (i, 10, 1);
     }

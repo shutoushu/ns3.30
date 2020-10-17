@@ -2392,7 +2392,7 @@ VanetRoutingExperiment::SetupScenario ()
       //std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";//デフォルトのbuildingモデル
 
       std::string bldgFile =
-          "./src/wave/examples/LSGO_Grid/test.poly.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
+          "./src/wave/examples/LSGO_Grid/small_buildings.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
 
       std::cout << "building ファイルを入力しましたそのファイルは " << bldgFile << "\n";
 
@@ -2455,11 +2455,11 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
 
-      m_traceFile = "src/wave/examples/LSGO_Grid/grid_300.tcl"; //モビリティ入力ファイル
+      m_traceFile = "src/wave/examples/LSGO_Grid/grid_500.tcl"; //モビリティ入力ファイル
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 300;
+      m_nNodes = 500;
       m_TotalSimTime = 33; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;

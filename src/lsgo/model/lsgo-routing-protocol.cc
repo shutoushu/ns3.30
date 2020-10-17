@@ -262,7 +262,8 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < SimTime; i++)
     {
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
+      if (id != 0)
+        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
     }
 
@@ -314,32 +315,34 @@ RoutingProtocol::DoInitialize (void)
   //   Simulator::Schedule (Seconds (SimStartTime + 17), &RoutingProtocol::Send, this, 461);
   // if (id == 478)
   //   Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 122);
-  // if (id == 128)
-  //   Simulator::Schedule (Seconds (SimStartTime + 19), &RoutingProtocol::Send, this, 408);
+
+  //////////////////////////////////////test 用
+  if (id == 1) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 9); //宛先ノード
 
   /////////////////////////////////random
-  if (id == 0)
-    {
+  // if (id == 0)
+  //   {
 
-      std::mt19937 rand_src (Seed); //シード値
-      std::uniform_int_distribution<int> rand_dist (0, NodeNum);
-      for (int i = 0; i < 20; i++)
-        {
-          m_source_id[i] = rand_dist (rand_src);
-          m_des_id[i] = rand_dist (rand_src);
-        }
-    }
+  //     std::mt19937 rand_src (Seed); //シード値
+  //     std::uniform_int_distribution<int> rand_dist (0, NodeNum);
+  //     for (int i = 0; i < 20; i++)
+  //       {
+  //         m_source_id[i] = rand_dist (rand_src);
+  //         m_des_id[i] = rand_dist (rand_src);
+  //       }
+  //   }
 
-  for (int i = 0; i < 20; i++)
-    {
-      if (id == m_source_id[i])
-        {
-          Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
-                               m_des_id[i]);
-          std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
-                    << "\n";
-        }
-    }
+  // for (int i = 0; i < 20; i++)
+  //   {
+  //     if (id == m_source_id[i])
+  //       {
+  //         Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
+  //                              m_des_id[i]);
+  //         std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
+  //                   << "\n";
+  //       }
+  //   }
   ///////////////////////////////////////////////////////////////////////////////////////////
 }
 
@@ -724,6 +727,9 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Address sourceAddress;
   Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
+
+  // std::cout << "packet size" << packet->GetSize () << "\n";
+
   TypeHeader tHeader (LSGOTYPE_HELLO);
   packet->RemoveHeader (tHeader);
 
@@ -788,7 +794,7 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
           }
 
         if (m_trans[id] == 0)
-          break;
+          break; //通信不能のノードだった場合はbreak
 
         int32_t pri_id[] = {sendheader.GetId1 (), sendheader.GetId2 (), sendheader.GetId3 (),
                             sendheader.GetId4 (), sendheader.GetId5 ()};
@@ -813,15 +819,25 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
             if (m_wait[des_id] >= hopcount)
               { //待機中のホップカウントより大きいホップカウントを受け取ったなら
                 m_wait.erase (des_id);
+                std::cout << "cancel packet recv id" << id << "time----------\n"
+                          << Simulator::Now ().GetMicroSeconds ();
               }
 
             for (int i = 0; i < 5; i++)
               {
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
-                    //std::cout << "\n--------------------------------------------------------\n";
-                    std::cout << "関係あるrecv id" << id << "time------------------------------\n"
-                              << Simulator::Now ().GetMicroSeconds ();
+                    if (m_wait[des_id] == 0)
+                      { // ※待ち状態でパケットを取得して待ち状態をキャンセルしたがそのパケットの中に自分のIDが含まれていた場合
+                        std::cout << "cancel packetが関係あるrecv id" << id << "time---------------"
+                                  << Simulator::Now ().GetMicroSeconds ();
+                      }
+                    else
+                      {
+                        std::cout << "待ち状態で関係あるrecv id" << id << "time---------------"
+                                  << Simulator::Now ().GetMicroSeconds ();
+                      }
+
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
@@ -837,7 +853,7 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
                     //std::cout << "\n--------------------------------------------------------\n";
-                    std::cout << "関係あるrecv id" << id << "time------------------------------"
+                    std::cout << "待ち状態ではないが関係あるrecv id" << id << "time-----------"
                               << Simulator::Now ().GetMicroSeconds () << "\n";
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
