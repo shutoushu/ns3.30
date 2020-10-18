@@ -39,7 +39,8 @@
 #define NodeNum 500
 #define SimStartMicro_Time 1000000 //４０秒
 #define SimStartTime 10 //４０秒
-#define Seed 33333 //送信車両と宛先車両をランダムに配置する Seed値
+#define Seed 33333 //送信車両と宛先車両をランダムに配置する Seed値]
+#define TransProbability 0.8 //予想伝送確率の閾値
 
 namespace ns3 {
 namespace lsgo {
@@ -139,6 +140,7 @@ private:
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数
   std::map<int, int> m_first_recv_time; //近隣ノードからのWINDOWSIZE内の最初の取得時間
   std::map<int, double> m_etx; //近隣ノードのkeyがIDでvalueがETX値
+  std::map<int, double> m_rt; //近隣ノードの keyがIDでvalueが予想伝送確率
   std::map<int, double> m_pri_value; //ノードの優先度を図る値　大きいほど優先度が高い
   std::map<int, int> m_wait; //key destination_id value ホップカウント
   //destination に対してこのホップカウントで送信待機している状態を表す

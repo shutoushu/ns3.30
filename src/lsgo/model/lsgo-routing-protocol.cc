@@ -435,6 +435,9 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
       //std::cout << "id" << itr->first << "dif_time" << diftime << "\n";
       double rt = (double) m_recvcount[itr->first] / diftime; //論文のrtの計算
       //std::cout << "id" << itr->first << "のrtは" << rt << "rt*rt" << rt * rt << "\n";
+      if (rt > 1)
+        rt = 1.0;
+      m_rt[itr->first] = rt;
       double etx = 1.000000 / (rt * rt);
       if (etx < 1)
         etx = 1;
@@ -582,7 +585,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
           //           << "\n"; // 値を表示
         }
 
-      SetEtxMap (); //EtX mapをセットする
+      SetEtxMap (); //m_rt と　EtX mapをセットする
       SetPriValueMap (des_x, des_y); //優先度を決める値をセットする関数
 
       // int32_t pri1_node_id = 10000000; ///ダミーID
@@ -650,20 +653,40 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
               break;
             }
         }
-      m_recvcount.clear ();
-      m_first_recv_time.clear ();
-      m_etx.clear ();
-      m_pri_value.clear ();
+      // 候補ノード選択アルゴリズム
+      double candidataNum = 5; // 候補ノード数　初期値は最大
+
+      for (int n = 1; n < 6; n++) //5回回して、 条件を満たすまでまわる nは候補ノード数
+        {
+          double infiniteProduct = 1; // 総乗
+          for (int p = 1; p <= n; p++) //pは優先度  優先度は1から回す
+            {
+              double rtMiss = 1 - m_rt[pri_id[p]]; // 伝送に失敗する予想確率
+              infiniteProduct = infiniteProduct * rtMiss;
+            }
+          if (TransProbability <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
+            {
+              std::cout << "infineteProduct" << infiniteProduct << "n" << n << "\n";
+              candidataNum = n; //候補ノード数を変更
+              break;
+            }
+        }
 
       for (int i = 1; i < 6; i++)
         {
           if (pri_id[i] != 10000000)
-            std::cout << "優先度" << i << "の node id = " << pri_id[i] << "\n";
+            {
+              std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
+                        << m_rt[pri_id[i]] << "\n";
+            }
         }
 
-      // std::cout << "優先度１のIdは " << pri_id[1] << "優先度2のIdは " << pri_id[2]
-      //           << "優先度3のIdは " << pri_id[3] << "優先度4のIdは " << pri_id[4]
-      //           << "優先度5のIdは " << pri_id[5] << "\n";
+      std::cout << "候補ノード数は" << candidataNum << "\n";
+      m_recvcount.clear ();
+      m_first_recv_time.clear ();
+      m_etx.clear ();
+      m_pri_value.clear ();
+      m_rt.clear (); //保持している予想伝送確率をクリア
 
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
