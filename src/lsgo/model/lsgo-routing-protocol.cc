@@ -588,12 +588,6 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       SetEtxMap (); //m_rt と　EtX mapをセットする
       SetPriValueMap (des_x, des_y); //優先度を決める値をセットする関数
 
-      // int32_t pri1_node_id = 10000000; ///ダミーID
-      // int32_t pri2_node_id = 10000000;
-      // int32_t pri3_node_id = 10000000;
-      // int32_t pri4_node_id = 10000000;
-      // int32_t pri5_node_id = 10000000;
-
       int32_t pri_id[6];
       pri_id[1] = 10000000; ///ダミーID
       pri_id[2] = 10000000;
@@ -654,7 +648,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
             }
         }
       // 候補ノード選択アルゴリズム
-      double candidataNum = 5; // 候補ノード数　初期値は最大
+      int candidataNum = 5; // 候補ノード数　初期値は最大
 
       for (int n = 1; n < 6; n++) //5回回して、 条件を満たすまでまわる nは候補ノード数
         {
@@ -672,6 +666,29 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
             }
         }
 
+      std::cout << "候補ノード数は" << candidataNum << "\n";
+      switch (candidataNum) //候補ノード数によってダミーノードIDを加える
+        {
+        case 1:
+          pri_id[2] = 10000000;
+          pri_id[3] = 10000000;
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 2:
+          pri_id[3] = 10000000;
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 3:
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 4:
+          pri_id[5] = 10000000;
+          break;
+        }
+
       for (int i = 1; i < 6; i++)
         {
           if (pri_id[i] != 10000000)
@@ -681,7 +698,6 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
             }
         }
 
-      std::cout << "候補ノード数は" << candidataNum << "\n";
       m_recvcount.clear ();
       m_first_recv_time.clear ();
       m_etx.clear ();
@@ -692,8 +708,6 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      // SendHeader sendHeader (des_id, des_x, des_y, pri1_node_id, pri2_node_id, pri3_node_id,
-      //                        pri4_node_id, pri5_node_id);
       if (pri_value != 0) //source node じゃなかったら
         {
           hopcount++;
