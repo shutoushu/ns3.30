@@ -414,15 +414,15 @@ NetSim::ConfigureNetworkLayer ()
   //ShutoHelper shutoProtocol;
   //SenkoHelper senkoProtocol;
   //SampleHelper sampleProtocol;
-  LsgoHelper lsgoProtocol;
-  //ShutoushuHelper shutoushuProtocol;
+  //LsgoHelper lsgoProtocol;
+  ShutoushuHelper shutoushuProtocol;
 
   Ipv4ListRoutingHelper listrouting;
   //listrouting.Add(shutoProtocol, 10);
   //listrouting.Add(senkoProtocol, 10);
   //listrouting.Add (sampleProtocol, 10);
-  listrouting.Add (lsgoProtocol, 10);
-  //listrouting.Add (shutoushuProtocol, 10);
+  //listrouting.Add (lsgoProtocol, 10);
+  listrouting.Add (shutoushuProtocol, 10);
 
   InternetStackHelper internet;
   internet.SetRoutingHelper (listrouting);

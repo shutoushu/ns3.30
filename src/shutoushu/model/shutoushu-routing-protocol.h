@@ -39,10 +39,11 @@
 #define NumInter 64
 #define InterPoint 0.07 //交差点ノードの与えるポイントの重み付け
 #define NodeNum 500
-#define SimStartMicro 100000000 //broadcast 開始時刻micro秒
+#define SimStartMicro 1000000 //broadcast 開始時刻micro秒
 #define SimStartTime 10 //broadcast 開始時刻　秒
-#define InterArea 8
+#define InterArea 8 //交差点エリア 正方形メートル　
 #define Seed 33333
+#define TransProbability 1.0 //予想伝送確率の閾値
 
 namespace ns3 {
 namespace shutoushu {
@@ -145,8 +146,10 @@ private:
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数
   std::map<int, int> m_first_recv_time; //近隣ノードからのWINDOWSIZE内の最初の取得時間
   std::map<int, double> m_etx; //近隣ノードのkeyがIDでvalueがETX値
+  std::map<int, double> m_rt; //近隣ノードの keyがIDでvalueが予想伝送確率
   std::map<int, double> m_pri_value; //ノードの優先度を図る値　大きいほど優先度が高い
   std::map<int, int> m_wait; //key destination_id value ホップカウント
+
   //destination に対してこのホップカウントで送信待機している状態を表す
   //**自作メソッド finish**/
 

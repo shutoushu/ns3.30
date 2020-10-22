@@ -39,8 +39,8 @@
 #define NodeNum 500
 #define SimStartMicro_Time 1000000 //４０秒
 #define SimStartTime 10 //４０秒
-#define Seed 33333 //送信車両と宛先車両をランダムに配置する Seed値]
-#define TransProbability 0.8 //予想伝送確率の閾値
+#define Seed 33333 //送信車両と宛先車両をランダムに配置する Seed値
+#define TransProbability 1.0 //予想伝送確率の閾値
 
 namespace ns3 {
 namespace lsgo {

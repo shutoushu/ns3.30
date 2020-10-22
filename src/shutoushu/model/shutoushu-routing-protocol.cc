@@ -263,7 +263,8 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < SimTime; i++)
     {
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
+      if (id != 0)
+        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
     }
 
@@ -319,29 +320,33 @@ RoutingProtocol::DoInitialize (void)
   // if (id == 128)
   //   Simulator::Schedule (Seconds (SimStartTime + 19), &RoutingProtocol::Send, this, 408);
 
+  //////////////////////////////////////test 用
+  if (id == 1) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 9); //宛先ノード
+
   ////////////////////////////////////random
 
-  if (id == 0)
-    {
-      std::mt19937 rand_src (Seed); //シード値
-      std::uniform_int_distribution<int> rand_dist (0, NodeNum);
-      for (int i = 0; i < 20; i++)
-        {
-          m_source_id[i] = rand_dist (rand_src);
-          m_des_id[i] = rand_dist (rand_src);
-        }
-    }
+  // if (id == 0)
+  //   {
+  //     std::mt19937 rand_src (Seed); //シード値
+  //     std::uniform_int_distribution<int> rand_dist (0, NodeNum);
+  //     for (int i = 0; i < 20; i++)
+  //       {
+  //         m_source_id[i] = rand_dist (rand_src);
+  //         m_des_id[i] = rand_dist (rand_src);
+  //       }
+  //   }
 
-  for (int i = 0; i < 20; i++)
-    {
-      if (id == m_source_id[i])
-        {
-          Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
-                               m_des_id[i]);
-          std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
-                    << "\n";
-        }
-    }
+  // for (int i = 0; i < 20; i++)
+  //   {
+  //     if (id == m_source_id[i])
+  //       {
+  //         Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
+  //                              m_des_id[i]);
+  //         std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
+  //                   << "\n";
+  //       }
+  //   }
 }
 void
 RoutingProtocol::Send (int des_id)
@@ -433,6 +438,9 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
       //std::cout << "id" << itr->first << "dif_time" << diftime << "\n";
       double rt = (double) m_recvcount[itr->first] / diftime; //論文のrtの計算
       //std::cout << "id" << itr->first << "のrtは" << rt << "rt*rt" << rt * rt << "\n";
+      if (rt > 1)
+        rt = 1.0;
+      m_rt[itr->first] = rt;
       double etx = 1.000000 / (rt * rt);
       if (etx < 1)
         etx = 1;
@@ -617,7 +625,7 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
           //           << "\n"; // 値を表示
         }
 
-      SetEtxMap (); //EtX mapをセットする
+      SetEtxMap (); //m_rt と EtX mapをセットする
       SetPriValueMap (des_x, des_y); //優先度を決める値をセットする関数
 
       // int32_t pri1_node_id = 10000000; ///ダミーID
@@ -685,27 +693,68 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
               break;
             }
         }
-      m_recvcount.clear ();
-      m_first_recv_time.clear ();
-      m_etx.clear ();
-      m_pri_value.clear ();
+
+      // 候補ノード選択アルゴリズム
+      int candidataNum = 5; // 候補ノード数　初期値は最大
+
+      for (int n = 1; n < 6; n++) //5回回して、 条件を満たすまでまわる nは候補ノード数
+        {
+          double infiniteProduct = 1; // 総乗
+          for (int p = 1; p <= n; p++) //pは優先度  優先度は1から回す
+            {
+              double rtMiss = 1 - m_rt[pri_id[p]]; // 伝送に失敗する予想確率
+              infiniteProduct = infiniteProduct * rtMiss;
+            }
+          if (TransProbability <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
+            {
+              std::cout << "infineteProduct" << infiniteProduct << "n" << n << "\n";
+              candidataNum = n; //候補ノード数を変更
+              break;
+            }
+        }
+
+      std::cout << "候補ノード数は" << candidataNum << "\n";
+      switch (candidataNum) //候補ノード数によってダミーノードIDを加える
+        {
+        case 1:
+          pri_id[2] = 10000000;
+          pri_id[3] = 10000000;
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 2:
+          pri_id[3] = 10000000;
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 3:
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 4:
+          pri_id[5] = 10000000;
+          break;
+        }
 
       for (int i = 1; i < 6; i++)
         {
           if (pri_id[i] != 10000000)
-            std::cout << "優先度" << i << "の node id = " << pri_id[i] << "\n";
+            {
+              std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
+                        << m_rt[pri_id[i]] << "\n";
+            }
         }
 
-      // std::cout << "優先度１のIdは " << pri_id[1] << "優先度2のIdは " << pri_id[2]
-      //           << "優先度3のIdは " << pri_id[3] << "優先度4のIdは " << pri_id[4]
-      //           << "優先度5のIdは " << pri_id[5] << "\n";
+      m_recvcount.clear ();
+      m_first_recv_time.clear ();
+      m_etx.clear ();
+      m_pri_value.clear ();
+      m_rt.clear (); //保持している予想伝送確率をクリア
 
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      // SendHeader sendHeader (des_id, des_x, des_y, pri1_node_id, pri2_node_id, pri3_node_id,
-      //                        pri4_node_id, pri5_node_id);
       if (pri_value != 0) //source node じゃなかったら
         {
           hopcount++;
