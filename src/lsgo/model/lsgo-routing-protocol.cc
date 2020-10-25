@@ -660,7 +660,6 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
             }
           if (TransProbability <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
             {
-              std::cout << "infineteProduct" << infiniteProduct << "n" << n << "\n";
               candidataNum = n; //候補ノード数を変更
               break;
             }

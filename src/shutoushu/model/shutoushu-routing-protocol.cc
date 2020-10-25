@@ -358,6 +358,8 @@ RoutingProtocol::Send (int des_id)
   SendShutoushuBroadcast (0, des_id, m_my_posx[des_id], m_my_posy[des_id], 1);
   std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
             << "des node point x=" << m_my_posx[des_id] << "y=" << m_my_posy[des_id] << "\n";
+
+  std::cout << "road id " << distinctionRoad (2100, 100) << "\n";
 }
 
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
@@ -1078,6 +1080,71 @@ RoutingProtocol::NoTrans (int node_id)
   //m_trans[node_id] = 0;
   //std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
   //<< "が通信不可能になりました\n";
+}
+
+int
+RoutingProtocol::distinctionRoad (int x_point, int y_point)
+{
+  /// 道路1〜56  57〜112
+  int range = 284;
+  int gridRange = 300;
+  int roadWidth = 20;
+  int x = 8;
+  int y = -10;
+  int count = 1;
+  x_point = 2100;
+  y_point = 2000;
+
+  for (int roadId = 1; roadId <= 112; roadId++)
+    {
+
+      if (roadId <= 56)
+        {
+          if (x <= x_point && x_point <= x + range && y <= y_point &&
+              y_point <= y + roadWidth) //example node1  x 座標 8〜292 y座標 -10〜10
+            {
+              return roadId; //条件に当てはまれば
+            }
+          if (count == 7) //7のときcount変数を初期化
+            {
+              count = 1;
+              x = x - 1800;
+              y = y + gridRange;
+            }
+          else // 7以外は足していく
+            {
+              x = x + gridRange;
+              count++;
+            }
+
+          if (roadId == 56)
+            {
+              x = -10;
+              y = 8;
+              count = 1;
+            }
+        }
+      else //57〜
+        {
+          if (x <= x_point && x_point <= x + roadWidth && y <= y_point &&
+              y_point <= y + range) //example node57 x座標 8〜292 y座標 -10〜10
+            {
+              return roadId; //条件に当てはまれば
+            }
+          if (count == 8) //8のときcount変数を初期化
+            {
+              count = 1;
+              x = x - 2100;
+              y = y + gridRange;
+            }
+          else // 8以外は足していく
+            {
+              x = x + gridRange;
+              count++;
+            }
+        }
+    }
+  return 0; // ０を返す = 交差点ノード
 }
 // シミュレーション結果の出力関数
 void
