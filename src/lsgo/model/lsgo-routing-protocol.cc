@@ -965,9 +965,6 @@ RoutingProtocol::ReadFile (void)
   // getline()で1行ずつ読み込む
   while (getline (ifs, tmp, ' '))
     {
-      //std::cout << "row_cout=" << row_count << "\n";
-      // ここでtmpを煮るなり焼くなりする
-      //std::cout << tmp << "\n"; // そのまま出力
       if (tmp.find ("at") != std::string::npos)
         {
           //puts ("文字列atが見つかりました");
@@ -983,7 +980,6 @@ RoutingProtocol::ReadFile (void)
           tmp.replace (0, 1, "a"); //１番目の文字 " をaに変換
           //std::cout << "node id string test " << tmp << "\n";
           sscanf (tmp.c_str (), "a$node_(%d", &node_id); //文字列から数字だけをnode_idに代入
-          //printf ("nodeid = %d\n", node_id);
           if (m_node_start_time[node_id] == 0)
             {
               if (time > 0 && time < 1000)
@@ -996,7 +992,6 @@ RoutingProtocol::ReadFile (void)
               m_node_finish_time[node_id] = time; //常に更新させた最終更新時間が到着時間
             }
         }
-
       row_count++;
     }
 

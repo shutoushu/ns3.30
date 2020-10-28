@@ -123,6 +123,8 @@ private:
   void SaveXpoint (int32_t map_id, int32_t map_xpoint); //近隣ノードのHello packetの情報を
   void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
+  void SaveRelation (int32_t map_id, int32_t map_xpoint,
+                     int32_t map_ypoint); //近隣ノードの道路IDを保存
   void
   SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
                           int32_t hopcount); //候補ノードの優先順位を計算してpacketを送信する関数
@@ -143,6 +145,8 @@ private:
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
   std::multimap<int, int>
       m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
+  std::map<int, int>
+      m_relation; //近隣ノードとの関係性 key = nodeid value=  同一道路1 or　異なる道路 2
 
   ///以下のマップは使ったら消去する
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数

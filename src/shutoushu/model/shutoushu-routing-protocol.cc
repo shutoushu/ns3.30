@@ -845,14 +845,10 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
         SaveXpoint (recv_hello_id, recv_hello_posx);
         SaveYpoint (recv_hello_id, recv_hello_posy);
         SaveRecvTime (recv_hello_id, recv_hello_time);
-
+        SaveRelation (recv_hello_id, recv_hello_posx, recv_hello_posy);
         break; //breakがないとエラー起きる
       }
       case SHUTOUSHUTYPE_SEND: {
-
-        //std::cout << "\n\n--------------------------------------------------------\n";
-        //std::cout << "recv id" << id << "time------------------------------------------"
-        // << Simulator::Now ().GetMicroSeconds () << "\n";
 
         SendHeader sendheader;
         packet->RemoveHeader (sendheader);
@@ -954,9 +950,63 @@ RoutingProtocol::SaveYpoint (int32_t map_id, int32_t map_ypoint)
 }
 
 void
+RoutingProtocol::SaveRelation (int32_t map_id, int32_t map_xpoint, int32_t map_ypoint)
+{
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  int myRoadId = distinctionRoad (mypos.x, mypos.y); //自分の道路ID
+  int NeighborRoadId = distinctionRoad (map_xpoint, map_ypoint); // 近隣ノードの道路ID
+  int currentRelation = 0; //現在ノードとの関係性
+  if (myRoadId == NeighborRoadId)
+    {
+      currentRelation = 1; //同一道路なら1
+    }
+  else
+    {
+      currentRelation = 2; //異なる道路なら2
+    }
+
+  if (id == 14)
+    {
+      std::cout << "自分の道路IDは" << myRoadId << "\n";
+      std::cout << "id" << map_id << "の道路IDは" << NeighborRoadId << "\n";
+      std::cout << "id" << map_id << "とのcurrentRelation" << currentRelation << "\n";
+      std::cout << "id" << map_id << "recv数は" << m_recvtime.size () << "\n";
+      for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
+        {
+          std::cout << "recv hello packet id = " << itr->first // キーを表示
+                    << "time" << itr->second << "\n"; // 値を表示
+        }
+    }
+
+  if (m_relation[map_id] != 0) //以前にリンクを持っていたら
+    {
+      if (currentRelation != m_relation[map_id]) //以前と関係性が異なるなら
+        {
+          if (NeighborRoadId == 0 || myRoadId == 0) // どちらかが交差点ノードの場合
+            {
+              currentRelation = m_relation[map_id]; //前の関係性を維持する
+            }
+          else
+            {
+              if (id == 14)
+                std::cout << "以前と関係性が違います　破棄します"
+                          << "\n";
+              m_recvtime.erase (map_id); // helloパケット取得履歴を破棄
+            }
+        }
+    }
+  m_relation[map_id] = currentRelation; // 現在の関係をマップに保存
+}
+
+void
 RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
 {
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   m_recvtime.insert (std::make_pair (map_id, map_recvtime));
+  if (id == 14)
+    std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
 }
 
 void
@@ -1092,8 +1142,6 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
   int x = 8;
   int y = -10;
   int count = 1;
-  x_point = 2100;
-  y_point = 2000;
 
   for (int roadId = 1; roadId <= 112; roadId++)
     {
@@ -1151,7 +1199,7 @@ void
 RoutingProtocol::SimulationResult (void) //
 {
   std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
-  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   if (Simulator::Now ().GetSeconds () == SimStartTime + 22)
     {
       // //*******************************ノードが持つ座標の確認ログ***************************//
@@ -1169,7 +1217,8 @@ RoutingProtocol::SimulationResult (void) //
       //**************************************************************************************//
 
       //*******************************ノードが持つ受信時刻ログ***************************//
-      //std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
+      // if (id == 14)
+      //   std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
 
       // auto itr = m_recvtime.find (1);
       // if (itr != m_recvtime.end ())

@@ -93,6 +93,8 @@ public:
   Ptr<Node> mn11;
   Ptr<Node> mn12;
   Ptr<Node> mn13;
+  Ptr<Node> mn14;
+  Ptr<Node> mn15;
 
   uint32_t totalReceived;
   uint32_t totalSent;
@@ -220,6 +222,8 @@ NetSim::CreateNetworkTopology ()
   mn11 = CreateObject<Node> (); // create 1 mobile node
   mn12 = CreateObject<Node> (); // create 1 mobile node
   mn13 = CreateObject<Node> (); // create 1 mobile node
+  mn14 = CreateObject<Node> (); // create 1 mobile node
+  mn15 = CreateObject<Node> (); // create 1 mobile node
 
   allNodes.Add (wlanNodes);
   allNodes.Add (mn);
@@ -235,6 +239,8 @@ NetSim::CreateNetworkTopology ()
   allNodes.Add (mn11);
   allNodes.Add (mn12);
   allNodes.Add (mn13);
+  allNodes.Add (mn14);
+  allNodes.Add (mn15);
 }
 
 void
@@ -406,6 +412,33 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   m_mob13->AddWaypoint (wpt_start13);
   Waypoint wpt_stop13 (Seconds (SIM_STOP - 20), Vector (350.0, 150.0, 0.0));
   m_mob13->AddWaypoint (wpt_stop13);
+
+  //node 14 patarn 1
+  Ptr<WaypointMobilityModel> m_mob14;
+  m_mob14 = CreateObject<WaypointMobilityModel> ();
+  mn14->AggregateObject (m_mob14);
+  Waypoint wpt_start14 (Seconds (0.0), Vector (900.0, 0.0, 0.0));
+  m_mob14->AddWaypoint (wpt_start14);
+  Waypoint wpt_stop14 (Seconds (40.0), Vector (900.0, 600.0, 0.0));
+  m_mob14->AddWaypoint (wpt_stop14);
+
+  //node 14 patarn 2
+
+  Ptr<WaypointMobilityModel> m_mob15;
+  m_mob15 = CreateObject<WaypointMobilityModel> ();
+  mn15->AggregateObject (m_mob15);
+  Waypoint wpt_start15 (Seconds (0.0), Vector (900.0, 150.0, 0.0));
+  m_mob15->AddWaypoint (wpt_start15);
+  Waypoint wpt_stop15 (Seconds (10.0), Vector (900.0, 300.0, 0.0));
+  m_mob15->AddWaypoint (wpt_stop15);
+  // Waypoint wpt_start15_2 (Seconds (10.0), Vector (900.0, 300.0, 0.0));
+  // m_mob15->AddWaypoint (wpt_start15_2);
+  // Waypoint wpt_stop15_2 (Seconds (30.0), Vector (1200.0, 300.0, 0.0));
+  // m_mob15->AddWaypoint (wpt_stop15_2);
+  Waypoint wpt_start150 (Seconds (11.0), Vector (900.0, 300.0, 0.0));
+  m_mob15->AddWaypoint (wpt_start150);
+  Waypoint wpt_stop150 (Seconds (30.0), Vector (1200.0, 300.0, 0.0));
+  m_mob15->AddWaypoint (wpt_stop150);
 }
 
 void
