@@ -967,18 +967,18 @@ RoutingProtocol::SaveRelation (int32_t map_id, int32_t map_xpoint, int32_t map_y
       currentRelation = 2; //異なる道路なら2
     }
 
-  if (id == 14)
-    {
-      std::cout << "自分の道路IDは" << myRoadId << "\n";
-      std::cout << "id" << map_id << "の道路IDは" << NeighborRoadId << "\n";
-      std::cout << "id" << map_id << "とのcurrentRelation" << currentRelation << "\n";
-      std::cout << "id" << map_id << "recv数は" << m_recvtime.size () << "\n";
-      for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
-        {
-          std::cout << "recv hello packet id = " << itr->first // キーを表示
-                    << "time" << itr->second << "\n"; // 値を表示
-        }
-    }
+  // if (id == 14)   test mobility debug
+  //   {
+  //     std::cout << "自分の道路IDは" << myRoadId << "\n";
+  //     std::cout << "id" << map_id << "の道路IDは" << NeighborRoadId << "\n";
+  //     std::cout << "id" << map_id << "とのcurrentRelation" << currentRelation << "\n";
+  //     std::cout << "id" << map_id << "recv数は" << m_recvtime.size () << "\n";
+  //     for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
+  //       {
+  //         std::cout << "recv hello packet id = " << itr->first // キーを表示
+  //                   << "time" << itr->second << "\n"; // 値を表示
+  //       }
+  //   }
 
   if (m_relation[map_id] != 0) //以前にリンクを持っていたら
     {
@@ -990,9 +990,9 @@ RoutingProtocol::SaveRelation (int32_t map_id, int32_t map_xpoint, int32_t map_y
             }
           else
             {
-              if (id == 14)
-                std::cout << "以前と関係性が違います　破棄します"
-                          << "\n";
+              // if (id == 14)
+              //   std::cout << "以前と関係性が違います　破棄します"
+              //             << "\n";
               m_recvtime.erase (map_id); // helloパケット取得履歴を破棄
             }
         }
@@ -1005,8 +1005,8 @@ RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   m_recvtime.insert (std::make_pair (map_id, map_recvtime));
-  if (id == 14)
-    std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
+  // if (id == 14)
+  //   std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
 }
 
 void
