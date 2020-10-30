@@ -321,12 +321,12 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   Waypoint wpt_stop2 (Seconds (SIM_STOP - 10), Vector (100.0, 10 * SIM_STOP + 100, 0.0));
   m_mob2->AddWaypoint (wpt_stop2);
 
-  Ptr<WaypointMobilityModel> m_mob10;
+  Ptr<WaypointMobilityModel> m_mob10; //交差点ノード
   m_mob10 = CreateObject<WaypointMobilityModel> ();
   mn10->AggregateObject (m_mob10);
-  Waypoint wpt_start10 (Seconds (5.0), Vector (0.0, 100.0, 0.0));
+  Waypoint wpt_start10 (Seconds (5.0), Vector (0.0, 300.0, 0.0));
   m_mob10->AddWaypoint (wpt_start10);
-  Waypoint wpt_stop10 (Seconds (SIM_STOP - 10), Vector (0.0, 10 * SIM_STOP + 100, 0.0));
+  Waypoint wpt_stop10 (Seconds (SIM_STOP - 10), Vector (0.0, 305, 0.0));
   m_mob10->AddWaypoint (wpt_stop10);
 
   Ptr<WaypointMobilityModel> m_mob11;

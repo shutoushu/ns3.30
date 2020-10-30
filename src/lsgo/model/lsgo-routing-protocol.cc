@@ -540,7 +540,8 @@ RoutingProtocol::SendToLsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address
                 << "\n";
       socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
       m_wait.erase (des_id);
-      broadcount[des_id] = broadcount[des_id] + 1;
+      if (m_finish_time[des_id] == 0) // まだ受信車両が受信してなかったら
+        broadcount[des_id] = broadcount[des_id] + 1;
     }
   else
     {

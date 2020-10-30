@@ -358,8 +358,6 @@ RoutingProtocol::Send (int des_id)
   SendShutoushuBroadcast (0, des_id, m_my_posx[des_id], m_my_posy[des_id], 1);
   std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
             << "des node point x=" << m_my_posx[des_id] << "y=" << m_my_posy[des_id] << "\n";
-
-  std::cout << "road id " << distinctionRoad (2100, 100) << "\n";
 }
 
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
@@ -581,7 +579,8 @@ RoutingProtocol::SendToShutoushu (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Ad
                 << "\n";
       socket->SendTo (packet, 0, InetSocketAddress (destination, SHUTOUSHU_PORT));
       m_wait.erase (des_id);
-      broadcount[des_id] = broadcount[des_id] + 1;
+      if (m_finish_time[des_id] == 0) // まだ受信車両が受信してなかったら
+        broadcount[des_id] = broadcount[des_id] + 1;
     }
   else
     {
@@ -949,12 +948,13 @@ RoutingProtocol::SaveYpoint (int32_t map_id, int32_t map_ypoint)
   m_ypoint[map_id] = map_ypoint;
 }
 
+//ノード間の関係性を更新するメソッド
 void
 RoutingProtocol::SaveRelation (int32_t map_id, int32_t map_xpoint, int32_t map_ypoint)
 {
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   int myRoadId = distinctionRoad (mypos.x, mypos.y); //自分の道路ID
   int NeighborRoadId = distinctionRoad (map_xpoint, map_ypoint); // 近隣ノードの道路ID
   int currentRelation = 0; //現在ノードとの関係性
@@ -1003,10 +1003,8 @@ RoutingProtocol::SaveRelation (int32_t map_id, int32_t map_xpoint, int32_t map_y
 void
 RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
 {
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   m_recvtime.insert (std::make_pair (map_id, map_recvtime));
-  // if (id == 14)
-  //   std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
 }
 
 void
