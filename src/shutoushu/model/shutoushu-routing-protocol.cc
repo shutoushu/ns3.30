@@ -63,6 +63,7 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
 /// UDP Port for SHUTOUSHU control traffic
 const uint32_t RoutingProtocol::SHUTOUSHU_PORT = 654;
+int numVehicle = 0; //グローバル変数
 
 RoutingProtocol::RoutingProtocol ()
 {
@@ -251,14 +252,15 @@ RoutingProtocol::DoInitialize (void)
   //int32_t time = Simulator::Now ().GetMicroSeconds ();
   m_trans[id] = 1;
 
+  numVehicle++;
   if (id == 0)
     {
       ReadFile ();
-      for (int i = 0; i < NodeNum; i++) //id分回す
-        {
-          Simulator::Schedule (Seconds (m_node_start_time[i]), &RoutingProtocol::Trans, this, i);
-          Simulator::Schedule (Seconds (m_node_finish_time[i]), &RoutingProtocol::NoTrans, this, i);
-        }
+      // for (int i = 0; i < NodeNum; i++) //id分回す
+      //   {
+      //     Simulator::Schedule (Seconds (m_node_start_time[i]), &RoutingProtocol::Trans, this, i);
+      //     Simulator::Schedule (Seconds (m_node_finish_time[i]), &RoutingProtocol::NoTrans, this, i);
+      //   }
     }
 
   for (int i = 1; i < SimTime; i++)
@@ -323,6 +325,8 @@ RoutingProtocol::DoInitialize (void)
   //////////////////////////////////////test 用
   if (id == 1) // 送信車両　
     Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 9); //宛先ノード
+  if (id == 2) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 8); //宛先ノード
 
   ////////////////////////////////////random
 
@@ -1269,8 +1273,7 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "受信数は" << m_finish_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
-
-      //std::cout << "node 数は" << NodeNum << "\n";
+      std::cout << "車両数は" << numVehicle << "\n";
     }
 }
 
