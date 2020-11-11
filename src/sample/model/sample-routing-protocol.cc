@@ -37,6 +37,16 @@
 #include "ns3/pointer.h"
 #include <algorithm>
 #include <limits>
+#include <math.h>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <random>
+
+#include "ns3/mobility-module.h"
 
 namespace ns3 {
 
@@ -47,6 +57,9 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
 /// UDP Port for SAMPLE control traffic
 const uint32_t RoutingProtocol::SAMPLE_PORT = 654;
+int posx = 0; //送信者の位置情報
+int posy = 0;
+int maxLenge = 0; // 受信者との距離マックス
 
 RoutingProtocol::RoutingProtocol ()
 {
@@ -237,13 +250,16 @@ RoutingProtocol::DoInitialize (void)
     {
       //std::cout << "broadcast will be send\n";
       //SendXBroadcast();
-      Simulator::Schedule (Seconds (15), &RoutingProtocol::SendXBroadcast, this);
-      Simulator::Schedule (Seconds (140), &RoutingProtocol::SendXBroadcast, this);
-      Simulator::Schedule (Seconds (141), &RoutingProtocol::SendXBroadcast, this);
-      Simulator::Schedule (Seconds (142), &RoutingProtocol::SendXBroadcast, this);
-      Simulator::Schedule (Seconds (143), &RoutingProtocol::SendXBroadcast, this);
-      Simulator::Schedule (Seconds (145), &RoutingProtocol::SendXBroadcast, this);
-      Simulator::Schedule (Seconds (146), &RoutingProtocol::SendXBroadcast, this);
+      for (int i = 0; i < 100; i++)
+        {
+          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
+        }
+      for (int i = 1; i < SimTime; i++)
+        {
+          if (id == 0)
+            Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
+                                 this); //結果出力関数
+        }
     }
 }
 
@@ -251,9 +267,20 @@ void
 RoutingProtocol::RecvSample (Ptr<Socket> socket)
 {
   std::cout << "In recv Sample(Node " << m_ipv4->GetObject<Node> ()->GetId () << ")\n";
-  // Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
-  // Vector mypos = mobility->GetPosition ();
-  // std::cout << "x " << mypos.x << "y " << mypos.y << "\n";
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector recvpos = mobility->GetPosition ();
+
+  double distance =
+      std::sqrt ((posx - recvpos.x) * (posx - recvpos.x) + (posy - recvpos.y) * (posy - recvpos.y));
+
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  recvCount[id]++;
+
+  if (distance > maxLenge)
+    maxLenge = distance;
+
+  if (distance > 150)
+    std::cout << "送信者との距離 " << distance << "\n";
 }
 
 void
@@ -265,6 +292,11 @@ RoutingProtocol::SendXBroadcast (void)
       int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
       std::cout << "id" << id << "broadcast"
                 << "\n";
+
+      Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+      Vector mypos = mobility->GetPosition ();
+      posx = mypos.x;
+      posy = mypos.y;
 
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
@@ -291,6 +323,22 @@ RoutingProtocol::SendXBroadcast (void)
       std::cout << "broadcast sent\n";
     }
 }
+
+void
+RoutingProtocol::SimulationResult (void) //
+{
+  if (Simulator::Now ().GetSeconds () == SimStartTime + 22)
+    {
+      for (auto itr = recvCount.begin (); itr != recvCount.end (); itr++)
+        {
+          std::cout << "recv hello packet id = " << itr->first // キーを表示
+                    << "取得数 " << itr->second << "\n"; // 値を表示
+        }
+      std::cout << "recv max lenge " << maxLenge << "\n";
+    }
+}
+
+std::map<int, int> RoutingProtocol::recvCount;
 
 } //namespace sample
 } //namespace ns3

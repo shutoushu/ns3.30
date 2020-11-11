@@ -30,6 +30,7 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
+#define maxHop 15
 #define SimTime 40 //シミュレーション時間 second
 #define WindowSize 10000000 //SHUTOUSHUのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
@@ -41,8 +42,10 @@
 #define SimStartMicro 1000000 //broadcast 開始時刻micro秒
 #define SimStartTime 10 //broadcast 開始時刻　秒
 #define InterArea 8 //交差点エリア 正方形メートル　
-#define Seed 33333
-#define TransProbability 1.0 //予想伝送確率の閾値
+#define Seed 33333 // ※毎回変える
+#define NodeNum 200 // ※毎回変える
+#define TransProbability 1.2 //予想伝送確率の閾値
+#define testId 107 // testで動きを表示させるID
 
 namespace ns3 {
 namespace shutoushu {

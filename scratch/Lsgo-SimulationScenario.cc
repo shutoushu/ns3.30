@@ -558,6 +558,8 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
   AsciiTraceHelper ascii;
   Ptr<OutputStreamWrapper> rtw = ascii.CreateFileStream ("routing_table");
 
+  std::cout << "fdksjfksdjkfds\n\n\n";
+
   switch (m_protocol)
     {
     case 0:
@@ -594,8 +596,8 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
       // setup is later
       m_protocolName = "DSR";
       break;
-    default:
-      NS_FATAL_ERROR ("No such protocol:" << m_protocol);
+      // default:
+      //   NS_FATAL_ERROR ("No such protocol:" << m_protocol);
       break;
     case 5:
       list.Add (sample, 100);
@@ -619,6 +621,8 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
                    "protocol done"
                 << "\n\n";
       break;
+    default:
+      NS_FATAL_ERROR ("No such protocol:" << m_protocol);
     }
 
   if (m_protocol < 4) //obstacle
@@ -2392,7 +2396,7 @@ VanetRoutingExperiment::SetupScenario ()
       //std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";//デフォルトのbuildingモデル
 
       std::string bldgFile =
-          "./src/wave/examples/LSGO_Grid/small_buildings.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
+          "./src/wave/examples/LSGO_Grid/normal_buildings.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
 
       std::cout << "building ファイルを入力しましたそのファイルは " << bldgFile << "\n";
 
@@ -2455,11 +2459,11 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
 
-      m_traceFile = "src/wave/examples/LSGO_Grid/grid_500.tcl"; //モビリティ入力ファイル
+      m_traceFile = "src/wave/examples/LSGO_Grid/grid_1000.tcl"; //モビリティ入力ファイル
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 500;
+      m_nNodes = 1000; //変更すべきところ
       m_TotalSimTime = 33; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;

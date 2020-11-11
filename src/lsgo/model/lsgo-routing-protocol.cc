@@ -279,50 +279,36 @@ RoutingProtocol::DoInitialize (void)
     }
 
   //sourse node**********************source node は優先度0 hopcount = 1*************************
-  //500~1000//////////////////////////////////////////////////////////////////////////////////
-  // if (id == 242)
-  //   Simulator::Schedule (Seconds (SimStartTime), &RoutingProtocol::Send, this, 98);
-  // if (id == 369)
-  //   Simulator::Schedule (Seconds (SimStartTime + 1), &RoutingProtocol::Send, this, 466);
-  // if (id == 447)
-  //   Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 331);
-  // if (id == 157)
-  //   Simulator::Schedule (Seconds (SimStartTime + 3), &RoutingProtocol::Send, this, 138);
-  // if (id == 414)
-  //   Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 182);
-  // if (id == 64)
-  //   Simulator::Schedule (Seconds (SimStartTime + 5), &RoutingProtocol::Send, this, 245);
-  // if (id == 111)
-  //   Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 428);
-  // if (id == 420)
-  //   Simulator::Schedule (Seconds (SimStartTime + 7), &RoutingProtocol::Send, this, 208);
-  // if (id == 320)
-  //   Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 32);
-  // if (id == 390)
-  //   Simulator::Schedule (Seconds (SimStartTime + 9), &RoutingProtocol::Send, this, 36);
-  // if (id == 200)
-  //   Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 461);
-  // if (id == 438)
-  //   Simulator::Schedule (Seconds (SimStartTime + 11), &RoutingProtocol::Send, this, 95);
-  // if (id == 369)
-  //   Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this, 235);
-  // if (id == 244)
-  //   Simulator::Schedule (Seconds (SimStartTime + 13), &RoutingProtocol::Send, this, 70);
-  // if (id == 167)
-  //   Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this, 103);
-  // if (id == 429)
-  //   Simulator::Schedule (Seconds (SimStartTime + 15), &RoutingProtocol::Send, this, 81);
-  // if (id == 155)
-  //   Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this, 42);
-  // if (id == 208)
-  //   Simulator::Schedule (Seconds (SimStartTime + 17), &RoutingProtocol::Send, this, 461);
-  // if (id == 478)
-  //   Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this, 122);
 
   //////////////////////////////////////test 用
-  if (id == 1) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 9); //宛先ノード
-
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 10); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 20); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 30); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 40); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 50); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this,
+                         60); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this,
+                         70); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this,
+                         80); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this,
+                         90); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this,
+                         100); //宛先ノード
+  if (id == testId) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 20), &RoutingProtocol::Send, this,
+                         110); //宛先ノード
   /////////////////////////////////random
   // if (id == 0)
   //   {
@@ -461,7 +447,8 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  std::cout << "id" << id << "が持つ\n";
+  if (id == testId)
+    std::cout << "id" << id << "が持つ\n";
 
   for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
     { ////next                  目的地までの距離とETX値から優先度を示す値をマップに保存する
@@ -532,7 +519,7 @@ RoutingProtocol::SendToLsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address
                              int32_t hopcount, int32_t des_id)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  int32_t current_time = Simulator::Now ().GetMicroSeconds ();
+  //int32_t current_time = Simulator::Now ().GetMicroSeconds ();
   std::cout << "send lsgo m_wait" << m_wait[des_id] << "\n";
   std::cout << "send Lsgo hopcount" << hopcount << "\n";
 
@@ -544,13 +531,15 @@ RoutingProtocol::SendToLsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address
       socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
       m_wait.erase (des_id);
       if (m_finish_time[des_id] == 0) // まだ受信車両が受信してなかったら
-        broadcount[des_id] = broadcount[des_id] + 1;
+        {
+          broadcount[des_id] = broadcount[des_id] + 1;
+        }
     }
   else
     {
-      std::cout << "id " << id
-                << " ブロードキャストキャンセル----------------------------------------------------"
-                << "m_wait" << m_wait[id] << "time" << current_time << "\n";
+      // std::cout << "id " << id
+      //           << " ブロードキャストキャンセル----------------------------------------------------"
+      //           << "m_wait" << m_wait[id] << "time" << current_time << "\n";
     }
 }
 
@@ -561,6 +550,10 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
        j != m_socketAddresses.end (); ++j)
     {
+
+      if (hopcount > maxHop) // hop数が最大値を超えたらブレイク
+        break;
+
       int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
 
       if (m_trans[send_node_id] == 0 && pri_value != 0) //通信許可がないノードならbreakする
@@ -669,7 +662,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
             }
         }
 
-      std::cout << "候補ノード数は" << candidataNum << "\n";
+      //std::cout << "候補ノード数は" << candidataNum << "\n";
       switch (candidataNum) //候補ノード数によってダミーノードIDを加える
         {
         case 1:
@@ -696,8 +689,9 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         {
           if (pri_id[i] != 10000000)
             {
-              std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
-                        << m_rt[pri_id[i]] << "\n";
+              if (send_node_id == testId)
+                std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
+                          << m_rt[pri_id[i]] << "hello受信回数 " << m_recvcount.size () << "\n";
             }
         }
 
@@ -723,16 +717,8 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       TypeHeader tHeader (LSGOTYPE_SEND);
       packet->AddHeader (tHeader);
 
-      //std::cout << "packet size" << packet->GetSize () << "\n";
-      //int32_t current_time = Simulator::Now ().GetMicroSeconds ();
-
       int32_t wait_time = (pri_value * WaitT) - WaitT; //待ち時間
       m_wait[des_id] = hopcount; //今から待機するホップカウント
-
-      std::cout << " id " << send_node_id << "の待ち時間は  " << wait_time << "\n";
-      std::cout << "自身の優先度pri value" << pri_value << "\n";
-      std::cout << "m_wait(hopcount)" << m_wait[des_id] << "\n";
-      std::cout << "-------------------------------------------\n";
 
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
       Ipv4Address destination;
@@ -748,9 +734,9 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       if (pri_value == 0) //初期のソースノードなら無条件にbroadcast
         {
           socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
-          std::cout << "id " << send_node_id
-                    << " broadcast----------------------------------------------------"
-                    << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
+          // std::cout << "id " << send_node_id
+          //           << " broadcast----------------------------------------------------"
+          //           << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
         }
       else
         {
@@ -859,24 +845,15 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
             if (m_wait[des_id] >= hopcount)
               { //待機中のホップカウントより大きいホップカウントを受け取ったなら
                 m_wait.erase (des_id);
-                std::cout << "cancel packet recv id" << id << "time----------\n"
-                          << Simulator::Now ().GetMicroSeconds ();
               }
 
             for (int i = 0; i < 5; i++)
               {
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
-                    if (m_wait[des_id] == 0)
-                      { // ※待ち状態でパケットを取得して待ち状態をキャンセルしたがそのパケットの中に自分のIDが含まれていた場合
-                        std::cout << "cancel packetが関係あるrecv id" << id << "time---------------"
-                                  << Simulator::Now ().GetMicroSeconds ();
-                      }
-                    else
-                      {
-                        std::cout << "待ち状態で関係あるrecv id" << id << "time---------------"
-                                  << Simulator::Now ().GetMicroSeconds ();
-                      }
+                    // //std::cout << "\n--------------------------------------------------------\n";
+                    // std::cout << "関係あるrecv id" << id << "time------------------------------\n"
+                    //           << Simulator::Now ().GetMicroSeconds ();
 
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
@@ -893,8 +870,8 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
                     //std::cout << "\n--------------------------------------------------------\n";
-                    std::cout << "待ち状態ではないが関係あるrecv id" << id << "time-----------"
-                              << Simulator::Now ().GetMicroSeconds () << "\n";
+                    // std::cout << "待ち状態ではないが関係あるrecv id" << id << "time-----------"
+                    //           << Simulator::Now ().GetMicroSeconds () << "\n";
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
@@ -1066,7 +1043,7 @@ RoutingProtocol::SimulationResult (void) //
       int sum_end_time = 0;
       int sum_br = 0; //ブロードキャスト数の平均
       double average_end_time = 0;
-      int count = 0;
+      int recvCount = 0;
       std::cout << "\n\n\n結果出力----------------------------------\n\n";
       for (auto itr = broadcount.begin (); itr != broadcount.end (); itr++)
         {
@@ -1074,26 +1051,36 @@ RoutingProtocol::SimulationResult (void) //
                     << "\n";
           sum_br += broadcount[itr->first];
         }
+      for (auto itr = m_start_time.begin (); itr != m_start_time.end (); itr++)
+        {
+          std::cout << "des id " << itr->first << "送信開始時刻" << m_start_time[itr->first]
+                    << "\n";
+        }
       for (auto itr = m_finish_time.begin (); itr != m_finish_time.end (); itr++)
         {
-          int end_to_end_time = m_finish_time[itr->first] - m_start_time[itr->first];
-          sum_end_time += end_to_end_time;
-          std::cout << "destination id = " << itr->first
-                    << "end to end deley time = " << end_to_end_time << "\n";
-          count++;
+          if (m_finish_time[itr->first] != 0) // 受信回数分回る
+            {
+              std::cout << "des id " << itr->first << "受信時刻" << m_finish_time[itr->first]
+                        << "\n";
+              int end_to_end_time = m_finish_time[itr->first] - m_start_time[itr->first];
+              sum_end_time += end_to_end_time;
+              std::cout << "destination id = " << itr->first
+                        << "end to end deley time = " << end_to_end_time << "\n";
+              recvCount++;
+            }
         }
       std::cout << "sum_br" << sum_br << "\n";
-      std::cout << "count" << count << "\n";
+      std::cout << "recvCount" << recvCount << "\n";
       std::cout << "sum_end_time" << sum_end_time << "\n";
-      double average_overhead = (double) sum_br / (double) m_finish_time.size ();
-      double packet_recv_rate = (double) m_finish_time.size () / (double) m_start_time.size ();
-      average_end_time = (double) sum_end_time / (double) count;
+      double average_overhead = (double) sum_br / (double) recvCount;
+      double packet_recv_rate = (double) recvCount / (double) m_start_time.size ();
+      average_end_time = (double) sum_end_time / (double) recvCount;
       std::cout << "本シミュレーションのパケット到達率は" << packet_recv_rate << "\n";
       std::cout << "本シミュレーションのパケットEnd to End遅延時間は" << average_end_time << "\n";
       std::cout << "本シミュレーションのパケット平均オーバーヘッドは" << average_overhead << "\n";
       std::cout << "本シミュレーションのシミュレーション開始時刻は" << SimStartTime << "\n";
       std::cout << "送信数は" << m_start_time.size () << "\n";
-      std::cout << "受信数は" << m_finish_time.size () << "\n";
+      std::cout << "受信数は" << recvCount << "\n";
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
