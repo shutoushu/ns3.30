@@ -282,58 +282,58 @@ RoutingProtocol::DoInitialize (void)
   //500~1000//////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////test 用
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 10); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 20); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 30); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 40); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 50); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this,
-                         60); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this,
-                         70); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this,
-                         80); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this,
-                         90); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this,
-                         100); //宛先ノード
-  if (id == testId) // 送信車両　
-    Simulator::Schedule (Seconds (SimStartTime + 20), &RoutingProtocol::Send, this,
-                         110); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 10); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 20); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 30); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 40); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 50); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this,
+  //                        60); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this,
+  //                        70); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this,
+  //                        80); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this,
+  //                        90); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this,
+  //                        100); //宛先ノード
+  // if (id == testId) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 20), &RoutingProtocol::Send, this,
+  //                        110); //宛先ノード
 
   ////////////////////////////////////random
 
-  // if (id == 0)
-  //   {
-  //     std::mt19937 rand_src (Seed); //シード値
-  //     std::uniform_int_distribution<int> rand_dist (0, NodeNum);
-  //     for (int i = 0; i < 20; i++)
-  //       {
-  //         m_source_id[i] = rand_dist (rand_src);
-  //         m_des_id[i] = rand_dist (rand_src);
-  //       }
-  //   }
+  if (id == 0)
+    {
+      std::mt19937 rand_src (Seed); //シード値
+      std::uniform_int_distribution<int> rand_dist (0, NodeNum);
+      for (int i = 0; i < 20; i++)
+        {
+          m_source_id[i] = rand_dist (rand_src);
+          m_des_id[i] = rand_dist (rand_src);
+        }
+    }
 
-  // for (int i = 0; i < 20; i++)
-  //   {
-  //     if (id == m_source_id[i])
-  //       {
-  //         Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
-  //                              m_des_id[i]);
-  //         std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
-  //                   << "\n";
-  //       }
-  //   }
+  for (int i = 0; i < 20; i++)
+    {
+      if (id == m_source_id[i])
+        {
+          Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
+                               m_des_id[i]);
+          std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
+                    << "\n";
+        }
+    }
 }
 void
 RoutingProtocol::Send (int des_id)
