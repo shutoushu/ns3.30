@@ -40,7 +40,7 @@
 #define SimStartMicro_Time 1000000 //４０秒
 #define SimStartTime 10 //４０秒
 #define Seed 33333 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
-#define NodeNum 200 //  ※毎回変える
+#define NodeNum 500 //  ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
 

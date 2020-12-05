@@ -63,7 +63,11 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
 /// UDP Port for SHUTOUSHU control traffic
 const uint32_t RoutingProtocol::SHUTOUSHU_PORT = 654;
-int numVehicle = 0; //グローバル変数
+
+//グローバル変数
+int numVehicle = 0; //車両数
+int roadCenterPointX[113]; //道路の中心x座標を格納
+int roadCenterPointY[113]; //道路の中心y座標を格納
 
 RoutingProtocol::RoutingProtocol ()
 {
@@ -256,11 +260,7 @@ RoutingProtocol::DoInitialize (void)
   if (id == 0)
     {
       ReadFile ();
-      // for (int i = 0; i < NodeNum; i++) //id分回す
-      //   {
-      //     Simulator::Schedule (Seconds (m_node_start_time[i]), &RoutingProtocol::Trans, this, i);
-      //     Simulator::Schedule (Seconds (m_node_finish_time[i]), &RoutingProtocol::NoTrans, this, i);
-      //   }
+      RoadCenterPoint ();
     }
 
   for (int i = 1; i < SimTime; i++)
@@ -282,8 +282,8 @@ RoutingProtocol::DoInitialize (void)
   //500~1000//////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////test 用
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 10); //宛先ノード
+  // if (id == 16) // 送信車両　
+  //   Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 21); //宛先ノード
   // if (id == testId) // 送信車両　
   //   Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 20); //宛先ノード
   // if (id == testId) // 送信車両　
@@ -441,15 +441,25 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
 void
 RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
 {
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
+
+  double Rp;
+  int nearRoadId;
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  //int myRoadId = distinctionRoad (mypos.x, mypos.y);
+
+  nearRoadId = NearRoadId (des_x, des_y);
+  std::cout << "id" << id << "が持つ\n";
+  std::cout << "最も近い道路IDは" << nearRoadId << "\n";
+  //最も目的地に近い道路に存在するノードのどれか一つに届く確率Rpを返す関数
+  Rp = CalculateRp (nearRoadId);
+  std::cout << "Rp" << Rp << "\n";
+
   double Dsd; //ソースノードと目的地までの距離(sendSHUTOUSHUbroadcastするノード)
   double Did; //候補ノードと目的地までの距離
   int Distination_x = des_x;
   int Distination_y = des_y;
-  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
-  Vector mypos = mobility->GetPosition ();
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (id == testId)
-    std::cout << "id" << id << "が持つ\n";
 
   for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
     { ////next                  目的地までの距離とETX値から優先度を示す値をマップに保存する
@@ -464,6 +474,12 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
       //std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
 
       ///交差点にいるか　いないかの場合分け
+      if (distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first]) == 0)
+        { //roadid=0 すなわち交差点ノードならば
+          std::cout << "候補ノードid" << itr->first << "は交差点にいます\n";
+          inter = 1;
+        }
+
       // for (int x = 0; x < 2200;)
       //   {
       //     for (int y = 0; y < 2200;)
@@ -489,18 +505,90 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
               m_ypoint[itr->first]); //角度Bを求める 中心となる座標b_x b_y = source node  = id = id
           std::cout << "source id" << id << "候補ノードid" << itr->first
                     << "とのdestinationまでの角度は" << angle << "\n";
-
-          m_pri_value[itr->first] = m_pri_value[itr->first] * InterPoint * angle;
-
-          //std::cout << "test angle" << getAngle (1.0, 1.0, 0.0, 0.0, 0.0, 1.0) << "\n";
+          if (Rp != 0)
+            {
+              m_pri_value[itr->first] = m_pri_value[itr->first] + InterPoint * angle / Rp;
+            }
         }
       else
         {
           m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
         }
-
-      //std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
+      if (id == 16)
+        std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
     }
+}
+
+//目的地に最も近い道路IDを返す関数
+int
+RoutingProtocol::NearRoadId (int32_t des_x, int32_t des_y)
+{
+  int nearRoadId;
+  double minDistance;
+  int count = 0;
+  for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
+    {
+      //近隣ノードが位置する道路の中心座標を取得　
+      int roadCenterX =
+          roadCenterPointX[distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first])];
+      int roadCenterY =
+          roadCenterPointY[distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first])];
+      if (distinctionRoad (roadCenterX, roadCenterY) == 0)
+        continue;
+
+      //std::cout << "id" << itr->first << "のroad idは" << distinctionRoad (roadCenterX, roadCenterY)
+      //<< "roadCenterX" << roadCenterX << "roadCenterY" << roadCenterY << "\n";
+      //目的地とそれぞれの道路の中心座標の距離を計算
+      double distance = getDistance (roadCenterX, roadCenterY, des_x, des_y);
+      //std::cout << "id" << itr->first << "distance" << distance << "\n";
+      if (count == 0)
+        {
+          minDistance = distance;
+          nearRoadId = distinctionRoad (roadCenterX, roadCenterY);
+        }
+      else
+        {
+          if (distance < minDistance)
+            {
+              minDistance = distance;
+              nearRoadId = distinctionRoad (roadCenterX, roadCenterY);
+            }
+        }
+      count++;
+    }
+  return nearRoadId;
+}
+
+//近い道路IDを受取その道路のRpを返す
+double
+RoutingProtocol::CalculateRp (int nearRoadId)
+{
+  double Rp = 0;
+  double missProbability = 1; //道路に存在するすべてのノードとの伝送が失敗する確率
+  int count = 0;
+
+  for (auto itr = m_rt.begin (); itr != m_rt.end (); itr++)
+    {
+      if (distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first]) == nearRoadId)
+        {
+          if (count == 0)
+            {
+              missProbability = 1 - m_rt[itr->first];
+              std::cout << "link を持っている node id" << itr->first << "とのrtは"
+                        << m_rt[itr->first] << "\n";
+            }
+          else
+            {
+              std::cout << "link を持っている node id" << itr->first << "とのrtは"
+                        << m_rt[itr->first] << "\n";
+              missProbability = missProbability * (1 - m_rt[itr->first]);
+            }
+          count++;
+        }
+    }
+
+  Rp = 1 - missProbability;
+  return Rp;
 }
 
 void
@@ -621,12 +709,6 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
       SetEtxMap (); //m_rt と EtX mapをセットする
       SetPriValueMap (des_x, des_y); //優先度を決める値をセットする関数
 
-      // int32_t pri1_node_id = 10000000; ///ダミーID
-      // int32_t pri2_node_id = 10000000;
-      // int32_t pri3_node_id = 10000000;
-      // int32_t pri4_node_id = 10000000;
-      // int32_t pri5_node_id = 10000000;
-
       int32_t pri_id[6];
       pri_id[1] = 10000000; ///ダミーID
       pri_id[2] = 10000000;
@@ -733,9 +815,9 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
         {
           if (pri_id[i] != 10000000)
             {
-              if (send_node_id == testId)
-                std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
-                          << m_rt[pri_id[i]] << "hello受信回数 " << m_recvcount.size () << "\n";
+              //if (send_node_id == testId)
+              std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
+                        << m_rt[pri_id[i]] << "hello受信回数 " << m_recvcount.size () << "\n";
             }
         }
 
@@ -1138,7 +1220,6 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
 
   for (int roadId = 1; roadId <= 112; roadId++)
     {
-
       if (roadId <= 56)
         {
           if (x <= x_point && x_point <= x + range && y <= y_point &&
@@ -1187,6 +1268,79 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
     }
   return 0; // ０を返す = 交差点ノード
 }
+
+void
+RoutingProtocol::RoadCenterPoint (void)
+{
+  int count = 1;
+  int gridRange = 300;
+
+  for (int roadId = 1; roadId <= 112; roadId++)
+    {
+      if (roadId <= 56)
+        {
+          if (count == 7) //7のときcount変数を初期化
+            {
+              count = 1;
+              roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
+              roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
+            }
+          else // 7以外は足していく
+            {
+              if (roadId == 1)
+                {
+                  roadCenterPointX[roadId] = 150;
+                  roadCenterPointY[roadId] = 0;
+                }
+              else if (count == 1)
+                {
+                  roadCenterPointX[roadId] = 150;
+                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + 300;
+                }
+              else
+                {
+                  roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
+                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
+                }
+              count++;
+            }
+
+          if (roadId == 56)
+            {
+              count = 1;
+            }
+        }
+      else //57〜
+        {
+          if (count == 8) //7のときcount変数を初期化
+            {
+              count = 1;
+              roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
+              roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
+            }
+          else // 7以外は足していく
+            {
+              if (roadId == 57)
+                {
+                  roadCenterPointX[roadId] = 0;
+                  roadCenterPointY[roadId] = 150;
+                }
+              else if (count == 1)
+                {
+                  roadCenterPointX[roadId] = 0;
+                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + 300;
+                }
+              else
+                {
+                  roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
+                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
+                }
+              count++;
+            }
+        }
+    }
+}
+
 // シミュレーション結果の出力関数
 void
 RoutingProtocol::SimulationResult (void) //

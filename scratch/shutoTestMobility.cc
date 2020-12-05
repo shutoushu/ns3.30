@@ -95,6 +95,12 @@ public:
   Ptr<Node> mn13;
   Ptr<Node> mn14;
   Ptr<Node> mn15;
+  Ptr<Node> mn16;
+  Ptr<Node> mn17;
+  Ptr<Node> mn18;
+  Ptr<Node> mn19;
+  Ptr<Node> mn20;
+  Ptr<Node> mn21;
 
   uint32_t totalReceived;
   uint32_t totalSent;
@@ -224,6 +230,12 @@ NetSim::CreateNetworkTopology ()
   mn13 = CreateObject<Node> (); // create 1 mobile node
   mn14 = CreateObject<Node> (); // create 1 mobile node
   mn15 = CreateObject<Node> (); // create 1 mobile node
+  mn16 = CreateObject<Node> (); // create 1 mobile node
+  mn17 = CreateObject<Node> (); // create 1 mobile node
+  mn18 = CreateObject<Node> (); // create 1 mobile node
+  mn19 = CreateObject<Node> (); // create 1 mobile node
+  mn20 = CreateObject<Node> (); // create 1 mobile node
+  mn21 = CreateObject<Node> (); // create 1 mobile node
 
   allNodes.Add (wlanNodes);
   allNodes.Add (mn);
@@ -241,6 +253,12 @@ NetSim::CreateNetworkTopology ()
   allNodes.Add (mn13);
   allNodes.Add (mn14);
   allNodes.Add (mn15);
+  allNodes.Add (mn16);
+  allNodes.Add (mn17);
+  allNodes.Add (mn18);
+  allNodes.Add (mn19);
+  allNodes.Add (mn20);
+  allNodes.Add (mn21);
 }
 
 void
@@ -450,6 +468,54 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   m_mob15->AddWaypoint (wpt_start150);
   Waypoint wpt_stop150 (Seconds (30.0), Vector (1200.0, 300.0, 0.0));
   m_mob15->AddWaypoint (wpt_stop150);
+
+  Ptr<WaypointMobilityModel> m_mob16;
+  m_mob16 = CreateObject<WaypointMobilityModel> ();
+  mn16->AggregateObject (m_mob16);
+  Waypoint wpt_start16 (Seconds (5.0), Vector (300.0, 700.0, 0.0));
+  m_mob16->AddWaypoint (wpt_start16);
+  Waypoint wpt_stop16 (Seconds (SIM_STOP - 20), Vector (300.0, 700.0, 0.0));
+  m_mob16->AddWaypoint (wpt_stop16);
+
+  Ptr<WaypointMobilityModel> m_mob17;
+  m_mob17 = CreateObject<WaypointMobilityModel> ();
+  mn17->AggregateObject (m_mob17);
+  Waypoint wpt_start17 (Seconds (5.0), Vector (300.0, 600.0, 0.0));
+  m_mob17->AddWaypoint (wpt_start17);
+  Waypoint wpt_stop17 (Seconds (SIM_STOP - 20), Vector (300.0, 600.0, 0.0));
+  m_mob17->AddWaypoint (wpt_stop17);
+
+  Ptr<WaypointMobilityModel> m_mob18;
+  m_mob18 = CreateObject<WaypointMobilityModel> ();
+  mn18->AggregateObject (m_mob18);
+  Waypoint wpt_start18 (Seconds (5.0), Vector (400.0, 600.0, 0.0));
+  m_mob18->AddWaypoint (wpt_start18);
+  Waypoint wpt_stop18 (Seconds (SIM_STOP - 20), Vector (400.0, 600.0, 0.0));
+  m_mob18->AddWaypoint (wpt_stop18);
+
+  Ptr<WaypointMobilityModel> m_mob19;
+  m_mob19 = CreateObject<WaypointMobilityModel> ();
+  mn19->AggregateObject (m_mob19);
+  Waypoint wpt_start19 (Seconds (5.0), Vector (450.0, 600.0, 0.0));
+  m_mob19->AddWaypoint (wpt_start19);
+  Waypoint wpt_stop19 (Seconds (SIM_STOP - 20), Vector (450.0, 600.0, 0.0));
+  m_mob19->AddWaypoint (wpt_stop19);
+
+  Ptr<WaypointMobilityModel> m_mob20;
+  m_mob20 = CreateObject<WaypointMobilityModel> ();
+  mn20->AggregateObject (m_mob20);
+  Waypoint wpt_start20 (Seconds (5.0), Vector (300.0, 500.0, 0.0));
+  m_mob20->AddWaypoint (wpt_start20);
+  Waypoint wpt_stop20 (Seconds (SIM_STOP - 20), Vector (300.0, 500.0, 0.0));
+  m_mob20->AddWaypoint (wpt_stop20);
+
+  Ptr<WaypointMobilityModel> m_mob21;
+  m_mob21 = CreateObject<WaypointMobilityModel> ();
+  mn21->AggregateObject (m_mob21);
+  Waypoint wpt_start21 (Seconds (5.0), Vector (600.0, 350.0, 0.0));
+  m_mob21->AddWaypoint (wpt_start21);
+  Waypoint wpt_stop21 (Seconds (SIM_STOP - 20), Vector (600.0, 350.0, 0.0));
+  m_mob21->AddWaypoint (wpt_stop21);
 }
 
 void
@@ -571,7 +637,7 @@ main (int argc, char *argv[])
   Simulator::Stop (Seconds (SIM_STOP));
   AnimationInterface anim (animFile);
 
-  for (int i = 0; i < 14; i++)
+  for (int i = 0; i < 22; i++)
     {
       anim.UpdateNodeSize (i, 10, 1);
     }

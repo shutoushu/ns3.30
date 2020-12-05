@@ -14,8 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * 
+ * 実行コマンド
+ * ~/shuto/workspace30/ns-3-allinone/ns-3.30
+ * 提案プロトコル
+ * sudo ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=7 --lossModel=4 --scenario=3"
+ * LSGO
+ * sudo ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=6 --lossModel=4 --scenario=3"
+ * 
+ * シナリオコード
+ * 車両数に注意
+ * NodeNum
+ * 
  *
- * Author: Alberto Gallegos <ramonet@fc.ritsumei.ac.jp>
+ * Author: Shuto Takahashi <is0361er@ed.ritsumei.ac.jp>
  *         Ritsumeikan University, Shiga, Japan
  */
 #ifndef SHUTOUSHUROUTINGPROTOCOL_H
@@ -38,12 +51,12 @@
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
-#define InterPoint 0.07 //交差点ノードの与えるポイントの重み付け
+#define InterPoint 0.1 //交差点ノードの与えるポイントの重み付け
 #define SimStartMicro 1000000 //broadcast 開始時刻micro秒
 #define SimStartTime 10 //broadcast 開始時刻　秒
 #define InterArea 8 //交差点エリア 正方形メートル　
 #define Seed 33333 // ※毎回変える
-#define NodeNum 200 // ※毎回変える
+#define NodeNum 500 // ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
 
@@ -141,6 +154,9 @@ private:
   void Send (int des_id); //シミュレーションソースIDとDestinationIDを指定する関数
   int distinctionRoad (int x_point,
                        int y_ypoint); //ｘ座標とy座標から道路番号を割り出す関数　return 道路番号
+  void RoadCenterPoint (); //roadの中心座標を格納するだけの関数
+  int NearRoadId (int32_t des_x, int32_t des_y); //目的地に最も近い道路IDを返す関数
+  double CalculateRp (int nearRoadId); //近い道路IDを受取その道路のRpを返す
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition

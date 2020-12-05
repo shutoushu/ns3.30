@@ -2225,8 +2225,8 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
                                       DoubleValue (6.0), "ReferenceDistance",
-                                      DoubleValue (40.0), ///伝搬距離250メートル
-                                      //DoubleValue (150.0), ///伝搬距離１メートル
+                                      DoubleValue (35.0), ///伝搬距離250メートル
+                                      //DoubleValue (150.0),
                                       "ReferenceLoss", DoubleValue (46.6777));
 
       wifiChannel.AddPropagationLoss ("ns3::NakagamiPropagationLossModel");
@@ -2461,11 +2461,11 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
 
-      m_traceFile = "src/wave/examples/LSGO_Grid/grid_700.tcl"; //モビリティ入力ファイル
+      m_traceFile = "src/wave/examples/LSGO_Grid/grid_800.tcl"; //モビリティ入力ファイル
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 700; //変更すべきところ
+      m_nNodes = 800; //変更すべきところ
       m_TotalSimTime = 33; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;
