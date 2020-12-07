@@ -51,7 +51,7 @@
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
-#define InterPoint 0.1 //交差点ノードの与えるポイントの重み付け
+#define InterPoint 0.2 //交差点ノードの与えるポイントの重み付け
 #define SimStartMicro 1000000 //broadcast 開始時刻micro秒
 #define SimStartTime 10 //broadcast 開始時刻　秒
 #define InterArea 8 //交差点エリア 正方形メートル　
@@ -59,6 +59,8 @@
 #define NodeNum 500 // ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
+#define AngleGamma 0.3 // ガンマ変換　
+#define RpGamma 2.0
 
 namespace ns3 {
 namespace shutoushu {

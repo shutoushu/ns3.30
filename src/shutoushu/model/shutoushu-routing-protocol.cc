@@ -259,8 +259,18 @@ RoutingProtocol::DoInitialize (void)
   numVehicle++;
   if (id == 0)
     {
+      //std::cout << "getangle" << getAngle (900.0, 900.0, 1200.0, 900.0, 1200.0, 1200.0);
       ReadFile ();
       RoadCenterPoint ();
+      double angle = 60;
+      double gammaAngle = angle / 90;
+      gammaAngle = pow (gammaAngle, 1 / AngleGamma);
+      gammaAngle = 90 * gammaAngle;
+      double Rp = 0.25;
+
+      double gammaRp = pow (Rp, 1 / RpGamma);
+
+      std::cout << "angle check" << gammaAngle << "Rp" << gammaRp << "\n";
     }
 
   for (int i = 1; i < SimTime; i++)
@@ -450,7 +460,8 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
   //int myRoadId = distinctionRoad (mypos.x, mypos.y);
 
   nearRoadId = NearRoadId (des_x, des_y);
-  std::cout << "id" << id << "が持つ\n";
+  std::cout << "id" << id << "が持つ(" << mypos.x << "," << mypos.y << ")"
+            << "\n";
   std::cout << "最も近い道路IDは" << nearRoadId << "\n";
   //最も目的地に近い道路に存在するノードのどれか一つに届く確率Rpを返す関数
   Rp = CalculateRp (nearRoadId);
@@ -476,7 +487,9 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
       ///交差点にいるか　いないかの場合分け
       if (distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first]) == 0)
         { //roadid=0 すなわち交差点ノードならば
-          std::cout << "候補ノードid" << itr->first << "は交差点にいます\n";
+          std::cout << "候補ノードid" << itr->first << "は交差点にいます(" << m_xpoint[itr->first]
+                    << "," << m_ypoint[itr->first] << ")"
+                    << "\n";
           inter = 1;
         }
 
@@ -504,18 +517,27 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
               des_x, des_y, mypos.x, mypos.y, m_xpoint[itr->first],
               m_ypoint[itr->first]); //角度Bを求める 中心となる座標b_x b_y = source node  = id = id
           std::cout << "source id" << id << "候補ノードid" << itr->first
-                    << "とのdestinationまでの角度は" << angle << "\n";
+                    << "とのdestinationまでの角度は" << angle << "destination position(" << des_x
+                    << "," << des_y << ")"
+                    << "\n";
+          double gammaAngle = angle / 90;
+          gammaAngle = pow (gammaAngle, 1 / AngleGamma);
+          gammaAngle = 90 * gammaAngle;
+
+          double gammaRp = pow (Rp, 1 / RpGamma);
+
           if (Rp != 0)
             {
-              m_pri_value[itr->first] = m_pri_value[itr->first] + InterPoint * angle / Rp;
+              m_pri_value[itr->first] = m_pri_value[itr->first] + InterPoint * gammaAngle / gammaRp;
             }
         }
       else
         {
           m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
         }
-      if (id == 16)
-        std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
+      std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "position("
+                << m_xpoint[itr->first] << "," << m_ypoint[itr->first] << ")"
+                << "\n";
     }
 }
 
@@ -644,14 +666,14 @@ RoutingProtocol::SendToShutoushu (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Ad
                                   int32_t hopcount, int32_t des_id)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  //int32_t current_time = Simulator::Now ().GetMicroSeconds ();
-  std::cout << "send shutoushu m_wait" << m_wait[des_id] << "\n";
-  std::cout << "send Shutoushu hopcount" << hopcount << "\n";
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
 
   if (m_wait[des_id] == hopcount) //送信するhopcount がまだ待機中だったら
     {
       std::cout << "id " << id << " broadcast----------------------------------------------------"
                 << "time" << Simulator::Now ().GetMicroSeconds () << "m_wait" << m_wait[des_id]
+                << "position(" << mypos.x << "," << mypos.y << ")"
                 << "\n";
       socket->SendTo (packet, 0, InetSocketAddress (destination, SHUTOUSHU_PORT));
       m_wait.erase (des_id);
@@ -817,7 +839,7 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
             {
               //if (send_node_id == testId)
               std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
-                        << m_rt[pri_id[i]] << "hello受信回数 " << m_recvcount.size () << "\n";
+                        << m_rt[pri_id[i]] << "\n";
             }
         }
 

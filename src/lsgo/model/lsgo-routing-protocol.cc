@@ -519,14 +519,14 @@ RoutingProtocol::SendToLsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address
                              int32_t hopcount, int32_t des_id)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  //int32_t current_time = Simulator::Now ().GetMicroSeconds ();
-  std::cout << "send lsgo m_wait" << m_wait[des_id] << "\n";
-  std::cout << "send Lsgo hopcount" << hopcount << "\n";
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
 
   if (m_wait[des_id] == hopcount) //送信するhopcount がまだ待機中だったら
     {
       std::cout << "id " << id << " broadcast----------------------------------------------------"
                 << "time" << Simulator::Now ().GetMicroSeconds () << "m_wait" << m_wait[des_id]
+                << "position(" << mypos.x << "," << mypos.y << ")"
                 << "\n";
       socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
       m_wait.erase (des_id);
