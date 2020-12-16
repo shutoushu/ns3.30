@@ -526,7 +526,7 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
 
           double gammaRp = pow (Rp, 1 / RpGamma);
 
-          if (Rp != 0 && angle > 45)
+          if (Rp != 0 && angle > 45 && Rp < 0.5)
             {
               m_pri_value[itr->first] = m_pri_value[itr->first] + InterPoint * gammaAngle / gammaRp;
               std::cout << "total 交差点 point" << InterPoint * gammaAngle / gammaRp;
