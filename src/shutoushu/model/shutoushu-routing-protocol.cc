@@ -68,6 +68,8 @@ const uint32_t RoutingProtocol::SHUTOUSHU_PORT = 654;
 int numVehicle = 0; //車両数
 int roadCenterPointX[113]; //道路の中心x座標を格納
 int roadCenterPointY[113]; //道路の中心y座標を格納
+std::string filename = "shutoushu-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
+std::ofstream packetTrajectory (filename);
 
 RoutingProtocol::RoutingProtocol ()
 {
@@ -254,6 +256,7 @@ RoutingProtocol::DoInitialize (void)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   //int32_t time = Simulator::Now ().GetMicroSeconds ();
+  std::string filename;
   m_trans[id] = 1;
 
   numVehicle++;
@@ -261,6 +264,30 @@ RoutingProtocol::DoInitialize (void)
     {
       //std::cout << "getangle" << getAngle (900.0, 900.0, 1200.0, 900.0, 1200.0, 1200.0);
       ReadFile ();
+
+      ///やることリスト
+      ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
+      packetTrajectory << "source_x"
+                       << ", "
+                       << "source_y"
+                       << ", "
+                       << "recv_x"
+                       << ", "
+                       << "recv_y"
+                       << ", "
+                       << "time"
+                       << ", "
+                       << "recv_priority"
+                       << ", "
+                       << "hopcount"
+                       << ", "
+                       << "recv_id"
+                       << ", "
+                       << "source_id"
+                       << ", "
+                       << "destination_id"
+                       << ", " << std::endl;
+
       RoadCenterPoint ();
       double angle = 60;
       double gammaAngle = angle / 90;
@@ -292,8 +319,8 @@ RoutingProtocol::DoInitialize (void)
   //500~1000//////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////test 用
-  // if (id == 16) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 21); //宛先ノード
+  if (id == 1) // 送信車両　
+    Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 9); //宛先ノード
   // if (id == testId) // 送信車両　
   //   Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 20); //宛先ノード
   // if (id == testId) // 送信車両　
@@ -323,27 +350,28 @@ RoutingProtocol::DoInitialize (void)
 
   ////////////////////////////////////random
 
-  if (id == 0)
-    {
-      std::mt19937 rand_src (Seed); //シード値
-      std::uniform_int_distribution<int> rand_dist (0, NodeNum);
-      for (int i = 0; i < 20; i++)
-        {
-          m_source_id[i] = rand_dist (rand_src);
-          m_des_id[i] = rand_dist (rand_src);
-        }
-    }
+  // if (id == 0)
+  //   {
+  //     std::mt19937 rand_src (Seed); //シード値
+  //     std::uniform_int_distribution<int> rand_dist (0, NodeNum);
+  //     for (int i = 0; i < 20; i++)
+  //       {
+  //         m_source_id[i] = rand_dist (rand_src);
+  //         m_des_id[i] = rand_dist (rand_src);
+  //       }
+  //   }
 
-  for (int i = 0; i < 20; i++)
-    {
-      if (id == m_source_id[i])
-        {
-          Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
-                               m_des_id[i]);
-          std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
-                    << "\n";
-        }
-    }
+  // for (int i = 0; i < 20; i++)
+  //   {
+  //     if (id == m_source_id[i])
+  //       {
+  //         Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
+  //                              m_des_id[i]);
+  //         std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
+  //                   << "\n";
+  //       }
+  //   }
+  /////////////////////////////random
 }
 void
 RoutingProtocol::Send (int des_id)
@@ -900,6 +928,9 @@ void
 RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
+
   Address sourceAddress;
   Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
   TypeHeader tHeader (SHUTOUSHUTYPE_HELLO);
@@ -949,10 +980,39 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
 
         if (des_id == id) //宛先が自分だったら
           {
+            //  packetTrajectory << "source_x"
+            //            << ", "
+            //            << "source_y"
+            //            << ", "
+            //            << "recv_x"
+            //            << ", "
+            //            << "recv_y"
+            //            << ", "
+            //            << "time"
+            //            << ", "
+            //            << "recv_priority"
+            //            << ", "
+            //            << "hopcount"
+            //            << ", "
+            //            << "recv_id"
+            //            << ", "
+            //            << "source_id"
+            //            << ", "
+            //            << "destination_id"
+            //            << ", " << std::endl;
+
             std::cout << "time" << Simulator::Now ().GetMicroSeconds () << "  id" << id
                       << "受信しましたよ　成功しました-------------\n";
             if (m_finish_time[des_id] == 0)
-              m_finish_time[des_id] = Simulator::Now ().GetMicroSeconds ();
+              {
+                m_finish_time[des_id] = Simulator::Now ().GetMicroSeconds ();
+                packetTrajectory << 100 << ", " << 100 << ", " << mypos.x << ", " << mypos.y << ", "
+                                 << Simulator::Now ().GetMicroSeconds () << ", "
+                                 << "destination"
+                                 << ", " << hopcount << ", " << id << ", "
+                                 << "sourceid"
+                                 << ", " << id << ", " << std::endl;
+              }
             break;
           }
 
@@ -994,8 +1054,8 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
                     // //std::cout << "\n--------------------------------------------------------\n";
-                    // std::cout << "関係あるrecv id" << id << "time------------------------------\n"
-                    //           << Simulator::Now ().GetMicroSeconds ();
+                    std::cout << "関係あるrecv id" << id << "time------------------------------\n"
+                              << Simulator::Now ().GetMicroSeconds ();
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
@@ -1011,8 +1071,8 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
                     //std::cout << "\n--------------------------------------------------------\n";
-                    // std::cout << "関係あるrecv id" << id << "time------------------------------"
-                    //           << Simulator::Now ().GetMicroSeconds () << "\n";
+                    std::cout << "関係あるrecv id" << id << "time------------------------------"
+                              << Simulator::Now ().GetMicroSeconds () << "\n";
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
@@ -1214,6 +1274,11 @@ RoutingProtocol::ReadFile (void)
     }
 
   std::cout << std::flush;
+}
+
+void
+RoutingProtocol::WriteFile (void)
+{
 }
 
 void
