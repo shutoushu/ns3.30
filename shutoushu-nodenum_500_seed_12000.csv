@@ -1,2 +1,2 @@
-source_x, source_y, recv_x, recv_y, time, recv_priority, hopcount, recv_id, source_id, destination_id, 
+source_x,source_y,recv_x,recv_y,time,recv_priority,hopcount,recv_id,source_id,destination_id,
 100, 100, 100, 771.567, 20012151, destination, 4, 9, sourceid, 9, 

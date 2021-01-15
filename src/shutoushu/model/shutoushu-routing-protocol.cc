@@ -268,25 +268,25 @@ RoutingProtocol::DoInitialize (void)
       ///やることリスト
       ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
       packetTrajectory << "source_x"
-                       << ", "
+                       << ","
                        << "source_y"
-                       << ", "
+                       << ","
                        << "recv_x"
-                       << ", "
+                       << ","
                        << "recv_y"
-                       << ", "
+                       << ","
                        << "time"
-                       << ", "
+                       << ","
                        << "recv_priority"
-                       << ", "
+                       << ","
                        << "hopcount"
-                       << ", "
+                       << ","
                        << "recv_id"
-                       << ", "
+                       << ","
                        << "source_id"
-                       << ", "
+                       << ","
                        << "destination_id"
-                       << ", " << std::endl;
+                       << "," << std::endl;
 
       RoadCenterPoint ();
       double angle = 60;
