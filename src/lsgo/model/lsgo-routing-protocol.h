@@ -128,6 +128,7 @@ private:
 
   void SetMyPos (void); //自分の位置情報を１秒ずつ保存
   void ReadFile (void); //mobility fileの読み取り
+  void WriteFile (void);
   void Trans (int node_id); //通信許可を与える関数
   void NoTrans (int node_id); //通信不許可を与える関数
   void Send (int des_id); //シミュレーションソースIDとDestinationIDを指定する関数

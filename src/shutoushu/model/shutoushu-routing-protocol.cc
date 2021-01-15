@@ -730,6 +730,8 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
       if (hopcount > maxHop) // hop数が最大値を超えたらブレイク
         break;
       int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
+      Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+      Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
 
       if (m_trans[send_node_id] == 0 && pri_value != 0) //通信許可がないノードならbreakする
         { //pri_value = 0 すなわち　source nodeのときはそのままbroadcast許可する
@@ -886,8 +888,8 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
         {
           hopcount++;
         }
-      SendHeader sendHeader (des_id, des_x, des_y, hopcount, pri_id[1], pri_id[2], pri_id[3],
-                             pri_id[4], pri_id[5]);
+      SendHeader sendHeader (des_id, des_x, des_y, send_node_id, mypos.x, mypos.y, hopcount,
+                             pri_id[1], pri_id[2], pri_id[3], pri_id[4], pri_id[5]);
 
       packet->AddHeader (sendHeader);
 
@@ -976,42 +978,24 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
         int32_t des_id = sendheader.GetDesId ();
         int32_t des_x = sendheader.GetPosX ();
         int32_t des_y = sendheader.GetPosY ();
+        int32_t send_id = sendheader.GetSendId ();
+        int32_t send_x = sendheader.GetSendPosX ();
+        int32_t send_y = sendheader.GetSendPosY ();
         int32_t hopcount = sendheader.GetHopcount ();
 
         if (des_id == id) //宛先が自分だったら
           {
-            //  packetTrajectory << "source_x"
-            //            << ", "
-            //            << "source_y"
-            //            << ", "
-            //            << "recv_x"
-            //            << ", "
-            //            << "recv_y"
-            //            << ", "
-            //            << "time"
-            //            << ", "
-            //            << "recv_priority"
-            //            << ", "
-            //            << "hopcount"
-            //            << ", "
-            //            << "recv_id"
-            //            << ", "
-            //            << "source_id"
-            //            << ", "
-            //            << "destination_id"
-            //            << ", " << std::endl;
 
             std::cout << "time" << Simulator::Now ().GetMicroSeconds () << "  id" << id
                       << "受信しましたよ　成功しました-------------\n";
             if (m_finish_time[des_id] == 0)
               {
                 m_finish_time[des_id] = Simulator::Now ().GetMicroSeconds ();
-                packetTrajectory << 100 << ", " << 100 << ", " << mypos.x << ", " << mypos.y << ", "
-                                 << Simulator::Now ().GetMicroSeconds () << ", "
+                packetTrajectory << send_x << ", " << send_y << ", " << mypos.x << ", " << mypos.y
+                                 << ", " << Simulator::Now ().GetMicroSeconds () << ", "
                                  << "destination"
-                                 << ", " << hopcount << ", " << id << ", "
-                                 << "sourceid"
-                                 << ", " << id << ", " << std::endl;
+                                 << ", " << hopcount << ", " << id << ", " << send_id << ", "
+                                 << des_id << ", " << std::endl;
               }
             break;
           }
@@ -1056,6 +1040,10 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                     // //std::cout << "\n--------------------------------------------------------\n";
                     std::cout << "関係あるrecv id" << id << "time------------------------------\n"
                               << Simulator::Now ().GetMicroSeconds ();
+                    packetTrajectory << send_x << ", " << send_y << ", " << mypos.x << ", "
+                                     << mypos.y << ", " << Simulator::Now ().GetMicroSeconds ()
+                                     << ", " << i << ", " << hopcount << ", " << id << ", "
+                                     << send_id << ", " << des_id << ", " << std::endl;
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
@@ -1073,6 +1061,10 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                     //std::cout << "\n--------------------------------------------------------\n";
                     std::cout << "関係あるrecv id" << id << "time------------------------------"
                               << Simulator::Now ().GetMicroSeconds () << "\n";
+                    packetTrajectory << send_x << ", " << send_y << ", " << mypos.x << ", "
+                                     << mypos.y << ", " << Simulator::Now ().GetMicroSeconds ()
+                                     << ", " << i << ", " << hopcount << ", " << id << ", "
+                                     << send_id << ", " << des_id << ", " << std::endl;
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
