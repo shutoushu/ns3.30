@@ -834,8 +834,9 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                       << "受信しましたよ　成功しました-------------\n";
             if (m_finish_time[des_id] == 0)
               m_finish_time[des_id] = Simulator::Now ().GetMicroSeconds ();
-            packetTrajectory << send_x << ", " << send_y << ", " << mypos.x << ", " << mypos.y
-                             << ", " << Simulator::Now ().GetMicroSeconds () << ", "
+            packetTrajectory << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
+                             << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds ()
+                             << ", "
                              << "destination"
                              << ", " << hopcount << ", " << id << ", " << send_id << ", " << des_id
                              << ", " << std::endl;
@@ -877,11 +878,11 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                     // //std::cout << "\n--------------------------------------------------------\n";
                     // std::cout << "関係あるrecv id" << id << "time------------------------------\n"
                     //           << Simulator::Now ().GetMicroSeconds ();
-                    packetTrajectory << send_x << ", " << send_y << ", " << mypos.x << ", "
-                                     << mypos.y << ", " << Simulator::Now ().GetMicroSeconds ()
-                                     << ", " << i << ", " << hopcount << ", " << id << ", "
-                                     << send_id << ", " << des_id << ", " << std::endl;
-
+                    packetTrajectory << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
+                                     << (int) mypos.y << ", "
+                                     << Simulator::Now ().GetMicroSeconds () << ", " << i << ", "
+                                     << hopcount << ", " << id << ", " << send_id << ", " << des_id
+                                     << ", " << std::endl;
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
@@ -899,10 +900,11 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                     //std::cout << "\n--------------------------------------------------------\n";
                     // std::cout << "待ち状態ではないが関係あるrecv id" << id << "time-----------"
                     //           << Simulator::Now ().GetMicroSeconds () << "\n";
-                    packetTrajectory << send_x << ", " << send_y << ", " << mypos.x << ", "
-                                     << mypos.y << ", " << Simulator::Now ().GetMicroSeconds ()
-                                     << ", " << i << ", " << hopcount << ", " << id << ", "
-                                     << send_id << ", " << des_id << ", " << std::endl;
+                    packetTrajectory << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
+                                     << (int) mypos.y << ", "
+                                     << Simulator::Now ().GetMicroSeconds () << ", " << i << ", "
+                                     << hopcount << ", " << id << ", " << send_id << ", " << des_id
+                                     << ", " << std::endl;
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
