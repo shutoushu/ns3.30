@@ -68,8 +68,7 @@ const uint32_t RoutingProtocol::SHUTOUSHU_PORT = 654;
 int numVehicle = 0; //車両数
 int roadCenterPointX[113]; //道路の中心x座標を格納
 int roadCenterPointY[113]; //道路の中心y座標を格納
-std::string filename = "data/shutoushu-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
-std::ofstream packetTrajectory (filename);
+int packetCount = 0; //パケット出力数のカウント
 
 RoutingProtocol::RoutingProtocol ()
 {
@@ -267,26 +266,6 @@ RoutingProtocol::DoInitialize (void)
 
       ///やることリスト
       ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
-      packetTrajectory << "source_x"
-                       << ","
-                       << "source_y"
-                       << ","
-                       << "recv_x"
-                       << ","
-                       << "recv_y"
-                       << ","
-                       << "time"
-                       << ","
-                       << "recv_priority"
-                       << ","
-                       << "hopcount"
-                       << ","
-                       << "recv_id"
-                       << ","
-                       << "source_id"
-                       << ","
-                       << "destination_id"
-                       << "," << std::endl;
 
       RoadCenterPoint ();
       double angle = 60;
@@ -991,12 +970,18 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
             if (m_finish_time[des_id] == 0)
               {
                 m_finish_time[des_id] = Simulator::Now ().GetMicroSeconds ();
-                packetTrajectory << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
-                                 << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds ()
-                                 << ", "
-                                 << "destination"
-                                 << ", " << hopcount << ", " << id << ", " << send_id << ", "
-                                 << des_id << ", " << std::endl;
+
+                p_source_x.push_back (send_x);
+                p_source_y.push_back (send_y);
+                p_recv_x.push_back (mypos.x);
+                p_recv_y.push_back (mypos.y);
+                p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+                p_recv_priority.push_back (id);
+                p_hopcount.push_back (hopcount);
+                p_recv_id.push_back (id);
+                p_source_id.push_back (send_id);
+                p_destination_id.push_back (des_id);
+                packetCount++;
               }
             break;
           }
@@ -1043,11 +1028,17 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                               << Simulator::Now ().GetMicroSeconds ();
                     if (m_finish_time[des_id] == 0)
                       {
-                        packetTrajectory
-                            << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
-                            << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds () << ", "
-                            << i << ", " << hopcount << ", " << id << ", " << send_id << ", "
-                            << des_id << ", " << std::endl;
+                        p_source_x.push_back (send_x);
+                        p_source_y.push_back (send_y);
+                        p_recv_x.push_back (mypos.x);
+                        p_recv_y.push_back (mypos.y);
+                        p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+                        p_recv_priority.push_back (i);
+                        p_hopcount.push_back (hopcount);
+                        p_recv_id.push_back (id);
+                        p_source_id.push_back (send_id);
+                        p_destination_id.push_back (des_id);
+                        packetCount++;
                       }
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
@@ -1068,11 +1059,18 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                               << Simulator::Now ().GetMicroSeconds () << "\n";
                     if (m_finish_time[des_id] == 0)
                       {
-                        packetTrajectory
-                            << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
-                            << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds () << ", "
-                            << i << ", " << hopcount << ", " << id << ", " << send_id << ", "
-                            << des_id << ", " << std::endl;
+
+                        p_source_x.push_back (send_x);
+                        p_source_y.push_back (send_y);
+                        p_recv_x.push_back (mypos.x);
+                        p_recv_y.push_back (mypos.y);
+                        p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+                        p_recv_priority.push_back (i);
+                        p_hopcount.push_back (hopcount);
+                        p_recv_id.push_back (id);
+                        p_source_id.push_back (send_id);
+                        p_destination_id.push_back (des_id);
+                        packetCount++;
                       }
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
@@ -1517,6 +1515,36 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
+      // std::string filename = "data/shutoushu-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
+      std::string filename = "data/test_" + std::to_string (Seed) + ".csv";
+      std::ofstream packetTrajectory (filename);
+      packetTrajectory << "source_x"
+                       << ","
+                       << "source_y"
+                       << ","
+                       << "recv_x"
+                       << ","
+                       << "recv_y"
+                       << ","
+                       << "time"
+                       << ","
+                       << "recv_priority"
+                       << ","
+                       << "hopcount"
+                       << ","
+                       << "recv_id"
+                       << ","
+                       << "source_id"
+                       << ","
+                       << "destination_id"
+                       << "," << std::endl;
+      for (int i = 0; i < packetCount; i++)
+        {
+          packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
+                           << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
+                           << ", " << p_hopcount[i] << ", " << p_recv_id[i] << ", "
+                           << p_source_id[i] << ", " << p_destination_id[i] << ", " << std::endl;
+        }
     }
 }
 
@@ -1531,6 +1559,18 @@ std::map<int, int> RoutingProtocol::m_node_start_time; //key node id value 止�
 std::map<int, int> RoutingProtocol::m_node_finish_time; //key node id value 止まっている時間カウント
 std::map<int, int> RoutingProtocol::m_source_id;
 std::map<int, int> RoutingProtocol::m_des_id;
+
+//パケット軌跡出力用の変数
+std::vector<int> RoutingProtocol::p_source_x;
+std::vector<int> RoutingProtocol::p_source_y;
+std::vector<int> RoutingProtocol::p_recv_x;
+std::vector<int> RoutingProtocol::p_recv_y;
+std::vector<int> RoutingProtocol::p_recv_time;
+std::vector<int> RoutingProtocol::p_recv_priority;
+std::vector<int> RoutingProtocol::p_hopcount;
+std::vector<int> RoutingProtocol::p_recv_id;
+std::vector<int> RoutingProtocol::p_source_id;
+std::vector<int> RoutingProtocol::p_destination_id;
 
 } // namespace shutoushu
 } // namespace ns3

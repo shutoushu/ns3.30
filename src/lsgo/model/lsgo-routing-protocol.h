@@ -74,6 +74,18 @@ public:
   static std::map<int, int> m_node_finish_time; //key id value nodeの到着時刻（秒）
   static std::map<int, int> m_source_id; //key 1~10 value sourceid
   static std::map<int, int> m_des_id; //key 1~10 value sourceid
+  //パケット軌跡出力用の変数
+  static std::vector<int> p_source_x;
+  static std::vector<int> p_source_y;
+  static std::vector<int> p_recv_x;
+  static std::vector<int> p_recv_y;
+  static std::vector<int> p_recv_time;
+  static std::vector<int> p_recv_priority;
+  static std::vector<int> p_hopcount;
+  static std::vector<int> p_recv_id;
+  static std::vector<int> p_source_id;
+  static std::vector<int> p_destination_id;
+
   /// constructor
   RoutingProtocol ();
   virtual ~RoutingProtocol ();

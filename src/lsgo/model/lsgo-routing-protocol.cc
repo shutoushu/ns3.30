@@ -64,6 +64,7 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 /// UDP Port for LSGO control traffic
 const uint32_t RoutingProtocol::LSGO_PORT = 654;
 int numVehicle = 0; //グローバル変数
+int packetCount = 0; //パケット出力数のカウント
 std::string filename = "data/lsgo-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
 std::ofstream packetTrajectory (filename);
 RoutingProtocol::RoutingProtocol ()
@@ -840,6 +841,18 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                              << "destination"
                              << ", " << hopcount << ", " << id << ", " << send_id << ", " << des_id
                              << ", " << std::endl;
+
+            p_source_x.push_back (send_x);
+            p_source_y.push_back (send_y);
+            p_recv_x.push_back (mypos.x);
+            p_recv_y.push_back (mypos.y);
+            p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+            p_recv_priority.push_back (id);
+            p_hopcount.push_back (hopcount);
+            p_recv_id.push_back (id);
+            p_source_id.push_back (send_id);
+            p_destination_id.push_back (des_id);
+            packetCount++;
             break;
           }
 
@@ -885,6 +898,17 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                             << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds () << ", "
                             << i << ", " << hopcount << ", " << id << ", " << send_id << ", "
                             << des_id << ", " << std::endl;
+                        p_source_x.push_back (send_x);
+                        p_source_y.push_back (send_y);
+                        p_recv_x.push_back (mypos.x);
+                        p_recv_y.push_back (mypos.y);
+                        p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+                        p_recv_priority.push_back (i);
+                        p_hopcount.push_back (hopcount);
+                        p_recv_id.push_back (id);
+                        p_source_id.push_back (send_id);
+                        p_destination_id.push_back (des_id);
+                        packetCount++;
                       }
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
@@ -907,6 +931,17 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                             << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds () << ", "
                             << i << ", " << hopcount << ", " << id << ", " << send_id << ", "
                             << des_id << ", " << std::endl;
+                        p_source_x.push_back (send_x);
+                        p_source_y.push_back (send_y);
+                        p_recv_x.push_back (mypos.x);
+                        p_recv_y.push_back (mypos.y);
+                        p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+                        p_recv_priority.push_back (i);
+                        p_hopcount.push_back (hopcount);
+                        p_recv_id.push_back (id);
+                        p_source_id.push_back (send_id);
+                        p_destination_id.push_back (des_id);
+                        packetCount++;
                       }
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
@@ -1138,6 +1173,19 @@ std::map<int, int> RoutingProtocol::m_node_start_time; //key node id value 止�
 std::map<int, int> RoutingProtocol::m_node_finish_time; //key node id value 止まっている時間カウント
 std::map<int, int> RoutingProtocol::m_source_id;
 std::map<int, int> RoutingProtocol::m_des_id;
+
+//パケット軌跡出力用の変数
+//パケット軌跡出力用の変数
+std::vector<int> RoutingProtocol::p_source_x;
+std::vector<int> RoutingProtocol::p_source_y;
+std::vector<int> RoutingProtocol::p_recv_x;
+std::vector<int> RoutingProtocol::p_recv_y;
+std::vector<int> RoutingProtocol::p_recv_time;
+std::vector<int> RoutingProtocol::p_recv_priority;
+std::vector<int> RoutingProtocol::p_hopcount;
+std::vector<int> RoutingProtocol::p_recv_id;
+std::vector<int> RoutingProtocol::p_source_id;
+std::vector<int> RoutingProtocol::p_destination_id;
 
 } // namespace lsgo
 } // namespace ns3
