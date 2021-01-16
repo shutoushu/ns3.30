@@ -68,7 +68,7 @@ const uint32_t RoutingProtocol::SHUTOUSHU_PORT = 654;
 int numVehicle = 0; //車両数
 int roadCenterPointX[113]; //道路の中心x座標を格納
 int roadCenterPointY[113]; //道路の中心y座標を格納
-std::string filename = "shutoushu-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
+std::string filename = "data/shutoushu-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
 std::ofstream packetTrajectory (filename);
 
 RoutingProtocol::RoutingProtocol ()
@@ -1041,11 +1041,14 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                     // //std::cout << "\n--------------------------------------------------------\n";
                     std::cout << "関係あるrecv id" << id << "time------------------------------\n"
                               << Simulator::Now ().GetMicroSeconds ();
-                    packetTrajectory << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
-                                     << (int) mypos.y << ", "
-                                     << Simulator::Now ().GetMicroSeconds () << ", " << i << ", "
-                                     << hopcount << ", " << id << ", " << send_id << ", " << des_id
-                                     << ", " << std::endl;
+                    if (m_finish_time[des_id] == 0)
+                      {
+                        packetTrajectory
+                            << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
+                            << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds () << ", "
+                            << i << ", " << hopcount << ", " << id << ", " << send_id << ", "
+                            << des_id << ", " << std::endl;
+                      }
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
@@ -1063,11 +1066,14 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                     //std::cout << "\n--------------------------------------------------------\n";
                     std::cout << "関係あるrecv id" << id << "time------------------------------"
                               << Simulator::Now ().GetMicroSeconds () << "\n";
-                    packetTrajectory << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
-                                     << (int) mypos.y << ", "
-                                     << Simulator::Now ().GetMicroSeconds () << ", " << i << ", "
-                                     << hopcount << ", " << id << ", " << send_id << ", " << des_id
-                                     << ", " << std::endl;
+                    if (m_finish_time[des_id] == 0)
+                      {
+                        packetTrajectory
+                            << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
+                            << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds () << ", "
+                            << i << ", " << hopcount << ", " << id << ", " << send_id << ", "
+                            << des_id << ", " << std::endl;
+                      }
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか

@@ -64,7 +64,7 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 /// UDP Port for LSGO control traffic
 const uint32_t RoutingProtocol::LSGO_PORT = 654;
 int numVehicle = 0; //グローバル変数
-std::string filename = "lsgo-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
+std::string filename = "data/lsgo-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
 std::ofstream packetTrajectory (filename);
 RoutingProtocol::RoutingProtocol ()
 {
@@ -878,11 +878,14 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                     // //std::cout << "\n--------------------------------------------------------\n";
                     // std::cout << "関係あるrecv id" << id << "time------------------------------\n"
                     //           << Simulator::Now ().GetMicroSeconds ();
-                    packetTrajectory << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
-                                     << (int) mypos.y << ", "
-                                     << Simulator::Now ().GetMicroSeconds () << ", " << i << ", "
-                                     << hopcount << ", " << id << ", " << send_id << ", " << des_id
-                                     << ", " << std::endl;
+                    if (m_finish_time[des_id] == 0)
+                      {
+                        packetTrajectory
+                            << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
+                            << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds () << ", "
+                            << i << ", " << hopcount << ", " << id << ", " << send_id << ", "
+                            << des_id << ", " << std::endl;
+                      }
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
@@ -897,14 +900,14 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
               {
                 if (id == pri_id[i]) //packetに自分のIDが含まれているか
                   {
-                    //std::cout << "\n--------------------------------------------------------\n";
-                    // std::cout << "待ち状態ではないが関係あるrecv id" << id << "time-----------"
-                    //           << Simulator::Now ().GetMicroSeconds () << "\n";
-                    packetTrajectory << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
-                                     << (int) mypos.y << ", "
-                                     << Simulator::Now ().GetMicroSeconds () << ", " << i << ", "
-                                     << hopcount << ", " << id << ", " << send_id << ", " << des_id
-                                     << ", " << std::endl;
+                    if (m_finish_time[des_id] == 0)
+                      {
+                        packetTrajectory
+                            << send_x << ", " << send_y << ", " << (int) mypos.x << ", "
+                            << (int) mypos.y << ", " << Simulator::Now ().GetMicroSeconds () << ", "
+                            << i << ", " << hopcount << ", " << id << ", " << send_id << ", "
+                            << des_id << ", " << std::endl;
+                      }
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   }
                 else //含まれていないか
