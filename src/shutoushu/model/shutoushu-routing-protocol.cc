@@ -1515,8 +1515,8 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
-      // std::string filename = "data/shutoushu-nodenum_500_seed_" + std::to_string (Seed) + ".csv";
-      std::string filename = "data/test_" + std::to_string (Seed) + ".csv";
+      std::string filename = "data/shutoushu-nodenum_" + std::to_string (numVehicle) + "_seed_" +
+                             std::to_string (Seed) + ".csv";
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"
                        << ","
