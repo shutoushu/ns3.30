@@ -55,7 +55,7 @@
 #define SimStartMicro 1000000 //broadcast 開始時刻micro秒
 #define SimStartTime 10 //broadcast 開始時刻　秒
 #define InterArea 8 //交差点エリア 正方形メートル　
-#define Seed 34567 // ※毎回変える
+#define Seed 43222 // ※毎回変える
 #define NodeNum 500 // ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
@@ -103,6 +103,8 @@ public:
   static std::vector<int> p_recv_id;
   static std::vector<int> p_source_id;
   static std::vector<int> p_destination_id;
+  static std::vector<int> p_destination_x;
+  static std::vector<int> p_destination_y;
 
   /// constructor
   RoutingProtocol ();

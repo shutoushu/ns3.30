@@ -981,6 +981,8 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                 p_recv_id.push_back (id);
                 p_source_id.push_back (send_id);
                 p_destination_id.push_back (des_id);
+                p_destination_x.push_back (des_x);
+                p_destination_y.push_back (des_y);
                 packetCount++;
               }
             break;
@@ -1038,6 +1040,8 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                         p_recv_id.push_back (id);
                         p_source_id.push_back (send_id);
                         p_destination_id.push_back (des_id);
+                        p_destination_x.push_back (des_x);
+                        p_destination_y.push_back (des_y);
                         packetCount++;
                       }
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
@@ -1070,6 +1074,8 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                         p_recv_id.push_back (id);
                         p_source_id.push_back (send_id);
                         p_destination_id.push_back (des_id);
+                        p_destination_x.push_back (des_x);
+                        p_destination_y.push_back (des_y);
                         packetCount++;
                       }
                     SendShutoushuBroadcast (i + 1, des_id, des_x, des_y, hopcount);
@@ -1543,7 +1549,8 @@ RoutingProtocol::SimulationResult (void) //
           packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
                            << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
                            << ", " << p_hopcount[i] << ", " << p_recv_id[i] << ", "
-                           << p_source_id[i] << ", " << p_destination_id[i] << ", " << std::endl;
+                           << p_source_id[i] << ", " << p_destination_id[i] << ", "
+                           << p_destination_x[i] << ", " << p_destination_y[i] << std::endl;
         }
     }
 }
@@ -1571,6 +1578,8 @@ std::vector<int> RoutingProtocol::p_hopcount;
 std::vector<int> RoutingProtocol::p_recv_id;
 std::vector<int> RoutingProtocol::p_source_id;
 std::vector<int> RoutingProtocol::p_destination_id;
+std::vector<int> RoutingProtocol::p_destination_x;
+std::vector<int> RoutingProtocol::p_destination_y;
 
 } // namespace shutoushu
 } // namespace ns3
