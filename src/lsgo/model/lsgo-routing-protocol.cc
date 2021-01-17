@@ -802,11 +802,8 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         int32_t send_x = sendheader.GetSendPosX ();
         int32_t send_y = sendheader.GetSendPosY ();
         int32_t hopcount = sendheader.GetHopcount ();
-        // int32_t pri1_id = sendheader.GetId1 ();
-        // int32_t pri2_id = sendheader.GetId2 ();
-        // int32_t pri3_id = sendheader.GetId3 ();
-        // int32_t pri4_id = sendheader.GetId4 ();
-        // int32_t pri5_id = sendheader.GetId5 ();
+        int32_t pri_id[] = {sendheader.GetId1 (), sendheader.GetId2 (), sendheader.GetId3 (),
+                            sendheader.GetId4 (), sendheader.GetId5 ()};
 
         if (des_id == id) //宛先が自分だったら
           {
@@ -827,6 +824,11 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
             p_destination_id.push_back (des_id);
             p_destination_x.push_back (des_x);
             p_destination_y.push_back (des_y);
+            p_pri_1.push_back (pri_id[0]);
+            p_pri_2.push_back (pri_id[1]);
+            p_pri_3.push_back (pri_id[2]);
+            p_pri_4.push_back (pri_id[3]);
+            p_pri_5.push_back (pri_id[4]);
             packetCount++;
             break;
           }
@@ -834,9 +836,7 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         if (m_trans[id] == 0)
           break; //通信不能のノードだった場合はbreak
 
-        int32_t pri_id[] = {sendheader.GetId1 (), sendheader.GetId2 (), sendheader.GetId3 (),
-                            sendheader.GetId4 (), sendheader.GetId5 ()};
-
+        
         ////*********recv hello packet log*****************////////////////
         // std::cout << " id " << id << "が受信したlsgo packetは\n";
         // for (int i = 0; i < 5; i++)
@@ -881,6 +881,11 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                         p_destination_id.push_back (des_id);
                         p_destination_x.push_back (des_x);
                         p_destination_y.push_back (des_y);
+                        p_pri_1.push_back (pri_id[0]);
+                        p_pri_2.push_back (pri_id[1]);
+                        p_pri_3.push_back (pri_id[2]);
+                        p_pri_4.push_back (pri_id[3]);
+                        p_pri_5.push_back (pri_id[4]);
                         packetCount++;
                       }
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
@@ -912,6 +917,11 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
                         p_destination_id.push_back (des_id);
                         p_destination_x.push_back (des_x);
                         p_destination_y.push_back (des_y);
+                        p_pri_1.push_back (pri_id[0]);
+                        p_pri_2.push_back (pri_id[1]);
+                        p_pri_3.push_back (pri_id[2]);
+                        p_pri_4.push_back (pri_id[3]);
+                        p_pri_5.push_back (pri_id[4]);
                         packetCount++;
                       }
                     SendLsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
@@ -1155,14 +1165,26 @@ RoutingProtocol::SimulationResult (void) //
                        << ","
                        << "destination_x"
                        << ","
-                       << "destination_y" << std::endl;
+                       << "destination_y"
+                       << ","
+                       << "pri_1"
+                       << ","
+                       << "pri_2"
+                       << ","
+                       << "pri_3"
+                       << ","
+                       << "pri_4"
+                       << ","
+                       << "pri_5" << std::endl;
       for (int i = 0; i < packetCount; i++)
         {
           packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
                            << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
                            << ", " << p_hopcount[i] << ", " << p_recv_id[i] << ", "
                            << p_source_id[i] << ", " << p_destination_id[i] << ", "
-                           << p_destination_x[i] << ", " << p_destination_y[i] << std::endl;
+                           << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
+                           << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
+                           << p_pri_5[i] << std::endl;
         }
     }
 }
@@ -1193,6 +1215,11 @@ std::vector<int> RoutingProtocol::p_source_id;
 std::vector<int> RoutingProtocol::p_destination_id;
 std::vector<int> RoutingProtocol::p_destination_x;
 std::vector<int> RoutingProtocol::p_destination_y;
+std::vector<int> RoutingProtocol::p_pri_1;
+std::vector<int> RoutingProtocol::p_pri_2;
+std::vector<int> RoutingProtocol::p_pri_3;
+std::vector<int> RoutingProtocol::p_pri_4;
+std::vector<int> RoutingProtocol::p_pri_5;
 
 } // namespace lsgo
 } // namespace ns3

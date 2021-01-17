@@ -105,6 +105,11 @@ public:
   static std::vector<int> p_destination_id;
   static std::vector<int> p_destination_x;
   static std::vector<int> p_destination_y;
+  static std::vector<int> p_pri_1;
+  static std::vector<int> p_pri_2;
+  static std::vector<int> p_pri_3;
+  static std::vector<int> p_pri_4;
+  static std::vector<int> p_pri_5;
 
   /// constructor
   RoutingProtocol ();
