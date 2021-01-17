@@ -836,8 +836,7 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
         if (m_trans[id] == 0)
           break; //通信不能のノードだった場合はbreak
 
-        
-        ////*********recv hello packet log*****************////////////////
+                ////*********recv hello packet log*****************////////////////
         // std::cout << " id " << id << "が受信したlsgo packetは\n";
         // for (int i = 0; i < 5; i++)
         //   {
@@ -1140,7 +1139,7 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
-      std::string filename = "data/lsgo-nodenum_" + std::to_string (numVehicle) + "_seed_" +
+      std::string filename = "data/lsgo/lsgo-nodenum_" + std::to_string (numVehicle) + "_seed_" +
                              std::to_string (Seed) + ".csv";
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"

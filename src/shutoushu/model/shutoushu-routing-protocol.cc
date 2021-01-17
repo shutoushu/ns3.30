@@ -1003,7 +1003,7 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
         // int32_t pri4_id = sendheader.GetId4 ();
         // int32_t pri5_id = sendheader.GetId5 ();
 
-                ////*********recv hello packet log*****************////////////////
+        ////*********recv hello packet log*****************////////////////
         // std::cout << " id " << id << "が受信したshutoushu packetは\n";
         // for (int i = 0; i < 5; i++)
         //   {
@@ -1535,8 +1535,8 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
-      std::string filename = "data/shutoushu-nodenum_" + std::to_string (numVehicle) + "_seed_" +
-                             std::to_string (Seed) + ".csv";
+      std::string filename = "data/sigo/shutoushu-nodenum_" + std::to_string (numVehicle) +
+                             "_seed_" + std::to_string (Seed) + ".csv";
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"
                        << ","
