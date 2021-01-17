@@ -1543,7 +1543,10 @@ RoutingProtocol::SimulationResult (void) //
                        << "source_id"
                        << ","
                        << "destination_id"
-                       << "," << std::endl;
+                       << ","
+                       << "destination_x"
+                       << ","
+                       << "destination_y" << std::endl;
       for (int i = 0; i < packetCount; i++)
         {
           packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
