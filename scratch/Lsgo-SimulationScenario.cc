@@ -2463,11 +2463,11 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
 
-      m_traceFile = "src/wave/examples/LSGO_Grid/grid_900.tcl"; //モビリティ入力ファイル
+      m_traceFile = "src/wave/examples/LSGO_Grid/grid_700.tcl"; //モビリティ入力ファイル
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 900; //変更すべきところ
+      m_nNodes = 700; //変更すべきところ
       m_TotalSimTime = 33; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;
