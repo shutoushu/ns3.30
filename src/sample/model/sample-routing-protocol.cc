@@ -250,11 +250,11 @@ RoutingProtocol::DoInitialize (void)
     {
       //std::cout << "broadcast will be send\n";
       //SendXBroadcast();
-      for (int i = 0; i < 100; i++)
+      for (int i = 0; i < 10; i++)
         {
           Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
         }
-      for (int i = 1; i < SimTime; i++)
+      for (int i = 1; i < 20; i++)
         {
           if (id == 0)
             Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
@@ -276,6 +276,9 @@ RoutingProtocol::RecvSample (Ptr<Socket> socket)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   recvCount[id]++;
 
+  std::cout << "In recv Sample(Node " << m_ipv4->GetObject<Node> ()->GetId () << ")"
+            << "x=" << recvpos.x << "y=" << recvpos.y << "distance" << distance << "\n";
+
   if (distance > maxLenge)
     maxLenge = distance;
 
@@ -290,14 +293,14 @@ RoutingProtocol::SendXBroadcast (void)
        j != m_socketAddresses.end (); ++j)
     {
       int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-      std::cout << "id" << id << "broadcast"
-                << "\n";
 
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition ();
       posx = mypos.x;
       posy = mypos.y;
-
+      std::cout << "id" << id << "broadcast"
+                << "x=" << posx << "y=" << posy << "time" << Simulator::Now ().GetSeconds ()
+                << "\n";
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
@@ -327,7 +330,7 @@ RoutingProtocol::SendXBroadcast (void)
 void
 RoutingProtocol::SimulationResult (void) //
 {
-  if (Simulator::Now ().GetSeconds () == SimStartTime + 22)
+  if (Simulator::Now ().GetSeconds () == 10)
     {
       for (auto itr = recvCount.begin (); itr != recvCount.end (); itr++)
         {
@@ -335,6 +338,7 @@ RoutingProtocol::SimulationResult (void) //
                     << "取得数 " << itr->second << "\n"; // 値を表示
         }
       std::cout << "recv max lenge " << maxLenge << "\n";
+      std::cout << "lossValue" << lossValue << "\n";
     }
 }
 

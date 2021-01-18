@@ -30,8 +30,9 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
-#define SimTime 40
-#define SimStartTime 10 //broadcast 開始時刻　秒
+// #define SimTime 10
+#define StartTime 0 //broadcast 開始時刻　秒
+#define lossValue 4 //loss値にかける値
 
 namespace ns3 {
 namespace sample {

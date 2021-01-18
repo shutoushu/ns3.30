@@ -1685,9 +1685,10 @@ VanetRoutingExperiment::ProcessOutputs ()
 
   std::ofstream out (m_CSVfileName2.c_str (), std::ios::app);
 
-  out << bsm_pdr1 << "," << bsm_pdr2 << "," << bsm_pdr3 << "," << bsm_pdr4 << "," << bsm_pdr5 << ","
-      << bsm_pdr6 << "," << bsm_pdr7 << "," << bsm_pdr8 << "," << bsm_pdr9 << "," << bsm_pdr10
-      << "," << averageRoutingGoodputKbps << "," << mac_phy_oh << "" << std::endl;
+  if (m_log == 100000000000)
+    out << bsm_pdr1 << "," << bsm_pdr2 << "," << bsm_pdr3 << "," << bsm_pdr4 << "," << bsm_pdr5
+        << "," << bsm_pdr6 << "," << bsm_pdr7 << "," << bsm_pdr8 << "," << bsm_pdr9 << ","
+        << bsm_pdr10 << "," << averageRoutingGoodputKbps << "," << mac_phy_oh << "" << std::endl;
 
   out.close ();
 
@@ -1742,8 +1743,9 @@ VanetRoutingExperiment::CourseChange (std::ostream *os, std::string context,
   //NS_LOG_UNCOND ("Changing pos for node=" << nodeId << " at " << Simulator::Now () );
 
   // Prints position and velocities
-  *os << Simulator::Now () << " POS: x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z
-      << "; VEL:" << vel.x << ", y=" << vel.y << ", z=" << vel.z << std::endl;
+  if (pos.z == 1000000)
+    *os << Simulator::Now () << " POS: x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z
+        << "; VEL:" << vel.x << ", y=" << vel.y << ", z=" << vel.z << std::endl;
 }
 
 void
