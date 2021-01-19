@@ -89,7 +89,7 @@ ObstacleShadowingPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobili
     }
   // std::cout<<"L_obs の値は"<<L_obs<<"\n";
   // std::cout<<"L_obs"<<L_obs<<"\n";
-  L_obs = L_obs * 2.3;
+  L_obs = L_obs * 10;
 
   return L_obs;
 }
