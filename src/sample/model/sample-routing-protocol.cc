@@ -338,7 +338,7 @@ RoutingProtocol::SimulationResult (void) //
                     << "取得数 " << itr->second << "\n"; // 値を表示
         }
       std::cout << "recv max lenge " << maxLenge << "\n";
-      std::cout << "lossValue" << lossValue << "\n";
+      std::cout << "lossValue" << 0.1 << "\n";
     }
 }
 
