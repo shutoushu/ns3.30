@@ -1139,7 +1139,7 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
-      std::string filename = "data/lsgo/10lsgo-nodenum_" + std::to_string (numVehicle) + "_seed_" +
+      std::string filename = "data/lsgo/lsgo-nodenum_" + std::to_string (numVehicle) + "_seed_" +
                              std::to_string (Seed) + ".csv";
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"
