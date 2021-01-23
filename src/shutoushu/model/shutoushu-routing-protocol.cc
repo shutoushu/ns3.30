@@ -978,7 +978,7 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                 p_recv_x.push_back (mypos.x);
                 p_recv_y.push_back (mypos.y);
                 p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
-                p_recv_priority.push_back (id);
+                p_recv_priority.push_back (id); //dummy 0
                 p_hopcount.push_back (hopcount);
                 p_recv_id.push_back (id);
                 p_source_id.push_back (send_id);
@@ -1039,7 +1039,7 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                         p_recv_x.push_back (mypos.x);
                         p_recv_y.push_back (mypos.y);
                         p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
-                        p_recv_priority.push_back (i);
+                        p_recv_priority.push_back (i + 1);
                         p_hopcount.push_back (hopcount);
                         p_recv_id.push_back (id);
                         p_source_id.push_back (send_id);
@@ -1078,7 +1078,7 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
                         p_recv_x.push_back (mypos.x);
                         p_recv_y.push_back (mypos.y);
                         p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
-                        p_recv_priority.push_back (i);
+                        p_recv_priority.push_back (i + 1);
                         p_hopcount.push_back (hopcount);
                         p_recv_id.push_back (id);
                         p_source_id.push_back (send_id);
@@ -1535,8 +1535,8 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
-      std::string filename = "data/sigo/shutoushu-nodenum_" + std::to_string (numVehicle) +
-                             "_seed_" + std::to_string (Seed) + ".csv";
+      std::string filename = "data/sigo/shutoushu-seed_" + std::to_string (Seed) + "nodenum_" +
+                             std::to_string (numVehicle) + ".csv";
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"
                        << ","
