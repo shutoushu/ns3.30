@@ -1477,7 +1477,6 @@ RoutingProtocol::SimulationResult (void) //
       // auto itr = m_recvtime.find (1);
       // if (itr != m_recvtime.end ())
       //   { // 見つかった場合
-
       //     for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
       //       {
       //         std::cout << itr->first << " " << itr->second << "\n"; //  キー、値を表示
