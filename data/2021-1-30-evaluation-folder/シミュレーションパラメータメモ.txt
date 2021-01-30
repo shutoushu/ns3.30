@@ -1,0 +1,14 @@
+1/22
+交差点優先度について
+Rp が１か０いがい　アングルが４５以上
+交差点パラメータ１．０
+angleGamma 0.4
+#define RpGamma 1.0
+
+実行コマンド
+lsgo
+sudo ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=6 --lossModel=4 --scenario=3"
+
+shutoushu
+sudo ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=7 --lossModel=4 --scenario=3"
+
