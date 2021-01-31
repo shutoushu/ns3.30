@@ -75,7 +75,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 public:
   /**
    * \brief Get the type ID.
-   * \return the object TypeId
+   * \return the object 
    */
   static TypeId GetTypeId (void);
   static const uint32_t SHUTOUSHU_PORT;
@@ -92,7 +92,7 @@ public:
   static std::map<int, int> m_node_finish_time; //key id value nodeの到着時刻（秒）
   static std::map<int, int> m_source_id; //key 1~10 value sourceid
   static std::map<int, int> m_des_id; //key 1~10 value sourceid
-  //パケット軌跡出力用の変数
+  //パケット軌跡出力用の変数 recv
   static std::vector<int> p_source_x;
   static std::vector<int> p_source_y;
   static std::vector<int> p_recv_x;
@@ -110,6 +110,23 @@ public:
   static std::vector<int> p_pri_3;
   static std::vector<int> p_pri_4;
   static std::vector<int> p_pri_5;
+
+  //logfile send
+  static std::vector<int> s_source_id;
+  static std::vector<int> s_source_x;
+  static std::vector<int> s_source_y;
+  static std::vector<int> s_time;
+  static std::vector<int> s_hop;
+  static std::vector<int> s_pri_1_id;
+  static std::vector<int> s_pri_2_id;
+  static std::vector<int> s_pri_3_id;
+  static std::vector<int> s_pri_4_id;
+  static std::vector<int> s_pri_5_id;
+  static std::vector<double> s_pri_1_r;
+  static std::vector<double> s_pri_2_r;
+  static std::vector<double> s_pri_3_r;
+  static std::vector<double> s_pri_4_r;
+  static std::vector<double> s_pri_5_r;
 
   /// constructor
   RoutingProtocol ();

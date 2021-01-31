@@ -1219,6 +1219,22 @@ std::vector<int> RoutingProtocol::p_pri_2;
 std::vector<int> RoutingProtocol::p_pri_3;
 std::vector<int> RoutingProtocol::p_pri_4;
 std::vector<int> RoutingProtocol::p_pri_5;
+//送信側ログ用変数
+std::vector<int> RoutingProtocol::s_source_id;
+std::vector<int> RoutingProtocol::s_source_x;
+std::vector<int> RoutingProtocol::s_source_y;
+std::vector<int> RoutingProtocol::s_time;
+std::vector<int> RoutingProtocol::s_hop;
+std::vector<int> RoutingProtocol::s_pri_1_id;
+std::vector<int> RoutingProtocol::s_pri_2_id;
+std::vector<int> RoutingProtocol::s_pri_3_id;
+std::vector<int> RoutingProtocol::s_pri_4_id;
+std::vector<int> RoutingProtocol::s_pri_5_id;
+std::vector<double> RoutingProtocol::s_pri_1_r;
+std::vector<double> RoutingProtocol::s_pri_2_r;
+std::vector<double> RoutingProtocol::s_pri_3_r;
+std::vector<double> RoutingProtocol::s_pri_4_r;
+std::vector<double> RoutingProtocol::s_pri_5_r;
 
 } // namespace lsgo
 } // namespace ns3
