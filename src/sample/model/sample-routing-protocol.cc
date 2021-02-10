@@ -252,7 +252,11 @@ RoutingProtocol::DoInitialize (void)
   for (int i = 0; i < 100; i++)
     {
       if (id == 1)
-        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
+        {
+          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
+          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
+          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
+        }
     }
   for (int i = 1; i < 100; i++)
     {
@@ -329,10 +333,72 @@ RoutingProtocol::SendXBroadcast (void)
     }
 }
 
+int
+RoutingProtocol::distinctionRoad (int x_point, int y_point)
+{
+  /// 道路1〜56  57〜112
+  int range = 284;
+  int gridRange = 300;
+  int roadWidth = 20;
+  int x = 8;
+  int y = -10;
+  int count = 1;
+
+  for (int roadId = 1; roadId <= 112; roadId++)
+    {
+      if (roadId <= 56)
+        {
+          if (x <= x_point && x_point <= x + range && y <= y_point &&
+              y_point <= y + roadWidth) //example node1  x 座標 8〜292 y座標 -10〜10
+            {
+              return roadId; //条件に当てはまれば
+            }
+          if (count == 7) //7のときcount変数を初期化
+            {
+              count = 1;
+              x = x - 1800;
+              y = y + gridRange;
+            }
+          else // 7以外は足していく
+            {
+              x = x + gridRange;
+              count++;
+            }
+
+          if (roadId == 56)
+            {
+              x = -10;
+              y = 8;
+              count = 1;
+            }
+        }
+      else //57〜
+        {
+          if (x <= x_point && x_point <= x + roadWidth && y <= y_point &&
+              y_point <= y + range) //example node57 x座標 8〜292 y座標 -10〜10
+            {
+              return roadId; //条件に当てはまれば
+            }
+          if (count == 8) //8のときcount変数を初期化
+            {
+              count = 1;
+              x = x - 2100;
+              y = y + gridRange;
+            }
+          else // 8以外は足していく
+            {
+              x = x + gridRange;
+              count++;
+            }
+        }
+    }
+  return 0; // ０を返す = 交差点ノード
+}
+
 void
 RoutingProtocol::SimulationResult (void) //
 {
-  if (Simulator::Now ().GetSeconds () == 98)
+  if (Simulator::Now ().GetSeconds () == 15)
     {
       for (auto itr = recvCount.begin (); itr != recvCount.end (); itr++)
         {

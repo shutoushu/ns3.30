@@ -89,6 +89,10 @@ private:
   void SendXBroadcast (void);
   void RecvSample (Ptr<Socket> socket);
 
+  int distinctionRoad (int x_point,
+                       int y_ypoint); //ｘ座標とy座標から道路番号を割り出す関数　return 道路番号
+  // void RoadCenterPoint (); //roadの中心座標を格納するだけの関数
+
   void SimulationResult (void); //シミュレーション結果を出力する
 
   /// IP protocol
