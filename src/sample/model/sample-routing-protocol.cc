@@ -246,19 +246,21 @@ RoutingProtocol::DoInitialize (void)
 {
 
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (id == 0) //if Node ID = 0
+
+  //std::cout << "broadcast will be send\n";
+  //SendXBroadcast();
+  for (int i = 0; i < 100; i++)
     {
-      //std::cout << "broadcast will be send\n";
-      //SendXBroadcast();
-      for (int i = 0; i < 10; i++)
+      if (id == 1)
+        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
+    }
+  for (int i = 1; i < 100; i++)
+    {
+      if (id == 0)
         {
-          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
-        }
-      for (int i = 1; i < 20; i++)
-        {
-          if (id == 0)
-            Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
-                                 this); //結果出力関数
+          Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
+                               this); //結果出力関数
+          std::cout << "time " << Simulator::Now ().GetMicroSeconds () << "\n";
         }
     }
 }
@@ -330,7 +332,7 @@ RoutingProtocol::SendXBroadcast (void)
 void
 RoutingProtocol::SimulationResult (void) //
 {
-  if (Simulator::Now ().GetSeconds () == 10)
+  if (Simulator::Now ().GetSeconds () == 98)
     {
       for (auto itr = recvCount.begin (); itr != recvCount.end (); itr++)
         {

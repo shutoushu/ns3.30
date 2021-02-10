@@ -65,6 +65,7 @@ NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 const uint32_t RoutingProtocol::LSGO_PORT = 654;
 int numVehicle = 0; //グローバル変数
 int packetCount = 0; //パケット出力数のカウント
+int sendpacketCount = 0; //sendpacket 出力数のカウント
 
 RoutingProtocol::RoutingProtocol ()
 {
@@ -694,6 +695,27 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
             }
         }
 
+      if (pri_value != 0) //source node じゃなかったら
+        {
+          hopcount++;
+        }
+
+      sendpacketCount++;
+      s_source_id.push_back (send_node_id);
+      s_source_x.push_back (mypos.x);
+      s_source_y.push_back (mypos.y);
+      s_time.push_back (Simulator::Now ().GetMicroSeconds ());
+      s_pri_1_id.push_back (pri_id[1]);
+      s_pri_2_id.push_back (pri_id[2]);
+      s_pri_3_id.push_back (pri_id[3]);
+      s_pri_4_id.push_back (pri_id[4]);
+      s_pri_5_id.push_back (pri_id[5]);
+      s_pri_1_r.push_back (m_rt[pri_id[1]]);
+      s_pri_2_r.push_back (m_rt[pri_id[2]]);
+      s_pri_3_r.push_back (m_rt[pri_id[3]]);
+      s_pri_4_r.push_back (m_rt[pri_id[4]]);
+      s_pri_5_r.push_back (m_rt[pri_id[5]]);
+
       m_recvcount.clear ();
       m_first_recv_time.clear ();
       m_etx.clear ();
@@ -704,10 +726,6 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      if (pri_value != 0) //source node じゃなかったら
-        {
-          hopcount++;
-        }
       SendHeader sendHeader (des_id, des_x, des_y, send_node_id, mypos.x, mypos.y, hopcount,
                              pri_id[1], pri_id[2], pri_id[3], pri_id[4], pri_id[5]);
 
@@ -1141,6 +1159,8 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "車両数は" << numVehicle << "\n";
       std::string filename = "data/lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
+      std::string send_filename = "data/send_lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +
+                                  std::to_string (numVehicle) + ".csv";
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"
                        << ","
@@ -1175,6 +1195,36 @@ RoutingProtocol::SimulationResult (void) //
                        << "pri_4"
                        << ","
                        << "pri_5" << std::endl;
+      std::ofstream send_packetTrajectory (send_filename);
+      send_packetTrajectory << "source_id"
+                            << ","
+                            << "source_x"
+                            << ","
+                            << "source_y"
+                            << ","
+                            << "time"
+                            << ","
+                            << "hop"
+                            << ","
+                            << "pri_1_id"
+                            << ","
+                            << "pri_2_id"
+                            << ","
+                            << "pri_3_id"
+                            << ","
+                            << "pri_4_id"
+                            << ","
+                            << "pri_5_id"
+                            << ","
+                            << "pri_1_r"
+                            << ","
+                            << "pri_2_r"
+                            << ","
+                            << "pri_3_r"
+                            << ","
+                            << "pri_4_r"
+                            << ","
+                            << "pri_5_r" << std::endl;
       for (int i = 0; i < packetCount; i++)
         {
           packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
@@ -1184,6 +1234,15 @@ RoutingProtocol::SimulationResult (void) //
                            << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
                            << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
                            << p_pri_5[i] << std::endl;
+        }
+      for (int i = 0; i < sendpacketCount; i++)
+        {
+          send_packetTrajectory << s_source_id[i] << ", " << s_source_x[i] << ", " << s_source_y[i]
+                                << ", " << s_time[i] << ", " << s_hop[i] << ", " << s_pri_1_id[i]
+                                << ", " << s_pri_2_id[i] << ", " << s_pri_3_id[i] << ", "
+                                << s_pri_4_id[i] << ", " << s_pri_5_id[i] << ", " << s_pri_1_r[i]
+                                << ", " << s_pri_2_r[i] << ", " << s_pri_3_r[i] << ", "
+                                << s_pri_4_r[i] << ", " << s_pri_5_r[i] << std::endl;
         }
     }
 }

@@ -89,7 +89,7 @@ ObstacleShadowingPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobili
     }
   // std::cout<<"L_obs の値は"<<L_obs<<"\n";
   // std::cout<<"L_obs"<<L_obs<<"\n";
-  L_obs = L_obs * 10;
+  L_obs = L_obs;
 
   return L_obs;
 }
@@ -100,7 +100,7 @@ ObstacleShadowingPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<Mob
 {
   double retVal = 0.0;
   double loss = GetLoss (a, b);
-  retVal = txPowerDbm - loss;
+  retVal = txPowerDbm - loss * 100;
   // std::cout<<"txPowerDbm"<<txPowerDbm<<"\n";
   // std::cout<<"-----"<<"\n";
 
