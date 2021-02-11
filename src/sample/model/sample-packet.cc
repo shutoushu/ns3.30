@@ -27,9 +27,7 @@ namespace sample {
 
 NS_OBJECT_ENSURE_REGISTERED (TypeHeader);
 
-TypeHeader::TypeHeader (MessageType t)
-  : m_type (t),
-    m_valid (true)
+TypeHeader::TypeHeader (MessageType t) : m_type (t), m_valid (true)
 {
 }
 
@@ -37,10 +35,9 @@ TypeId
 TypeHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::sample::TypeHeader")
-    .SetParent<Header> ()
-    .SetGroupName ("Sample")
-    .AddConstructor<TypeHeader> ()
-  ;
+                          .SetParent<Header> ()
+                          .SetGroupName ("Sample")
+                          .AddConstructor<TypeHeader> ();
   return tid;
 }
 
@@ -73,11 +70,11 @@ TypeHeader::Deserialize (Buffer::Iterator start)
     case SAMPLETYPE_RREQ:
     case SAMPLETYPE_RREP:
     case SAMPLETYPE_RERR:
-    case SAMPLETYPE_RREP_ACK:
-      {
+      case SAMPLETYPE_RREP_ACK: {
         m_type = (MessageType) type;
         break;
       }
+    case SAMPLETYPE_HELLO:
     default:
       m_valid = false;
     }
@@ -91,24 +88,24 @@ TypeHeader::Print (std::ostream &os) const
 {
   switch (m_type)
     {
-    case SAMPLETYPE_RREQ:
-      {
+      case SAMPLETYPE_RREQ: {
         os << "RREQ";
         break;
       }
-    case SAMPLETYPE_RREP:
-      {
+      case SAMPLETYPE_RREP: {
         os << "RREP";
         break;
       }
-    case SAMPLETYPE_RERR:
-      {
+      case SAMPLETYPE_RERR: {
         os << "RERR";
         break;
       }
-    case SAMPLETYPE_RREP_ACK:
-      {
+      case SAMPLETYPE_RREP_ACK: {
         os << "RREP_ACK";
+        break;
+      }
+      case SAMPLETYPE_HELLO: {
+        os << "HELLO";
         break;
       }
     default:
@@ -117,13 +114,13 @@ TypeHeader::Print (std::ostream &os) const
 }
 
 bool
-TypeHeader::operator== (TypeHeader const & o) const
+TypeHeader::operator== (TypeHeader const &o) const
 {
   return (m_type == o.m_type && m_valid == o.m_valid);
 }
 
 std::ostream &
-operator<< (std::ostream & os, TypeHeader const & h)
+operator<< (std::ostream &os, TypeHeader const &h)
 {
   h.Print (os);
   return os;
@@ -133,14 +130,14 @@ operator<< (std::ostream & os, TypeHeader const & h)
 // RREP
 //-----------------------------------------------------------------------------
 
-RrepHeader::RrepHeader (uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst,
-                        uint32_t dstSeqNo, Ipv4Address origin, Time lifeTime)
-  : m_flags (0),
-    m_prefixSize (prefixSize),
-    m_hopCount (hopCount),
-    m_dst (dst),
-    m_dstSeqNo (dstSeqNo),
-    m_origin (origin)
+RrepHeader::RrepHeader (uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst, uint32_t dstSeqNo,
+                        Ipv4Address origin, Time lifeTime)
+    : m_flags (0),
+      m_prefixSize (prefixSize),
+      m_hopCount (hopCount),
+      m_dst (dst),
+      m_dstSeqNo (dstSeqNo),
+      m_origin (origin)
 {
   m_lifeTime = uint32_t (lifeTime.GetMilliSeconds ());
 }
@@ -151,10 +148,9 @@ TypeId
 RrepHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::sample::RrepHeader")
-    .SetParent<Header> ()
-    .SetGroupName ("Sample")
-    .AddConstructor<RrepHeader> ()
-  ;
+                          .SetParent<Header> ()
+                          .SetGroupName ("Sample")
+                          .AddConstructor<RrepHeader> ();
   return tid;
 }
 
@@ -257,11 +253,11 @@ RrepHeader::GetPrefixSize () const
 }
 
 bool
-RrepHeader::operator== (RrepHeader const & o) const
+RrepHeader::operator== (RrepHeader const &o) const
 {
-  return (m_flags == o.m_flags && m_prefixSize == o.m_prefixSize
-          && m_hopCount == o.m_hopCount && m_dst == o.m_dst && m_dstSeqNo == o.m_dstSeqNo
-          && m_origin == o.m_origin && m_lifeTime == o.m_lifeTime);
+  return (m_flags == o.m_flags && m_prefixSize == o.m_prefixSize && m_hopCount == o.m_hopCount &&
+          m_dst == o.m_dst && m_dstSeqNo == o.m_dstSeqNo && m_origin == o.m_origin &&
+          m_lifeTime == o.m_lifeTime);
 }
 
 void
@@ -277,11 +273,79 @@ RrepHeader::SetHello (Ipv4Address origin, uint32_t srcSeqNo, Time lifetime)
 }
 
 std::ostream &
-operator<< (std::ostream & os, RrepHeader const & h)
+operator<< (std::ostream &os, RrepHeader const &h)
 {
   h.Print (os);
   return os;
 }
 
+// ***********************start Sample_HELLO*************************************//
+HelloHeader::HelloHeader (int32_t nodeid, int32_t posx, int32_t posy)
+    : m_nodeid (nodeid), m_posx (posx), m_posy (posy)
+{
 }
+NS_OBJECT_ENSURE_REGISTERED (HelloHeader);
+
+TypeId
+HelloHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::sample::HelloHeader")
+                          .SetParent<Header> ()
+                          .SetGroupName ("Sample")
+                          .AddConstructor<HelloHeader> ();
+  return tid;
 }
+
+TypeId
+HelloHeader::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+HelloHeader::GetSerializedSize () const
+{
+  return 12;
+}
+
+void
+HelloHeader::Serialize (Buffer::Iterator i) const //シリアル化
+{
+  i.WriteHtonU32 (m_nodeid);
+  i.WriteHtonU32 (m_posx);
+  i.WriteHtonU32 (m_posy);
+}
+
+uint32_t
+HelloHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
+{
+  Buffer::Iterator i = start;
+
+  m_nodeid = i.ReadNtohU32 ();
+  m_posx = i.ReadNtohU32 ();
+  m_posy = i.ReadNtohU32 ();
+
+  uint32_t dist2 = i.GetDistanceFrom (start);
+
+  NS_ASSERT (dist2 == GetSerializedSize ());
+  return dist2;
+}
+
+void
+HelloHeader::Print (std::ostream &os) const
+{
+  // os << "NodeId " << m_nodeid;
+  // os << "NodePointX " << m_posx;
+  // os << "NodePointY" << m_posy;
+}
+std::ostream &
+operator<< (std::ostream &os, HelloHeader const &h)
+{
+  h.Print (os);
+  return os;
+}
+
+// ***********************end Sample_HELLO*************************************//
+
+} // namespace sample
+} // namespace ns3

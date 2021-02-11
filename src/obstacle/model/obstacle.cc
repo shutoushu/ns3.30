@@ -25,20 +25,22 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("obstacle");
 
-Obstacle::Obstacle() :
-  // default values for per-wall and per-meter attenuation, 
-  // (per obstacle instance)
-  // See C. Sommer et. al.:
-  // A Computationally Inexpensive Empirical Model of IEEE 802.11p
-  // Radio Shadowing in Urban Environments;  
-  m_beta(9.0),
-  m_gamma(0.4)
+Obstacle::Obstacle ()
+    : // default values for per-wall and per-meter attenuation,
+      // (per obstacle instance)
+      // See C. Sommer et. al.:
+      // A Computationally Inexpensive Empirical Model of IEEE 802.11p
+      // Radio Shadowing in Urban Environments;
+      // m_beta (9.0),
+      // m_gamma (0.4) //default値
+      m_beta (15.0),
+      m_gamma (100.2)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-Obstacle::SetId(std::string id)
+Obstacle::SetId (std::string id)
 {
   NS_LOG_FUNCTION (this);
 
@@ -46,7 +48,7 @@ Obstacle::SetId(std::string id)
 }
 
 const std::string
-Obstacle::GetId()
+Obstacle::GetId ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -54,7 +56,7 @@ Obstacle::GetId()
 }
 
 Polygon_2 &
-Obstacle::GetPolygon()
+Obstacle::GetPolygon ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -62,35 +64,35 @@ Obstacle::GetPolygon()
 }
 
 void
-Obstacle::AddVertex(Point p)
+Obstacle::AddVertex (Point p)
 {
   NS_LOG_FUNCTION (this);
 
   // add vertex to internal CGAL Polygon_2 object
-  m_obstacle.push_back(p);
+  m_obstacle.push_back (p);
 }
 
 void
-Obstacle::Locate()
+Obstacle::Locate ()
 {
   NS_LOG_FUNCTION (this);
 
   // get the bounding box of the obstacle
-  Bbox_2 bbox = m_obstacle.bbox();
+  Bbox_2 bbox = m_obstacle.bbox ();
 
-  double bx = (double)bbox.xmin();
-  double by = (double)bbox.ymin();
+  double bx = (double) bbox.xmin ();
+  double by = (double) bbox.ymin ();
   // get the centerpoint
-  double cx = (double)(bx + (bbox.xmax() - bx));
-  double cy = (double)(by + (bbox.ymax() - by));
+  double cx = (double) (bx + (bbox.xmax () - bx));
+  double cy = (double) (by + (bbox.ymax () - by));
 
-  m_center = Point(cx, cy);
+  m_center = Point (cx, cy);
 
   m_radiusSq = (cx - bx) * (cx - bx) + (cy - by) * (cy - by);
 }
 
 const Point &
-Obstacle::GetCenter()
+Obstacle::GetCenter ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -98,7 +100,7 @@ Obstacle::GetCenter()
 }
 
 double
-Obstacle::GetRadiusSq()
+Obstacle::GetRadiusSq ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -106,7 +108,7 @@ Obstacle::GetRadiusSq()
 }
 
 double
-Obstacle::GetBeta()
+Obstacle::GetBeta ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -114,7 +116,7 @@ Obstacle::GetBeta()
 }
 
 double
-Obstacle::GetGamma()
+Obstacle::GetGamma ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -122,7 +124,7 @@ Obstacle::GetGamma()
 }
 
 void
-Obstacle::SetBeta(double beta)
+Obstacle::SetBeta (double beta)
 {
   NS_LOG_FUNCTION (this);
 
@@ -130,12 +132,11 @@ Obstacle::SetBeta(double beta)
 }
 
 void
-Obstacle::SetGamma(double gamma)
+Obstacle::SetGamma (double gamma)
 {
   NS_LOG_FUNCTION (this);
 
   m_gamma = gamma;
 }
 
-}
-
+} // namespace ns3

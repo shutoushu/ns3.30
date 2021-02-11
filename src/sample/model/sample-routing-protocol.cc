@@ -251,10 +251,8 @@ RoutingProtocol::DoInitialize (void)
   //SendXBroadcast();
   for (int i = 0; i < 100; i++)
     {
-      if (id == 1)
+      if (id == 1 || id == 10 || id == 20 || id == 30 || id == 40 || id == 50)
         {
-          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
-          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
           Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
         }
     }
@@ -272,18 +270,37 @@ RoutingProtocol::DoInitialize (void)
 void
 RoutingProtocol::RecvSample (Ptr<Socket> socket)
 {
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   std::cout << "In recv Sample(Node " << m_ipv4->GetObject<Node> ()->GetId () << ")\n";
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector recvpos = mobility->GetPosition ();
 
-  double distance =
-      std::sqrt ((posx - recvpos.x) * (posx - recvpos.x) + (posy - recvpos.y) * (posy - recvpos.y));
+  Address sourceAddress;
+  Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
+  TypeHeader tHeader (SAMPLETYPE_HELLO);
+  packet->RemoveHeader (tHeader);
 
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  recvCount[id]++;
+  HelloHeader helloheader;
+  packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
+  //int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
+  int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
+  int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
+  int send_road = distinctionRoad (recv_hello_posx, recv_hello_posy);
+  int recv_road = distinctionRoad (recvpos.x, recvpos.y);
 
-  std::cout << "In recv Sample(Node " << m_ipv4->GetObject<Node> ()->GetId () << ")"
-            << "x=" << recvpos.x << "y=" << recvpos.y << "distance" << distance << "\n";
+  double distance = std::sqrt ((recv_hello_posx - recvpos.x) * (recv_hello_posx - recvpos.x) +
+                               (recv_hello_posy - recvpos.y) * (recv_hello_posy - recvpos.y));
+
+  if (send_road != recv_road) //受信ノードと送信ノードの道路IDが違うならば
+    {
+      // std::cout << "異なる道路\n";
+      recvCount[id]++;
+      // std::cout << "In recv Sample(Node " << m_ipv4->GetObject<Node> ()->GetId () << ")"
+      //           << "x=" << recvpos.x << "y=" << recvpos.y << "distance" << distance << "\n";
+    }
+  else
+    {
+    }
 
   if (distance > maxLenge)
     maxLenge = distance;
@@ -311,11 +328,13 @@ RoutingProtocol::SendXBroadcast (void)
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      RrepHeader rrepHeader (0, 3, Ipv4Address ("10.1.1.15"), 5, Ipv4Address ("10.1.1.13"),
-                             Seconds (3));
-      packet->AddHeader (rrepHeader);
+      // RrepHeader rrepHeader (0, 3, Ipv4Address ("10.1.1.15"), 5, Ipv4Address ("10.1.1.13"),
+      //                        Seconds (3));
+      // packet->AddHeader (rrepHeader);
+      HelloHeader helloHeader (id, mypos.x, mypos.y);
+      packet->AddHeader (helloHeader);
 
-      TypeHeader tHeader (SAMPLETYPE_RREP);
+      TypeHeader tHeader (SAMPLETYPE_HELLO);
       packet->AddHeader (tHeader);
 
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
@@ -406,7 +425,8 @@ RoutingProtocol::SimulationResult (void) //
                     << "取得数 " << itr->second << "\n"; // 値を表示
         }
       std::cout << "recv max lenge " << maxLenge << "\n";
-      std::cout << "lossValue" << 0.1 << "\n";
+      std::cout << "m_beta" << 9.0 << "\n";
+      std::cout << "m_beta" << 30.2 << "\n";
     }
 }
 

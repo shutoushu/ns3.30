@@ -67,7 +67,7 @@ ObstacleShadowingPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobili
   Topology *topology = Topology::GetTopology ();
   NS_ASSERT (topology != 0);
 
-  if (topology->HasObstacles () == true)
+  if (topology->HasObstacles () == true) //２点間に建物が存在すれば
     {
       // additional loss for obstacles
       double p1_x = a->GetPosition ().x;
@@ -82,10 +82,6 @@ ObstacleShadowingPropagationLossModel::GetLoss (Ptr<MobilityModel> a, Ptr<Mobili
 
       // get the obstructed loss, from the topology class
       L_obs = topology->GetObstructedLossBetween (p1, p2, r);
-      // std::cout<<"p1_x"<<p1_x<<"\n";
-      // std::cout<<"p1_y"<<p1_y<<"\n";
-      // std::cout<<"p2_x"<<p2_x<<"\n";
-      // std::cout<<"p2_y"<<p2_y<<"\n";
     }
   // std::cout<<"L_obs の値は"<<L_obs<<"\n";
   // std::cout<<"L_obs"<<L_obs<<"\n";
@@ -100,9 +96,13 @@ ObstacleShadowingPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<Mob
 {
   double retVal = 0.0;
   double loss = GetLoss (a, b);
-  retVal = txPowerDbm - loss * 100;
-  // std::cout<<"txPowerDbm"<<txPowerDbm<<"\n";
-  // std::cout<<"-----"<<"\n";
+  // if (loss != 0)
+  //   std::cout << "loss" << loss;
+  retVal = txPowerDbm - loss;
+  //std::cout << "retVal" << retVal;
+  // std::cout << "txPowerDbm" << txPowerDbm;
+
+  // defaltのretvalをcheckしたらマイナスの値だった
 
   // if (loss != 0)
   //   std::cout << "loss" << loss << "\n";

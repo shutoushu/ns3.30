@@ -25,19 +25,20 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("topology");
 
-Topology::Topology () : 
-  // initially very large values
-  // so that obstacle bounding box
-  // updates will be made
-  m_minX(999999999.0),
-  m_minY(999999999.0),
-  m_maxX(-999999999.0),
-  m_maxY(-999999999.0)
+Topology::Topology ()
+    : // initially very large values
+      // so that obstacle bounding box
+      // updates will be made
+      m_minX (999999999.0),
+      m_minY (999999999.0),
+      m_maxX (-999999999.0),
+      m_maxY (-999999999.0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-void Topology::CommandSetup (int argc, char **argv)
+void
+Topology::CommandSetup (int argc, char **argv)
 {
   NS_LOG_FUNCTION (this);
 
@@ -62,7 +63,7 @@ Topology::PeekTopology (void)
   return &topo;
 }
 
-Topology * 
+Topology *
 Topology::GetTopology (void)
 {
   Topology **ptopo = PeekTopology ();
@@ -72,31 +73,30 @@ Topology::GetTopology (void)
   if (*ptopo == 0)
     {
       // create the topology
-      *ptopo = new Topology();
+      *ptopo = new Topology ();
     }
 
   return *ptopo;
 }
 
-void 
-Topology::
-CreateVertex(Obstacle &obstacle, std::string vertex) 
+void
+Topology::CreateVertex (Obstacle &obstacle, std::string vertex)
 {
   NS_LOG_FUNCTION (this);
 
   // x, y valus are comma-separated
-  size_t pos = vertex.find(",");
-  std::string x = vertex.substr(0, pos);
-  std::string y = vertex.substr(pos + 1);
+  size_t pos = vertex.find (",");
+  std::string x = vertex.substr (0, pos);
+  std::string y = vertex.substr (pos + 1);
 
   // convert values to double
-  double dx = atof(x.c_str ());
-  double dy = atof(y.c_str ());
+  double dx = atof (x.c_str ());
+  double dy = atof (y.c_str ());
 
   // create a 2D x,y point
-  Point p(dx, dy);
+  Point p (dx, dy);
   // add the point as a vertex to an obstacle
-  obstacle.AddVertex(p);
+  obstacle.AddVertex (p);
 
   // if possible, update topology bounding box values
   if (dx < m_minX)
@@ -117,62 +117,62 @@ CreateVertex(Obstacle &obstacle, std::string vertex)
     }
 }
 
-void 
-Topology::
-CreateShape(std::string id, std::string vertices) 
+void
+Topology::CreateShape (std::string id, std::string vertices)
 {
   // create an obstacle
   Obstacle obstacle;
   // name the obstacle
-  obstacle.SetId(id);
+  obstacle.SetId (id);
 
   // tokenize each vertex
   size_t pos1 = 0;
-  size_t pos2 = vertices.find(" ", pos1);
+  size_t pos2 = vertices.find (" ", pos1);
   std::string vertex;
-  while (pos2 != std::string::npos) 
+  while (pos2 != std::string::npos)
     {
-      vertex = vertices.substr(pos1, pos2-pos1);
-      CreateVertex(obstacle, vertex);
+      vertex = vertices.substr (pos1, pos2 - pos1);
+      CreateVertex (obstacle, vertex);
       pos1 = pos2 + 1;
-      pos2 = vertices.find(" ", pos1);
+      pos2 = vertices.find (" ", pos1);
     }
   // NOTE:  In OSM data, last vertex is dup of first
   // so, we don't need to get it for polygonal obstacle
   // get last vertex
 
-  // calculate the obstacle center of 
+  // calculate the obstacle center of
   // bounding box and radius(squared).
-  obstacle.Locate();
+  obstacle.Locate ();
 
   // load centerpoint into Range Tree
-  Point c = obstacle.GetCenter();
-  Key k = Key(c, obstacle);
+  Point c = obstacle.GetCenter ();
+  Key k = Key (c, obstacle);
 
   // add the obstacle to the topolgoy
-  m_obstacles.push_back(k);
+  m_obstacles.push_back (k);
 }
 
-// range tree (binary space partition, BSP) 
+// range tree (binary space partition, BSP)
 // for quickly searching for obstacles within a range
 static Range_tree_2_type m_rangeTree;
 
-void 
-Topology::LoadBuildings(std::string bldgFilename)
+void
+Topology::LoadBuildings (std::string bldgFilename)
 {
   NS_LOG_UNCOND ("Load buildings");
   std::ifstream file (bldgFilename.c_str (), std::ios::in);
-  if (!(file.is_open ())) 
+  if (!(file.is_open ()))
     {
-      NS_FATAL_ERROR("Could not open buildings file " << bldgFilename.c_str() << " for reading, aborting here \n"); 
+      NS_FATAL_ERROR ("Could not open buildings file " << bldgFilename.c_str ()
+                                                       << " for reading, aborting here \n");
     }
   else
     {
-      Topology * topology = Topology::GetTopology();
-      NS_ASSERT(topology != 0);
+      Topology *topology = Topology::GetTopology ();
+      NS_ASSERT (topology != 0);
 
       NS_LOG_UNCOND ("Reading file: " << bldgFilename);
-      while (!file.eof () )
+      while (!file.eof ())
         {
           std::string line;
 
@@ -180,56 +180,58 @@ Topology::LoadBuildings(std::string bldgFilename)
 
           NS_LOG_UNCOND (line);
 
-          size_t posB = line.find("type=\"building");
-          size_t posU = line.find("type=\"unknown");
-          if ((posB != std::string::npos)
-              || (posU != std::string::npos))
+          size_t posB = line.find ("type=\"building");
+          size_t posU = line.find ("type=\"unknown");
+          if ((posB != std::string::npos) || (posU != std::string::npos))
             {
-              // could *possibly* use XML-DOM here, but 
+              // could *possibly* use XML-DOM here, but
               // seems faster to just read through the file
 
               // found a building
               // get the building id (name) and shape (vertices)
               std::string polyid;
               std::string shape;
-              size_t pos = line.find("<poly id=\"");
+              size_t pos = line.find ("<poly id=\"");
               if (pos != std::string::npos)
                 {
-                  size_t pos2 = line.find("\"", pos + 11);
+                  size_t pos2 = line.find ("\"", pos + 11);
                   if (pos2 != std::string::npos)
                     {
-                      polyid = line.substr(pos + 10, pos2 - pos - 10);
-                      pos = line.find("shape=\"");
+                      polyid = line.substr (pos + 10, pos2 - pos - 10);
+                      pos = line.find ("shape=\"");
                       if (pos != std::string::npos)
-                      {
-                        size_t pos2 = line.find("\"", pos + 8);
-                        if (pos2 != std::string::npos)
                         {
-                          shape = line.substr(pos + 7, pos2 - pos - 7);
+                          size_t pos2 = line.find ("\"", pos + 8);
+                          if (pos2 != std::string::npos)
+                            {
+                              shape = line.substr (pos + 7, pos2 - pos - 7);
+                            }
                         }
-                      }
-                      topology->CreateShape(polyid, shape);      
+                      topology->CreateShape (polyid, shape);
                     }
                 }
             }
         }
-      NS_LOG_UNCOND ("Topology buildings bounded by x:" << topology->GetMinX() << "," << topology->GetMaxX() << " y:" << topology->GetMinY() << "," << topology->GetMaxY());
+      NS_LOG_UNCOND ("Topology buildings bounded by x:"
+                     << topology->GetMinX () << "," << topology->GetMaxX ()
+                     << " y:" << topology->GetMinY () << "," << topology->GetMaxY ());
       // all obstacles have been loaded
       // so now create a searchable range tree based on those obstacles
-      topology->MakeRangeTree();
+      topology->MakeRangeTree ();
     }
 }
 
 void
-Topology::MakeRangeTree()
+Topology::MakeRangeTree ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_rangeTree.make_tree(m_obstacles.begin(), m_obstacles.end());
+  m_rangeTree.make_tree (m_obstacles.begin (), m_obstacles.end ());
 }
 
 void
-Topology::GetObstructedDistance(const Point &p1, const Point &p2, Obstacle &obs, double & obstructedDistance, int &intersections)
+Topology::GetObstructedDistance (const Point &p1, const Point &p2, Obstacle &obs,
+                                 double &obstructedDistance, int &intersections)
 {
   NS_LOG_FUNCTION (this);
 
@@ -245,36 +247,35 @@ Topology::GetObstructedDistance(const Point &p1, const Point &p2, Obstacle &obs,
   double d_min = 999999999.0;
   double d_max = -999999999.0;
 
-  Segment_2 r(p1, p2);
+  Segment_2 r (p1, p2);
 
-  Polygon_2 &poly = obs.GetPolygon();  
-  for (EdgeIterator iterEdge = poly.edges_begin(); iterEdge != poly.edges_end(); ++iterEdge) 
+  Polygon_2 &poly = obs.GetPolygon ();
+  for (EdgeIterator iterEdge = poly.edges_begin (); iterEdge != poly.edges_end (); ++iterEdge)
     {
       Segment_2 s = (Segment_2) (*iterEdge);
 
-      CGAL::Object result = CGAL::intersection(s, r);
+      CGAL::Object result = CGAL::intersection (s, r);
 
-      if (const CGAL::Point_2<K> *ipoint = CGAL::object_cast<CGAL::Point_2<K> >(
-		&result)) 
+      if (const CGAL::Point_2<K> *ipoint = CGAL::object_cast<CGAL::Point_2<K>> (&result))
         {
           intersections++;
 
           // handle the point intersection case with *ipoint.
-          double dx = CGAL::to_double(ipoint->x()) - CGAL::to_double(p1.x());
-          double dy = CGAL::to_double(ipoint->y()) - CGAL::to_double(p1.y());
+          double dx = CGAL::to_double (ipoint->x ()) - CGAL::to_double (p1.x ());
+          double dy = CGAL::to_double (ipoint->y ()) - CGAL::to_double (p1.y ());
           // square it, for performance optimization
           // (there will be many compares to this vaule)
           double distP1toIPsq = dx * dx + dy * dy;
 
-          if (distP1toIPsq < d_min) 
+          if (distP1toIPsq < d_min)
             {
               d_min = distP1toIPsq;
             }
-          if (distP1toIPsq > d_max) 
+          if (distP1toIPsq > d_max)
             {
               d_max = distP1toIPsq;
             }
-        } 
+        }
       /*
       else if (const CGAL::Segment_2<K> *iseg = CGAL::object_cast<
 		CGAL::Segment_2<K> >(&result)) 
@@ -289,10 +290,9 @@ Topology::GetObstructedDistance(const Point &p1, const Point &p2, Obstacle &obs,
           //cout << "s and rho do not intersect." << endl;
         }
       */
-
     }
 
-  if ((d_min < 999999999.0) && (d_max > 0)) 
+  if ((d_min < 999999999.0) && (d_max > 0))
     {
       // if d_min == d_max, then intersection was at a vertex of an edge
       if (d_min == d_max)
@@ -301,15 +301,15 @@ Topology::GetObstructedDistance(const Point &p1, const Point &p2, Obstacle &obs,
         }
       else
         {
-          double d1 = sqrt(d_min);
-          double d2 = sqrt(d_max);
-          obstructedDistance = d2 - d1;
+          double d1 = sqrt (d_min);
+          double d2 = sqrt (d_max);
+          obstructedDistance = d2 - d1; //おそらくこれが貫通距離
         }
     }
 }
 
-double 
-Topology::GetObstructedLossBetween(const Point &p1, const Point &p2, double r)
+double
+Topology::GetObstructedLossBetween (const Point &p1, const Point &p2, double r)
 {
   NS_LOG_FUNCTION (this);
 
@@ -320,42 +320,42 @@ Topology::GetObstructedLossBetween(const Point &p1, const Point &p2, double r)
 
   double rSq = r * r;
 
-  double p1x = CGAL::to_double(p1.x());
-  double p1y = CGAL::to_double(p1.y());
-  double p2x = CGAL::to_double(p2.x());
-  double p2y = CGAL::to_double(p2.y());
+  double p1x = CGAL::to_double (p1.x ());
+  double p1y = CGAL::to_double (p1.y ());
+  double p2x = CGAL::to_double (p2.x ());
+  double p2y = CGAL::to_double (p2.y ());
 
   // test first to see if we have a cached value
   // for loss between these two points
   // using their positions to the nearest 0.1m
 
   char buff[100];
-  sprintf(buff, "%010.1f %010.1f", p1x, p1y);
+  sprintf (buff, "%010.1f %010.1f", p1x, p1y);
   std::string p1Pos = buff;
-  sprintf(buff, "%010.1f %010.1f", p2x, p2y);
+  sprintf (buff, "%010.1f %010.1f", p2x, p2y);
   std::string p2Pos = buff;
-  sprintf(buff, "%s %s", p1Pos.c_str(), p2Pos.c_str());
+  sprintf (buff, "%s %s", p1Pos.c_str (), p2Pos.c_str ());
   std::string key = buff;
 
   // check if cached
-  if (m_obstructedDistanceMap.count(key) > 0) 
+  if (m_obstructedDistanceMap.count (key) > 0)
     {
       // found it
       TStrDblMap::iterator it;
-      it = m_obstructedDistanceMap.find(key);
+      it = m_obstructedDistanceMap.find (key);
       obstructedLoss = it->second;
       return obstructedLoss;
     }
   else
     {
       // B to A is same as A to B
-      sprintf(buff, "%s %s", p2Pos.c_str(), p1Pos.c_str());
+      sprintf (buff, "%s %s", p2Pos.c_str (), p1Pos.c_str ());
       std::string key = buff;
-      if (m_obstructedDistanceMap.count(key) > 0) 
+      if (m_obstructedDistanceMap.count (key) > 0)
         {
           // found it
           TStrDblMap::iterator it;
-          it = m_obstructedDistanceMap.find(key);
+          it = m_obstructedDistanceMap.find (key);
           obstructedLoss = it->second;
           return obstructedLoss;
         }
@@ -372,39 +372,38 @@ Topology::GetObstructedLossBetween(const Point &p1, const Point &p2, double r)
     {
       // now search by range tree search
       // get bounding box, and extend by r is all directions
-      double xmin = std::min(p1x, p2x) - r;
-      double xmax = std::max(p1x, p2x) + r;
-      double ymin = std::min(p1y, p2y) - r;
-      double ymax = std::max(p1y, p2y) + r;
-      Point pLow(xmin, ymin);
-      Point pHigh(xmax, ymax);
-      Interval win(Interval(pLow, pHigh));
-      m_outputList.clear();
-      m_rangeTree.window_query(win, std::back_inserter(m_outputList));
-      std::vector<Key>::iterator current = m_outputList.begin();
-      while (current != m_outputList.end())
+      double xmin = std::min (p1x, p2x) - r;
+      double xmax = std::max (p1x, p2x) + r;
+      double ymin = std::min (p1y, p2y) - r;
+      double ymax = std::max (p1y, p2y) + r;
+      Point pLow (xmin, ymin);
+      Point pHigh (xmax, ymax);
+      Interval win (Interval (pLow, pHigh));
+      m_outputList.clear ();
+      m_rangeTree.window_query (win, std::back_inserter (m_outputList));
+      std::vector<Key>::iterator current = m_outputList.begin ();
+      while (current != m_outputList.end ())
         {
           Obstacle obstacle = (*current).second;
-          std::string id = obstacle.GetId();
-          Point center = obstacle.GetCenter();
+          std::string id = obstacle.GetId ();
+          Point center = obstacle.GetCenter ();
 
-          double dx1 = CGAL::to_double(center.x()) - p1x;
-          double dy1 = CGAL::to_double(center.y()) - p1y;
+          double dx1 = CGAL::to_double (center.x ()) - p1x;
+          double dy1 = CGAL::to_double (center.y ()) - p1y;
           double distCtoP1sq = dx1 * dx1 + dy1 * dy1;
 
-          double dx2 = CGAL::to_double(center.x()) - p2x;
-          double dy2 = CGAL::to_double(center.y()) - p2y;
+          double dx2 = CGAL::to_double (center.x ()) - p2x;
+          double dy2 = CGAL::to_double (center.y ()) - p2y;
           double distCtoP2sq = dx2 * dx2 + dy2 * dy2;
 
-          if (((distCtoP1sq - rSq) < 0)
-              && ((distCtoP2sq - rSq) < 0))
+          if (((distCtoP1sq - rSq) < 0) && ((distCtoP2sq - rSq) < 0))
             {
               // obtstacle is within range
               countFound++;
 
               double obstructedDistanceBetween = 0.0;
               int intersections = 0;
-              GetObstructedDistance(p1, p2, obstacle, obstructedDistanceBetween, intersections);
+              GetObstructedDistance (p1, p2, obstacle, obstructedDistanceBetween, intersections);
               // From C. Sommer et. al.:
               // A Computationally Inexpensive Empirical Model of IEEE 802.11p
               // Radio Shadowing in Urban Environments, 2011.
@@ -418,9 +417,11 @@ Topology::GetObstructedLossBetween(const Point &p1, const Point &p2, double r)
               // d_m is the distance in meters of propagation through the obstacle
               if ((obstructedDistanceBetween > 0.0) && (intersections > 1))
                 {
-                  double beta = obstacle.GetBeta();
-                  double gamma = obstacle.GetGamma();
-                  obstructedLoss = beta * (double) intersections + gamma * obstructedDistanceBetween;
+                  double beta = obstacle.GetBeta ();
+                  double gamma = obstacle.GetGamma ();
+                  // std::cout << "gamma" << gamma;
+                  obstructedLoss =
+                      beta * (double) intersections + gamma * obstructedDistanceBetween;
                 }
             }
           current++;
@@ -428,18 +429,18 @@ Topology::GetObstructedLossBetween(const Point &p1, const Point &p2, double r)
     }
 
   // cache results
-  if (m_obstructedDistanceMap.size() > 1000) 
+  if (m_obstructedDistanceMap.size () > 1000)
     {
       // clear it every once in a while, to avoid bloat.
-      m_obstructedDistanceMap.clear();
+      m_obstructedDistanceMap.clear ();
     }
-  m_obstructedDistanceMap.insert(TStrDblPair(key, obstructedLoss));
+  m_obstructedDistanceMap.insert (TStrDblPair (key, obstructedLoss));
 
   return obstructedLoss;
 }
 
 double
-Topology::GetMinX()
+Topology::GetMinX ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -447,7 +448,7 @@ Topology::GetMinX()
 }
 
 double
-Topology::GetMaxX()
+Topology::GetMaxX ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -455,7 +456,7 @@ Topology::GetMaxX()
 }
 
 double
-Topology::GetMinY()
+Topology::GetMinY ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -463,21 +464,21 @@ Topology::GetMinY()
 }
 
 double
-Topology::GetMaxY()
+Topology::GetMaxY ()
 {
   NS_LOG_FUNCTION (this);
 
   return m_maxY;
 }
 
-bool 
-Topology::HasObstacles()
+bool
+Topology::HasObstacles ()
 {
   NS_LOG_FUNCTION (this);
 
   bool hasObstacles = false;
 
-  if (m_obstacles.size() > 0)
+  if (m_obstacles.size () > 0)
     {
       hasObstacles = true;
     }
