@@ -1157,7 +1157,7 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
-      std::string filename = "data/propagation_test/dis_15_100_30_lsgo-seed_" +
+      std::string filename = "data/propagation_test/dis_250_100_80_lsgo-seed_" +
                              std::to_string (Seed) + "nodenum_" + std::to_string (numVehicle) +
                              ".csv";
       std::string send_filename = "data/send_lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +

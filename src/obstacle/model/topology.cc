@@ -304,7 +304,7 @@ Topology::GetObstructedDistance (const Point &p1, const Point &p2, Obstacle &obs
           double d1 = sqrt (d_min);
           double d2 = sqrt (d_max);
           obstructedDistance = d2 - d1; //おそらくこれが貫通距離  ここを変更する
-          obstructedDistance = obstructedDistance * 15; //距離を数倍する
+          obstructedDistance = obstructedDistance * 250; //距離を数倍する
 
           // if (obstructedDistance != 0)
           //   std::cout << "obstructedDistance" << obstructedDistance;
