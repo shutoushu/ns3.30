@@ -99,16 +99,19 @@ ObstacleShadowingPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<Mob
   // if (loss != 0)
   //   std::cout << "loss" << loss;
   retVal = txPowerDbm - loss;
-  //std::cout << "retVal" << retVal;
+  // std::cout << "retVal" << retVal;
   // std::cout << "txPowerDbm" << txPowerDbm;
 
   // defaltのretvalをcheckしたらマイナスの値だった
 
   // if (loss != 0)
-  //   std::cout << "loss" << loss << "\n";
-
-  // std::cout<<"==";
-  // std::cout<<"retVal"<<"\n";
+  //   {
+  //     std::cout << "-----------------------------no loss \n";
+  //     std::cout << "txPowerDbm" << txPowerDbm;
+  //     std::cout << "loss" << loss << "\n";
+  //     std::cout << "retVal" << retVal;
+  //     std::cout << "------------------------------------\n";
+  //   }
   return (retVal);
 }
 

@@ -258,7 +258,8 @@ Topology::GetObstructedDistance (const Point &p1, const Point &p2, Obstacle &obs
 
       if (const CGAL::Point_2<K> *ipoint = CGAL::object_cast<CGAL::Point_2<K>> (&result))
         {
-          intersections++;
+          // /intersections++;
+          intersections = intersections + 2;
 
           // handle the point intersection case with *ipoint.
           double dx = CGAL::to_double (ipoint->x ()) - CGAL::to_double (p1.x ());
@@ -304,7 +305,8 @@ Topology::GetObstructedDistance (const Point &p1, const Point &p2, Obstacle &obs
           double d1 = sqrt (d_min);
           double d2 = sqrt (d_max);
           obstructedDistance = d2 - d1; //おそらくこれが貫通距離  ここを変更する
-          obstructedDistance = obstructedDistance * 250; //距離を数倍する
+          obstructedDistance = obstructedDistance * 10; //距離を数倍する
+          // std::cout << "intersections" << intersections;
 
           // if (obstructedDistance != 0)
           //   std::cout << "obstructedDistance" << obstructedDistance;
