@@ -251,7 +251,7 @@ RoutingProtocol::DoInitialize (void)
   //SendXBroadcast();
   for (int i = 0; i < 100; i++)
     {
-      if (id == 1 || id == 10 || id == 20 || id == 30 || id == 40 || id == 50)
+      if (id == 0)
         {
           Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
         }
@@ -417,7 +417,7 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
 void
 RoutingProtocol::SimulationResult (void) //
 {
-  if (Simulator::Now ().GetSeconds () == 15)
+  if (Simulator::Now ().GetSeconds () == 99)
     {
       for (auto itr = recvCount.begin (); itr != recvCount.end (); itr++)
         {

@@ -60,7 +60,6 @@
 #include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/internet-module.h"
-#include "ns3/shuto-module.h"
 #include "ns3/senko-module.h"
 #include "ns3/netanim-module.h"
 #include "ns3/sample-module.h"
