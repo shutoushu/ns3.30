@@ -1,8 +1,8 @@
 $node_(0) set X_ 1150.0
 $node_(0) set Y_ 1200.0
 $node_(0) set Z_ 0
-$ns_ at 0.0 "$node_(0) setdest 1150.0 1200.0 0.00"
-$ns_ at 1.0 "$node_(0) setdest 1100.0 1200.0 0.00"
+$ns_ at 0.0 "$node_(0) setdest 1190.0 1200.0 0.00"
+$ns_ at 1.0 "$node_(0) setdest 1190.0 1200.0 0.00"
 $node_(1) set X_ 1200.0
 $node_(1) set Y_ 1195.0
 $node_(1) set Z_ 0

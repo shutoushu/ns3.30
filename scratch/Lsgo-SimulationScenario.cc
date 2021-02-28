@@ -2402,7 +2402,7 @@ VanetRoutingExperiment::SetupScenario ()
       //std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";//デフォルトのbuildingモデル
 
       std::string bldgFile =
-          "./src/wave/examples/LSGO_Grid/newbuildings.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
+          "./src/wave/examples/LSGO_Grid/testbuildings.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
 
       std::cout << "building ファイルを入力しましたそのファイルは " << bldgFile << "\n";
 
@@ -2447,7 +2447,6 @@ VanetRoutingExperiment::SetupScenario ()
     }
   else if (m_scenario == 3)
     {
-
       // Realistic vehicular trace in Downtown Raleigh, NC USA
       // 50 vehicles,
       // with buildings, for Obstacle Shadowing Model
@@ -2464,8 +2463,7 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
-
-      m_traceFile = "src/wave/examples/LSGO_Grid/newtest.tcl"; //testモビリティ入力ファイル
+      m_traceFile = "src/wave/examples/LSGO_Grid/test.tcl"; //testモビリティ入力ファイル
       // m_traceFile = "src/wave/examples/LSGO_Grid/grid_1000.tcl"; //モビリティ入力ファイル
 
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
