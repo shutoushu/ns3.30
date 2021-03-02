@@ -34,7 +34,7 @@ Obstacle::Obstacle ()
       // m_beta (9.0),
       // m_gamma (0.4) //default値
       m_beta (9.5),
-      m_gamma (0.6)
+      m_gamma (0.8)
 {
   NS_LOG_FUNCTION (this);
 }

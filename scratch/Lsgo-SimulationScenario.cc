@@ -2402,7 +2402,7 @@ VanetRoutingExperiment::SetupScenario ()
       //std::string bldgFile = "./src/wave/examples/Raleigh_Downtown.buildings.xml";//デフォルトのbuildingモデル
 
       std::string bldgFile =
-          "./src/wave/examples/LSGO_Grid/testbuildings.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
+          "./src/wave/examples/LSGO_Grid/max_buildings.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
 
       std::cout << "building ファイルを入力しましたそのファイルは " << bldgFile << "\n";
 
@@ -2463,13 +2463,13 @@ VanetRoutingExperiment::SetupScenario ()
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
       // m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
       //-------------------------------------------------------------------------------------------------
-      m_traceFile = "src/wave/examples/LSGO_Grid/test.tcl"; //testモビリティ入力ファイル
-      // m_traceFile = "src/wave/examples/LSGO_Grid/grid_1000.tcl"; //モビリティ入力ファイル
+      // m_traceFile = "src/wave/examples/LSGO_Grid/test4.tcl"; //testモビリティ入力ファイル
+      m_traceFile = "src/wave/examples/LSGO_Grid/grid_600.tcl"; //モビリティ入力ファイル
 
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 21; //変更すべきところ
+      m_nNodes = 600; //変更すべきところ
       m_TotalSimTime = 100; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;

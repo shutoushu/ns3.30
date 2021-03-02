@@ -255,14 +255,8 @@ Topology::GetObstructedDistance (const Point &p1, const Point &p2, Obstacle &obs
       Segment_2 s = (Segment_2) (*iterEdge);
 
       CGAL::Object result = CGAL::intersection (s, r);
-      std::cout << "-------------------polygon p1 = " << p1 << "p2" << p2
-                << "-------------------\n"; //check
-      std::cout << "result" << result << "\n";
-      std::cout << " CGAL::object_cast<CGAL::Point_2<K>> (&result)"
-                << CGAL::object_cast<CGAL::Point_2<K>> (&result) << "\n";
       if (const CGAL::Point_2<K> *ipoint = CGAL::object_cast<CGAL::Point_2<K>> (&result))
         {
-          std::cout << "壁発見\n";
           intersections++;
           //intersections = intersections + 2; //変更　
 
@@ -417,9 +411,6 @@ Topology::GetObstructedLossBetween (const Point &p1, const Point &p2, double r)
           if (((distCtoP1sq - rSq) < 0) && ((distCtoP2sq - rSq) < 0))
             {
 
-              std::cout << "obstacle is within range  p1= " << p1x << "," << p1y << " p2 = " << p2x
-                        << ", " << p2y << "\n"; //check
-
               // obtstacle is within range
               countFound++;
 
@@ -444,7 +435,7 @@ Topology::GetObstructedLossBetween (const Point &p1, const Point &p2, double r)
                   // std::cout << "gamma" << gamma;
                   obstructedLoss =
                       beta * (double) intersections + gamma * obstructedDistanceBetween;
-                  std::cout << "obstacted loss" << obstructedLoss << "\n";
+                  // std::cout << "obstacted loss" << obstructedLoss << "\n";
                 }
             }
           current++;
