@@ -39,7 +39,7 @@
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define SimStartMicro_Time 1000000 //４０秒
 #define SimStartTime 10 //４０秒
-#define Seed 11111 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
+#define Seed 11000 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
 #define NodeNum 500 //  ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
