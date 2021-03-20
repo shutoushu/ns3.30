@@ -1,0 +1,6 @@
+<configuration>
+   <input>
+       <net-file value="longautobahn.net.xml"/>
+       <route-files value="trips.9s.xml"/>
+   </input>
+</configuration>
