@@ -99,6 +99,50 @@ Polyconver
 
 
 
+export SUMO_HOME=/usr/share/sumo(pathを通す)
+
+
+
+
+
+
+**********************2021 3/20 モビリティ再作成 ********************************
+
+1.sumo netedit で道路を作成する
+
+例
+netgenerate --grid --output-file=grid.net.xml --tls.guess --tls.guess.threshold 30  --grid.length 300 --grid.number 8 
+
+
+2.車両の生成 randomTrip.py
+python randomTrips.py -n net.net.xml -o flows.xml -b 0 -e 300 --flows 150
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
