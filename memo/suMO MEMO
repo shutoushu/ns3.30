@@ -115,11 +115,11 @@ netgenerate --grid --output-file=grid.net.xml --tls.guess --tls.guess.threshold 
 
 sum
 2.車両の生成 randomTrip.py
-python randomTrips.py -n net.net.xml -o flows.xml -b 0 -e 300 -p 0.01
+python randomTrips.py -n own_make/grid.net.xml -o own_make/grid_trip.xml -b 0  -p 0.01 
  -n 道路のファイル -o アウトプットファイル -b 開始時期 -e　終了時刻 -p 車両生成間隔
 
 3 車両のルートを生成
-　duarouter -n own_make/grid.net.xml -t own_make/original_trip.xml -o own_make/original_route.xml
+　duarouter -n own_make/grid.net.xml -t own_make/original_trip.xml -o own_make/original_route.xml -e 100
  -n 道路ファイル -t tripファイル（2の手順で書きだしたファイル）-o 書き出しファイル
 
 
