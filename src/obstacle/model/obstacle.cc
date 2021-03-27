@@ -31,10 +31,10 @@ Obstacle::Obstacle ()
       // See C. Sommer et. al.:
       // A Computationally Inexpensive Empirical Model of IEEE 802.11p
       // Radio Shadowing in Urban Environments;
-      m_beta (9.0),
-      m_gamma (0.4) //default値
-// m_beta (9.5),
-// m_gamma (0.8)
+      // m_beta (9.0),
+      // m_gamma (0.4) //default値
+m_beta (9.5),
+m_gamma (1.2)
 {
   NS_LOG_FUNCTION (this);
 }
