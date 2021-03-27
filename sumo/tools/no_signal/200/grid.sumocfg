@@ -6,7 +6,7 @@
     <input>
         <net-file value="original_net.xml"/>
         <route-files value="original_route.xml"/>
-	<!-- <additional-files value="newbuildings.xml"/> -->
+	    <additional-files value="poly_1000.xml"/>
     </input>
 
     <report>
