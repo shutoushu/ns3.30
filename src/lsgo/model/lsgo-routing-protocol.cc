@@ -999,59 +999,59 @@ RoutingProtocol::SetMyPos (void)
 void
 RoutingProtocol::ReadFile (void)
 {
-  std::vector<std::string> v;
-  std::ifstream ifs ("src/wave/examples/LSGO_Grid/mobility.tcl");
-  if (!ifs)
-    {
-      std::cerr << "ファイルオープンに失敗" << std::endl;
-      std::exit (1);
-    }
+  // std::vector<std::string> v;
+  // std::ifstream ifs ("src/wave/examples/LSGO_Grid/mobility.tcl");
+  // if (!ifs)
+  //   {
+  //     std::cerr << "ファイルオープンに失敗" << std::endl;
+  //     std::exit (1);
+  //   }
 
-  std::string tmp;
-  std::string str;
-  int time, node_id;
-  int row_count = 1; //何列目かを判断するカウンター　atが１列目 time が２列目 $nodeが３列め
+  // std::string tmp;
+  // std::string str;
+  // int time, node_id;
+  // int row_count = 1; //何列目かを判断するカウンター　atが１列目 time が２列目 $nodeが３列め
 
-  // getline()で1行ずつ読み込む
-  while (getline (ifs, tmp, ' '))
-    {
-      if (tmp.find ("at") != std::string::npos)
-        {
-          //puts ("文字列atが見つかりました");
-          row_count = 1; //at は１列目
-        }
-      if (row_count == 2)
-        {
-          time = atoi (tmp.c_str ());
-          //std::cout << "time" << time << "\n";
-        }
-      if (row_count == 3)
-        {
-          tmp.replace (0, 1, "a"); //１番目の文字 " をaに変換
-          //std::cout << "node id string test " << tmp << "\n";
-          sscanf (tmp.c_str (), "a$node_(%d", &node_id); //文字列から数字だけをnode_idに代入
-          if (m_node_start_time[node_id] == 0)
-            {
-              if (time > 0 && time < 1000)
-                {
-                  m_node_start_time[node_id] = time;
-                }
-            }
-          if (time != 0)
-            {
-              m_node_finish_time[node_id] = time; //常に更新させた最終更新時間が到着時間
-            }
-        }
-      row_count++;
-    }
+  // // getline()で1行ずつ読み込む
+  // while (getline (ifs, tmp, ' '))
+  //   {
+  //     if (tmp.find ("at") != std::string::npos)
+  //       {
+  //         //puts ("文字列atが見つかりました");
+  //         row_count = 1; //at は１列目
+  //       }
+  //     if (row_count == 2)
+  //       {
+  //         time = atoi (tmp.c_str ());
+  //         //std::cout << "time" << time << "\n";
+  //       }
+  //     if (row_count == 3)
+  //       {
+  //         tmp.replace (0, 1, "a"); //１番目の文字 " をaに変換
+  //         //std::cout << "node id string test " << tmp << "\n";
+  //         sscanf (tmp.c_str (), "a$node_(%d", &node_id); //文字列から数字だけをnode_idに代入
+  //         if (m_node_start_time[node_id] == 0)
+  //           {
+  //             if (time > 0 && time < 1000)
+  //               {
+  //                 m_node_start_time[node_id] = time;
+  //               }
+  //           }
+  //         if (time != 0)
+  //           {
+  //             m_node_finish_time[node_id] = time; //常に更新させた最終更新時間が到着時間
+  //           }
+  //       }
+  //     row_count++;
+  //   }
 
-  if (!ifs.eof ())
-    {
-      std::cerr << "読み込みに失敗" << std::endl;
-      std::exit (1);
-    }
+  // if (!ifs.eof ())
+  //   {
+  //     std::cerr << "読み込みに失敗" << std::endl;
+  //     std::exit (1);
+  //   }
 
-  std::cout << std::flush;
+  // std::cout << std::flush;
 }
 
 void

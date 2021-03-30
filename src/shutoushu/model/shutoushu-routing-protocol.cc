@@ -274,10 +274,15 @@ RoutingProtocol::DoInitialize (void)
       gammaAngle = pow (gammaAngle, 1 / AngleGamma);
       gammaAngle = 90 * gammaAngle;
       double Rp = 0.25;
-
       double gammaRp = pow (Rp, 1 / RpGamma);
-
       std::cout << "angle check" << gammaAngle << "Rp" << gammaRp << "\n";
+
+      std::cout << distinctionRoad(750, 800) << "\n";
+      std::cout << distinctionRoad(200, 300) << "\n";
+      std::cout << distinctionRoad(210, 208) << "\n";
+      std::cout << distinctionRoad(805, 920) << "\n";
+      std::cout << distinctionRoad(798, 1001) << "\n";
+      std::cout << distinctionRoad(15, 0) << "\n";
     }
 
   for (int i = 1; i < SimTime; i++)
@@ -301,32 +306,7 @@ RoutingProtocol::DoInitialize (void)
   //////////////////////////////////////test 用
   // if (id == 1) // 送信車両　
   //   Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 9); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 20); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 30); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 40); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 50); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this,
-  //                        60); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this,
-  //                        70); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this,
-  //                        80); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this,
-  //                        90); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this,
-  //                        100); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 20), &RoutingProtocol::Send, this,
-  //                        110); //宛先ノード
+
 
   ////////////////////////////////////random
 
@@ -1252,64 +1232,64 @@ RoutingProtocol::SetMyPos (void)
 void
 RoutingProtocol::ReadFile (void)
 {
-  std::vector<std::string> v;
-  std::ifstream ifs ("src/wave/examples/LSGO_Grid/mobility.tcl");
-  if (!ifs)
-    {
-      std::cerr << "ファイルオープンに失敗" << std::endl;
-      std::exit (1);
-    }
+  // std::vector<std::string> v;
+  // std::ifstream ifs ("src/wave/examples/LSGO_Grid/mobility.tcl");
+  // if (!ifs)
+  //   {
+  //     std::cerr << "ファイルオープンに失敗" << std::endl;
+  //     std::exit (1);
+  //   }
 
-  std::string tmp;
-  std::string str;
-  int time, node_id;
-  int row_count = 1; //何列目かを判断するカウンター　atが１列目 time が２列目 $nodeが３列め
+  // std::string tmp;
+  // std::string str;
+  // int time, node_id;
+  // int row_count = 1; //何列目かを判断するカウンター　atが１列目 time が２列目 $nodeが３列め
 
-  // getline()で1行ずつ読み込む
-  while (getline (ifs, tmp, ' '))
-    {
-      //std::cout << "row_cout=" << row_count << "\n";
-      // ここでtmpを煮るなり焼くなりする
-      //std::cout << tmp << "\n"; // そのまま出力
-      if (tmp.find ("at") != std::string::npos)
-        {
-          //puts ("文字列atが見つかりました");
-          row_count = 1; //at は１列目
-        }
-      if (row_count == 2)
-        {
-          time = atoi (tmp.c_str ());
-          //std::cout << "time" << time << "\n";
-        }
-      if (row_count == 3)
-        {
-          tmp.replace (0, 1, "a"); //１番目の文字 " をaに変換
-          //std::cout << "node id string test " << tmp << "\n";
-          sscanf (tmp.c_str (), "a$node_(%d", &node_id); //文字列から数字だけをnode_idに代入
-          //printf ("nodeid = %d\n", node_id);
-          if (m_node_start_time[node_id] == 0)
-            {
-              if (time > 0 && time < 1000)
-                {
-                  m_node_start_time[node_id] = time;
-                }
-            }
-          if (time != 0)
-            {
-              m_node_finish_time[node_id] = time; //常に更新させた最終更新時間が到着時間
-            }
-        }
+  // // getline()で1行ずつ読み込む
+  // while (getline (ifs, tmp, ' '))
+  //   {
+  //     //std::cout << "row_cout=" << row_count << "\n";
+  //     // ここでtmpを煮るなり焼くなりする
+  //     //std::cout << tmp << "\n"; // そのまま出力
+  //     if (tmp.find ("at") != std::string::npos)
+  //       {
+  //         //puts ("文字列atが見つかりました");
+  //         row_count = 1; //at は１列目
+  //       }
+  //     if (row_count == 2)
+  //       {
+  //         time = atoi (tmp.c_str ());
+  //         //std::cout << "time" << time << "\n";
+  //       }
+  //     if (row_count == 3)
+  //       {
+  //         tmp.replace (0, 1, "a"); //１番目の文字 " をaに変換
+  //         //std::cout << "node id string test " << tmp << "\n";
+  //         sscanf (tmp.c_str (), "a$node_(%d", &node_id); //文字列から数字だけをnode_idに代入
+  //         //printf ("nodeid = %d\n", node_id);
+  //         if (m_node_start_time[node_id] == 0)
+  //           {
+  //             if (time > 0 && time < 1000)
+  //               {
+  //                 m_node_start_time[node_id] = time;
+  //               }
+  //           }
+  //         if (time != 0)
+  //           {
+  //             m_node_finish_time[node_id] = time; //常に更新させた最終更新時間が到着時間
+  //           }
+  //       }
 
-      row_count++;
-    }
+  //     row_count++;
+  //   }
 
-  if (!ifs.eof ())
-    {
-      std::cerr << "読み込みに失敗" << std::endl;
-      std::exit (1);
-    }
+  // if (!ifs.eof ())
+  //   {
+  //     std::cerr << "読み込みに失敗" << std::endl;
+  //     std::exit (1);
+  //   }
 
-  std::cout << std::flush;
+  // std::cout << std::flush;
 }
 
 void
@@ -1334,61 +1314,55 @@ RoutingProtocol::NoTrans (int node_id)
 int
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
-  /// 道路1〜56  57〜112
-  int range = 284;
-  int gridRange = 300;
-  int roadWidth = 20;
-  int x = 8;
-  int y = -10;
-  int count = 1;
+  /// 道路1〜30  31〜61
+  int gridRange = 200;
+  int x = 0;
+  int y = 0;
+  int colomnCount = 1;
+  int interRange = 10; //交差点の大きさ interRange × interRange の正方形
 
-  for (int roadId = 1; roadId <= 112; roadId++)
-    {
-      if (roadId <= 56)
-        {
-          if (x <= x_point && x_point <= x + range && y <= y_point &&
-              y_point <= y + roadWidth) //example node1  x 座標 8〜292 y座標 -10〜10
+  for (int roadId = 1; roadId <= 60; roadId++)
+    {   
+        if (roadId <= 30)
+          {
+            if (x + interRange < x_point && x_point < x + gridRange - interRange && y - interRange < y_point && y_point < y + interRange) 
             {
-              return roadId; //条件に当てはまれば
+              return roadId;
             }
-          if (count == 7) //7のときcount変数を初期化
+            if(colomnCount == 5)
             {
-              count = 1;
-              x = x - 1800;
+              colomnCount = 1;
+              x = 0;
               y = y + gridRange;
             }
-          else // 7以外は足していく
-            {
-              x = x + gridRange;
-              count++;
+            else {
+              x = x+ gridRange;
+              colomnCount++;
             }
 
-          if (roadId == 56)
+            if(roadId == 30)
             {
-              x = -10;
-              y = 8;
-              count = 1;
+              x = 0;
+              y = 0;
             }
-        }
-      else //57〜
-        {
-          if (x <= x_point && x_point <= x + roadWidth && y <= y_point &&
-              y_point <= y + range) //example node57 x座標 8〜292 y座標 -10〜10
+          }
+        else //31〜
+          {
+            if (x - interRange < x_point && x_point < x + interRange && y +  interRange < y_point && y_point < y + gridRange -  interRange) 
             {
-              return roadId; //条件に当てはまれば
+              return roadId;
             }
-          if (count == 8) //8のときcount変数を初期化
+            if(colomnCount == 6)
             {
-              count = 1;
-              x = x - 2100;
+              colomnCount = 1;
+              x = 0;
               y = y + gridRange;
             }
-          else // 8以外は足していく
-            {
-              x = x + gridRange;
-              count++;
+            else {
+              x = x+ gridRange;
+              colomnCount++;
             }
-        }
+      }
     }
   return 0; // ０を返す = 交差点ノード
 }
@@ -1397,29 +1371,29 @@ void
 RoutingProtocol::RoadCenterPoint (void)
 {
   int count = 1;
-  int gridRange = 300;
+  int gridRange = 200;
 
-  for (int roadId = 1; roadId <= 112; roadId++)
+  for (int roadId = 1; roadId <= 60; roadId++)
     {
-      if (roadId <= 56)
+      if (roadId <= 30)
         {
-          if (count == 7) //7のときcount変数を初期化
+          if (count == 5) //7のときcount変数を初期化
             {
               count = 1;
               roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
               roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
             }
-          else // 7以外は足していく
+          else // 5以外は足していく
             {
               if (roadId == 1)
                 {
-                  roadCenterPointX[roadId] = 150;
+                  roadCenterPointX[roadId] = 100;
                   roadCenterPointY[roadId] = 0;
                 }
               else if (count == 1)
                 {
-                  roadCenterPointX[roadId] = 150;
-                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + 300;
+                  roadCenterPointX[roadId] = 100;
+                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + 200;
                 }
               else
                 {
@@ -1429,30 +1403,30 @@ RoutingProtocol::RoadCenterPoint (void)
               count++;
             }
 
-          if (roadId == 56)
+          if (roadId == 30)
             {
               count = 1;
             }
         }
-      else //57〜
+      else //31〜
         {
-          if (count == 8) //7のときcount変数を初期化
+          if (count == 6) //6のときcount変数を初期化
             {
               count = 1;
               roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
               roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
             }
-          else // 7以外は足していく
+          else // 6以外は足していく
             {
-              if (roadId == 57)
+              if (roadId == 31)
                 {
                   roadCenterPointX[roadId] = 0;
-                  roadCenterPointY[roadId] = 150;
+                  roadCenterPointY[roadId] = 100;
                 }
               else if (count == 1)
                 {
                   roadCenterPointX[roadId] = 0;
-                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + 300;
+                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + gridRange;
                 }
               else
                 {
