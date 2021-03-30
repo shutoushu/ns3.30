@@ -62,6 +62,16 @@
 #define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
 
+#define SourceLowX -50
+#define SourceHighX 300
+#define SourceLowY -50
+#define SourceHighY 300
+
+#define DesLowX 700
+#define DesHighX 1050
+#define DesLowY 700
+#define DesHighY 1050
+
 namespace ns3 {
 namespace shutoushu {
 /**
@@ -92,6 +102,10 @@ public:
   static std::map<int, int> m_node_finish_time; //key id value nodeの到着時刻（秒）
   static std::map<int, int> m_source_id; //key 1~10 value sourceid
   static std::map<int, int> m_des_id; //key 1~10 value sourceid
+  static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
+  static std::vector<int> des_list;
+  
+
   //パケット軌跡出力用の変数 recv
   static std::vector<int> p_source_x;
   static std::vector<int> p_source_y;
@@ -195,6 +209,7 @@ private:
   void RoadCenterPoint (); //roadの中心座標を格納するだけの関数
   int NearRoadId (int32_t des_x, int32_t des_y); //目的地に最も近い道路IDを返す関数
   double CalculateRp (int nearRoadId); //近い道路IDを受取その道路のRpを返す
+  void SourceAndDestination (void); //source,destinationの指定エリアに存在する
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition

@@ -51,6 +51,8 @@
 #include <sstream>
 #include <vector>
 #include <random>
+#include <numeric>
+#include <iterator>
 
 #include "ns3/mobility-module.h"
 
@@ -256,11 +258,16 @@ RoutingProtocol::DoInitialize (void)
   numVehicle++;
 
   for (int i = 1; i < SimTime; i++)
-    {
-      if (id != 0)
-        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
-      Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
-    }
+  {
+    if (id != 0)
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
+    Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
+  }
+
+  if(id == 0)
+  {
+    Simulator::Schedule (Seconds (SimStartTime - 1), &RoutingProtocol::SourceAndDestination, this);
+  }
 
   //**結果出力******************************************//
   for (int i = 1; i < SimTime; i++)
@@ -277,17 +284,16 @@ RoutingProtocol::DoInitialize (void)
   //   Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 10); //宛先ノード
 
   /////////////////////////////////random
-  if (id == 0)
-    {
-
-      std::mt19937 rand_src (Seed); //シード値
-      std::uniform_int_distribution<int> rand_dist (0, NodeNum);
-      for (int i = 0; i < 20; i++)
-        {
-          m_source_id[i] = rand_dist (rand_src);
-          m_des_id[i] = rand_dist (rand_src);
-        }
-    }
+  // if (id == 0)
+  //   {
+  //     std::mt19937 rand_src (Seed); //シード値
+  //     std::uniform_int_distribution<int> rand_dist (0, NodeNum);
+  //     for (int i = 0; i < 20; i++)
+  //       {
+  //         m_source_id[i] = rand_dist (rand_src);
+  //         m_des_id[i] = rand_dist (rand_src);
+  //       }
+  //   }
 
   for (int i = 0; i < 20; i++)
     {
@@ -295,11 +301,39 @@ RoutingProtocol::DoInitialize (void)
         {
           Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
                                m_des_id[i]);
-          std::cout << "source node id " << m_source_id[i] << "distination node id " << m_des_id[i]
-                    << "\n";
         }
     }
   ///////////////////////////////////////////////////////////////////////////////////////////
+}
+
+void
+RoutingProtocol::SourceAndDestination()
+{
+  for(int i = 0; i<500; i++)    ///node数　設定する
+  {
+    if(m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY && m_my_posy[i] <= SourceHighY)
+    {
+      source_list.push_back(i);
+      // std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+    }
+    if(m_my_posx[i] >= DesLowX && m_my_posx[i] <= DesHighX && m_my_posy[i] >= DesLowY && m_my_posy[i] <= DesHighY)
+    {
+      des_list.push_back(i);
+      // std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+    }
+  }
+
+  std::mt19937 get_rand_mt(Seed);
+
+  std::shuffle( source_list.begin(), source_list.end(), get_rand_mt );
+  std::shuffle( des_list.begin(), des_list.end(), get_rand_mt );
+
+  for (int i = 0; i < 20; i++)
+  {
+    m_source_id[i] = source_list[i];
+    m_des_id[i] = des_list[i];
+  }
+
 }
 
 void
@@ -1227,6 +1261,8 @@ std::map<int, int> RoutingProtocol::m_node_start_time; //key node id value 止�
 std::map<int, int> RoutingProtocol::m_node_finish_time; //key node id value 止まっている時間カウント
 std::map<int, int> RoutingProtocol::m_source_id;
 std::map<int, int> RoutingProtocol::m_des_id;
+std::vector<int> RoutingProtocol::source_list;
+std::vector<int> RoutingProtocol::des_list;
 
 //パケット軌跡出力用の変数
 //パケット軌跡出力用の変数

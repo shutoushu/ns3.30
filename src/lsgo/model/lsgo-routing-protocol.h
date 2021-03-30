@@ -44,6 +44,16 @@
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
 
+#define SourceLowX -50
+#define SourceHighX 300
+#define SourceLowY -50
+#define SourceHighY 300
+
+#define DesLowX 700
+#define DesHighX 1050
+#define DesLowY 700
+#define DesHighY 1050
+
 namespace ns3 {
 namespace lsgo {
 /**
@@ -74,6 +84,10 @@ public:
   static std::map<int, int> m_node_finish_time; //key id value nodeの到着時刻（秒）
   static std::map<int, int> m_source_id; //key 1~10 value sourceid
   static std::map<int, int> m_des_id; //key 1~10 value sourceid
+  static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
+  static std::vector<int> des_list;
+
+
   //パケット軌跡出力用の変数 recv
   static std::vector<int> p_source_x;
   static std::vector<int> p_source_y;
@@ -168,6 +182,7 @@ private:
   void Trans (int node_id); //通信許可を与える関数
   void NoTrans (int node_id); //通信不許可を与える関数
   void Send (int des_id); //シミュレーションソースIDとDestinationIDを指定する関数
+  void SourceAndDestination (void); //source,destinationの指定エリアに存在する
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
