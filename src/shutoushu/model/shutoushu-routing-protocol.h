@@ -43,7 +43,7 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
 
-#define maxHop 15
+#define maxHop 20
 #define SimTime 40 //シミュレーション時間 second
 #define WindowSize 10000000 //SHUTOUSHUのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
@@ -203,7 +203,7 @@ private:
   void WriteFile (void); //packet traceのためのファイル書き込み
   void Trans (int node_id); //通信許可を与える関数
   void NoTrans (int node_id); //通信不許可を与える関数
-  void Send (int des_id); //シミュレーションソースIDとDestinationIDを指定する関数
+  void Send (void); //シミュレーションソースIDとDestinationIDを指定する関数
   int distinctionRoad (int x_point,
                        int y_ypoint); //ｘ座標とy座標から道路番号を割り出す関数　return 道路番号
   void RoadCenterPoint (); //roadの中心座標を格納するだけの関数

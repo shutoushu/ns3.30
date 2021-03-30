@@ -266,7 +266,7 @@ RoutingProtocol::DoInitialize (void)
 
   if(id == 0)
   {
-    Simulator::Schedule (Seconds (SimStartTime - 1), &RoutingProtocol::SourceAndDestination, this);
+    Simulator::Schedule (Seconds (2), &RoutingProtocol::SourceAndDestination, this);
   }
 
   //**結果出力******************************************//
@@ -293,15 +293,11 @@ RoutingProtocol::DoInitialize (void)
   //         m_source_id[i] = rand_dist (rand_src);
   //         m_des_id[i] = rand_dist (rand_src);
   //       }
-  //   }
+  //   } 
 
   for (int i = 0; i < 20; i++)
     {
-      if (id == m_source_id[i])
-        {
-          Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this,
-                               m_des_id[i]);
-        }
+      Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this);
     }
   ///////////////////////////////////////////////////////////////////////////////////////////
 }
@@ -309,6 +305,7 @@ RoutingProtocol::DoInitialize (void)
 void
 RoutingProtocol::SourceAndDestination()
 {
+  std::cout<<"source and                        destination function\n";
   for(int i = 0; i<500; i++)    ///node数　設定する
   {
     if(m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY && m_my_posy[i] <= SourceHighY)
@@ -328,24 +325,34 @@ RoutingProtocol::SourceAndDestination()
   std::shuffle( source_list.begin(), source_list.end(), get_rand_mt );
   std::shuffle( des_list.begin(), des_list.end(), get_rand_mt );
 
-  for (int i = 0; i < 20; i++)
+  for(int i = 0; i<20; i++)
   {
-    m_source_id[i] = source_list[i];
-    m_des_id[i] = des_list[i];
+    std::cout<<"shuffle source id"<<source_list[i]<<"\n";
+    std::cout<<"shuffle destination id"<<des_list[i]<<"\n";
   }
-
 }
 
 void
-RoutingProtocol::Send (int des_id)
+RoutingProtocol::Send ()
 {
-  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
-  Vector mypos = mobility->GetPosition ();
-  int MicroSeconds = Simulator::Now ().GetMicroSeconds ();
-  m_start_time[des_id] = MicroSeconds;
-  SendLsgoBroadcast (0, des_id, m_my_posx[des_id], m_my_posy[des_id], 1);
-  std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
-            << "des node point x=" << m_my_posx[des_id] << "y=" << m_my_posy[des_id] << "\n";
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  int time = Simulator::Now ().GetSeconds ();
+
+  if(time >= SimStartTime)
+  {
+    if(id == source_list[time - SimStartTime])
+      {
+        int index_time = time - SimStartTime; //example time16 simstarttime15のときm_source_id = 1 すなわち２つめのsourceid
+
+        Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+        Vector mypos = mobility->GetPosition ();
+        int MicroSeconds = Simulator::Now ().GetMicroSeconds ();
+        m_start_time[des_list[index_time]] = MicroSeconds;
+        SendLsgoBroadcast (0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
+        std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
+                  << "des node point x=" << m_my_posx[des_list[index_time]] << "y=" << m_my_posy[des_list[index_time]] << "\n";
+      }
+  }
 }
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
 void
@@ -754,9 +761,9 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       if (pri_value == 0) //初期のソースノードなら無条件にbroadcast
         {
           socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
-          // std::cout << "id " << send_node_id
-          //           << " broadcast----------------------------------------------------"
-          //           << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
+          std::cout << "id " << send_node_id
+                    << " source node broadcast----------------------------------------------------"
+                    << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
         }
       else
         {
