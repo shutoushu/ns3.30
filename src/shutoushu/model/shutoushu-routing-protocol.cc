@@ -262,27 +262,17 @@ RoutingProtocol::DoInitialize (void)
   numVehicle++;
   if (id == 0)
     {
-      //std::cout << "getangle" << getAngle (900.0, 900.0, 1200.0, 900.0, 1200.0, 1200.0);
-      ReadFile ();
-
       ///やることリスト
       ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
 
       RoadCenterPoint ();
-      double angle = 60;
-      double gammaAngle = angle / 90;
-      gammaAngle = pow (gammaAngle, 1 / AngleGamma);
-      gammaAngle = 90 * gammaAngle;
-      double Rp = 0.25;
-      double gammaRp = pow (Rp, 1 / RpGamma);
-      std::cout << "angle check" << gammaAngle << "Rp" << gammaRp << "\n";
-
-      std::cout << distinctionRoad(750, 800) << "\n";
-      std::cout << distinctionRoad(200, 300) << "\n";
-      std::cout << distinctionRoad(210, 208) << "\n";
-      std::cout << distinctionRoad(805, 920) << "\n";
-      std::cout << distinctionRoad(798, 1001) << "\n";
-      std::cout << distinctionRoad(15, 0) << "\n";
+      // double angle = 60;
+      // double gammaAngle = angle / 90;
+      // gammaAngle = pow (gammaAngle, 1 / AngleGamma);
+      // gammaAngle = 90 * gammaAngle;
+      // double Rp = 0.25;
+      // double gammaRp = pow (Rp, 1 / RpGamma);
+      // std::cout << "angle check" << gammaAngle << "Rp" << gammaRp << "\n";
     }
 
   for (int i = 1; i < SimTime; i++)

@@ -255,12 +255,6 @@ RoutingProtocol::DoInitialize (void)
   m_trans[id] = 1;
   numVehicle++;
 
-  if (id == 0)
-    {
-      ReadFile ();
-      ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
-    }
-
   for (int i = 1; i < SimTime; i++)
     {
       if (id != 0)
@@ -281,32 +275,7 @@ RoutingProtocol::DoInitialize (void)
   //////////////////////////////////////test 用
   // if (id == testId) // 送信車両　
   //   Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 10); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 2), &RoutingProtocol::Send, this, 20); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 4), &RoutingProtocol::Send, this, 30); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 6), &RoutingProtocol::Send, this, 40); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 8), &RoutingProtocol::Send, this, 50); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this,
-  //                        60); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 12), &RoutingProtocol::Send, this,
-  //                        70); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 14), &RoutingProtocol::Send, this,
-  //                        80); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 16), &RoutingProtocol::Send, this,
-  //                        90); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 18), &RoutingProtocol::Send, this,
-  //                        100); //宛先ノード
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 20), &RoutingProtocol::Send, this,
-  //                        110); //宛先ノード
+
   /////////////////////////////////random
   if (id == 0)
     {
