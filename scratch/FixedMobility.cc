@@ -74,33 +74,13 @@ public:
   virtual void Configure (StringValue);
   virtual void CreateNetworkTopology ();
   virtual void ConfigureDataLinkLayer (bool, StringValue, double);
-  virtual void ConfigureNetworkLayer ();
+  virtual void ConfigureNetworkLayer (uint32_t);
   virtual void ConfigureTransportLayerWithUDP (Ptr<Node>, uint32_t, Ptr<Node>, uint32_t);
   virtual void StartApplication (Ptr<Node>, DataRate, uint32_t);
   virtual void StartApplication (Ptr<Node>, uint32_t, uint32_t, double);
 
   Ptr<Node> *n;
   Ptr<Node> mn;
-  // Ptr<Node> mn2;
-  // Ptr<Node> mn3;
-  // Ptr<Node> mn4;
-  // Ptr<Node> mn5;
-  // Ptr<Node> mn6;
-  // Ptr<Node> mn7;
-  // Ptr<Node> mn8;
-  // Ptr<Node> mn9;
-  // Ptr<Node> mn10;
-  // Ptr<Node> mn11;
-  // Ptr<Node> mn12;
-  // Ptr<Node> mn13;
-  // Ptr<Node> mn14;
-  // Ptr<Node> mn15;
-  // Ptr<Node> mn16;
-  // Ptr<Node> mn17;
-  // Ptr<Node> mn18;
-  // Ptr<Node> mn19;
-  // Ptr<Node> mn20;
-  // Ptr<Node> mn21;
 
   uint32_t totalReceived;
   uint32_t totalSent;
@@ -373,24 +353,36 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
 }
 
 void
-NetSim::ConfigureNetworkLayer ()
+NetSim::ConfigureNetworkLayer (uint32_t protocol)
 {
-  //ShutoHelper shutoProtocol;
-  //SenkoHelper senkoProtocol;
-  SampleHelper sampleProtocol;
-  //LsgoHelper lsgoProtocol;
-  // ShutoushuHelper shutoushuProtocol;
-
-  Ipv4ListRoutingHelper listrouting;
-  //listrouting.Add(shutoProtocol, 10);
-  //listrouting.Add(senkoProtocol, 10);
-  listrouting.Add (sampleProtocol, 10);
-  //listrouting.Add (lsgoProtocol, 10);
-  // listrouting.Add (shutoushuProtocol, 10);
-
-  InternetStackHelper internet;
-  internet.SetRoutingHelper (listrouting);
-  internet.Install (allNodes);
+  // ShutoHelper shutoProtocol;
+  if(protocol == 0)
+  {
+    SampleHelper Protocol;
+    Ipv4ListRoutingHelper listrouting;
+    listrouting.Add (Protocol, 10);
+    InternetStackHelper internet;
+    internet.SetRoutingHelper (listrouting);
+    internet.Install (allNodes);
+    std::cout<<"set routing protocol sample \n";
+  }else if(protocol == 1)
+  {
+    LsgoHelper Protocol;
+    Ipv4ListRoutingHelper listrouting;
+    listrouting.Add (Protocol, 10);
+    InternetStackHelper internet;
+    internet.SetRoutingHelper (listrouting);
+    internet.Install (allNodes);
+    std::cout<<"set routing protocol lsgo \n";
+  }else {
+    ShutoushuHelper Protocol;
+    Ipv4ListRoutingHelper listrouting;
+    listrouting.Add (Protocol, 10);
+    InternetStackHelper internet;
+    internet.SetRoutingHelper (listrouting);
+    internet.Install (allNodes);    std::cout<<"set routing protocol sigo \n";
+  }
+  
 
   Ipv4AddressHelper ipv4;
   NS_LOG_INFO ("aaaaaaaaaaaa");
@@ -445,7 +437,7 @@ main (int argc, char *argv[])
 
   std::string animFile = "fixedmobiiltytest"; //netanim
 
-  std::string phyMode ("DsssRate1Mbps"); //?
+  std::string phyMode ("DsssRate11Mbps"); //?
   bool verbose = false;
   bool sendFlag = false; // send pkts with dataRate
   DataRate dataRate = DataRate ("512Kbps");
@@ -453,9 +445,13 @@ main (int argc, char *argv[])
   uint32_t numPackets = 10;
   double distance = 150.0; // distance from mobile node
   double interval = 0.1; // seconds
+  uint32_t protocol = 0;
 
   CommandLine cmd;
   //以下の変数は拡張可能 ex packetSize=~
+
+  // simulatin 実行コマンド
+  // ./waf --run "FixedMobility --protocol=0 or 1 or 2"
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
   cmd.AddValue ("dataRate", "dataRate of application packet sent", dataRate);
@@ -464,6 +460,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("interval", "interval (seconds) between packets", interval);
   cmd.AddValue ("sendFlag", "send flag (1: use pkt data rate, 0: use number of pkts)", sendFlag);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
+  cmd.AddValue ("protocol", "select protocol 0=sample , 1= lsgo, 2= sigo", protocol);
   cmd.Parse (argc, argv);
 
   sim.Configure (phyMode);
@@ -472,7 +469,7 @@ main (int argc, char *argv[])
 
   sim.ConfigureDataLinkLayer (verbose, phyMode, distance);
 
-  sim.ConfigureNetworkLayer ();
+  sim.ConfigureNetworkLayer (protocol);
   sim.ConfigureTransportLayerWithUDP (sim.n[0], 8888, sim.mn, 8888);
 
   if (sendFlag)
