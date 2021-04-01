@@ -1196,7 +1196,7 @@ RoutingProtocol::SaveRelation (int32_t map_id, int32_t map_xpoint, int32_t map_y
                             << "\n";
                   std::cout << "関係性が変わった IDは" << id << "pare id" << map_id << "\n";
                   // }
-                  m_recvtime.erase (map_id); // helloパケット取得履歴を破棄
+                  //m_recvtime.erase (map_id); // helloパケット取得履歴を破棄
                   // if (id == testId)
                   //   {
                   std::cout << "破棄後の取得数 " << m_recvtime.size () << "\n";
