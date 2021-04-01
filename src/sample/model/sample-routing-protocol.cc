@@ -244,8 +244,13 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
 void
 RoutingProtocol::DoInitialize (void)
 {
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector pos = mobility->GetPosition ();
+
 
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  std::cout<<"--topology--  id " << id << "x_pos " << pos.x << "y_pos" << pos.y << "\n";
+  
 
   //std::cout << "broadcast will be send\n";
   //SendXBroadcast();
@@ -262,7 +267,7 @@ RoutingProtocol::DoInitialize (void)
         {
           Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
                                this); //結果出力関数
-          std::cout << "time " << Simulator::Now ().GetMicroSeconds () << "\n";
+          // std::cout << "time " << Simulator::Now ().GetMicroSeconds () << "\n";
         }
     }
 }
