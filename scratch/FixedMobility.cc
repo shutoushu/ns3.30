@@ -196,54 +196,16 @@ NetSim::CreateNetworkTopology ()
       wlanNodes.Add (n[i]);
     }
   mn = CreateObject<Node> (); // create 1 mobile node
-  // mn2 = CreateObject<Node> (); // create 1 mobile node
-  // mn3 = CreateObject<Node> (); // create 1 mobile node
-  // mn4 = CreateObject<Node> (); // create 1 mobile node
-  // mn5 = CreateObject<Node> (); // create 1 mobile node
-  // mn6 = CreateObject<Node> (); // create 1 mobile node
-  // mn7 = CreateObject<Node> (); // create 1 mobile node
-  // mn8 = CreateObject<Node> (); // create 1 mobile node
-  // mn9 = CreateObject<Node> (); // create 1 mobile node
-  // mn10 = CreateObject<Node> (); // create 1 mobile node
-  // mn11 = CreateObject<Node> (); // create 1 mobile node
-  // mn12 = CreateObject<Node> (); // create 1 mobile node
-  // mn13 = CreateObject<Node> (); // create 1 mobile node
-  // mn14 = CreateObject<Node> (); // create 1 mobile node
-  // mn15 = CreateObject<Node> (); // create 1 mobile node
-  // mn16 = CreateObject<Node> (); // create 1 mobile node
-  // mn17 = CreateObject<Node> (); // create 1 mobile node
-  // mn18 = CreateObject<Node> (); // create 1 mobile node
-  // mn19 = CreateObject<Node> (); // create 1 mobile node
-  // mn20 = CreateObject<Node> (); // create 1 mobile node
-  // mn21 = CreateObject<Node> (); // create 1 mobile node
 
   allNodes.Add (wlanNodes);
   allNodes.Add (mn);
-  // allNodes.Add (mn2);
-  // allNodes.Add (mn3);
-  // allNodes.Add (mn4);
-  // allNodes.Add (mn5);
-  // allNodes.Add (mn6);
-  // allNodes.Add (mn7);
-  // allNodes.Add (mn8);
-  // allNodes.Add (mn9);
-  // allNodes.Add (mn10);
-  // allNodes.Add (mn11);
-  // allNodes.Add (mn12);
-  // allNodes.Add (mn13);
-  // allNodes.Add (mn14);
-  // allNodes.Add (mn15);
-  // allNodes.Add (mn16);
-  // allNodes.Add (mn17);
-  // allNodes.Add (mn18);
-  // allNodes.Add (mn19);
-  // allNodes.Add (mn20);
-  // allNodes.Add (mn21);
 }
 
 void
 NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
 {
+  
+
   // The below set of helpers will help us to put together the wifi NICs we want
   WifiHelper wifi;
   if (verbose)
@@ -251,6 +213,7 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
 
   // Setup 802.11p stuff
+  // m_phyMode ("OfdmRate6MbpsBW10MHz"),
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", phyMode, "ControlMode",
                                 phyMode);
   //
@@ -265,7 +228,16 @@ NetSim::ConfigureDataLinkLayer (bool verbose, StringValue phyMode, double dist)
   wifiChannel.AddPropagationLoss ("ns3::NakagamiPropagationLossModel", "m0", DoubleValue (1), "m1",
                                   DoubleValue (1), "m2", DoubleValue (1));
 
+  wifiChannel.AddPropagationLoss ("ns3::ObstacleShadowingPropagationLossModel");
+
   ////////////////////////////////////////
+
+  std::string bldgFile =
+          "./src/wave/examples/no_signal/poly_1000.xml"; 
+
+  Topology::LoadBuildings (bldgFile);
+      std::cout << "ファイル読み取り成功"
+                << "\n";
 
   // wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   //wifiChannel.AddPropagationLoss ("ns3::RandomPropagationLossModel",
@@ -451,7 +423,7 @@ main (int argc, char *argv[])
   //以下の変数は拡張可能 ex packetSize=~
 
   // simulatin 実行コマンド
-  // ./waf --run "FixedMobility --protocol=0 or 1 or 2"
+  // ./waf --run "FixedMobility --protocol=0"
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
   cmd.AddValue ("dataRate", "dataRate of application packet sent", dataRate);
