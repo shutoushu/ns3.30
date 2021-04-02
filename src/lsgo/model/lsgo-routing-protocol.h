@@ -43,7 +43,7 @@
 #define NodeNum 200 //  ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
-#define SourceNodeNum 10
+#define SourceNodeNum 2
 
 
 #define SourceLowX -50

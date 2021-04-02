@@ -96,8 +96,8 @@ ObstacleShadowingPropagationLossModel::DoCalcRxPower (double txPowerDbm, Ptr<Mob
 {
   double retVal = 0.0;
   double loss = GetLoss (a, b);
-  if (loss != 0)
-    std::cout << "loss" << loss;
+  // if (loss != 0)
+  //   std::cout << "loss" << loss;
   retVal = txPowerDbm - loss;
   // std::cout << "retVal" << retVal;
   // std::cout << "txPowerDbm" << txPowerDbm;

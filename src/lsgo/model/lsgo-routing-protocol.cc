@@ -295,7 +295,7 @@ RoutingProtocol::DoInitialize (void)
   //       }
   //   } 
 
-  for (int i = 0; i < 20; i++)
+  for (int i = 0; i < SourceNodeNum; i++)
     {
       Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this);
     }
@@ -1089,7 +1089,7 @@ RoutingProtocol::SimulationResult (void) //
 {
   std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
   //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (Simulator::Now ().GetSeconds () == SimStartTime + 21)
+  if (Simulator::Now ().GetSeconds () == SimStartTime + SourceNodeNum + 1)
     {
       // //*******************************ノードが持つ座標の確認ログ***************************//
       //std::cout << "id=" << id << "の\n";

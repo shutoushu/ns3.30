@@ -61,7 +61,7 @@
 #define testId 107 // testで動きを表示させるID
 #define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
-#define SourceNodeNum 10
+#define SourceNodeNum 2
 
 #define SourceLowX -50
 #define SourceHighX 300
