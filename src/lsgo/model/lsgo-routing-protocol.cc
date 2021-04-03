@@ -306,7 +306,7 @@ void
 RoutingProtocol::SourceAndDestination()
 {
   std::cout<<"source and                        destination function\n";
-  for(int i = 0; i<500; i++)    ///node数　設定する
+  for(int i = 0; i<300; i++)    ///node数　設定する
   {
     if(m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY && m_my_posy[i] <= SourceHighY)
     {
