@@ -423,7 +423,7 @@ main (int argc, char *argv[])
   //以下の変数は拡張可能 ex packetSize=~
 
   // simulatin 実行コマンド
-  // ./waf --run "FixedMobility --protocol=0"
+  // ./waf --run "FixedMobility --protocol=1"
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
   cmd.AddValue ("dataRate", "dataRate of application packet sent", dataRate);

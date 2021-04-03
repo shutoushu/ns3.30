@@ -715,6 +715,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       s_source_x.push_back (mypos.x);
       s_source_y.push_back (mypos.y);
       s_time.push_back (Simulator::Now ().GetMicroSeconds ());
+      s_hop.push_back(hopcount);
       s_pri_1_id.push_back (pri_id[1]);
       s_pri_2_id.push_back (pri_id[2]);
       s_pri_3_id.push_back (pri_id[3]);

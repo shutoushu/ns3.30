@@ -53,15 +53,15 @@
 #define NumInter 64
 #define InterPoint 1.0 //交差点ノードの与えるポイントの重み付け
 #define SimStartMicro 1000000 //broadcast 開始時刻micro秒
-#define SimStartTime 3 //broadcast 開始時刻　秒
+#define SimStartTime 2 //broadcast 開始時刻　秒
 #define InterArea 8 //交差点エリア 正方形メートル　
-#define Seed 11000 // ※毎回変える
+#define Seed 65000 // ※毎回変える
 #define NodeNum 200 // ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
 #define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
-#define SourceNodeNum 2
+#define SourceNodeNum 5
 
 #define SourceLowX -50
 #define SourceHighX 300

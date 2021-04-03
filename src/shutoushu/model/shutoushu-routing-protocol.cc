@@ -718,7 +718,7 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
     {
       if (hopcount > maxHop) // hop数が最大値を超えたらブレイク
         break;
-      int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
+      int send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
 
@@ -869,9 +869,11 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
 
       sendpacketCount++;
       s_source_id.push_back (send_node_id);
+      std::cout<<"s_source_id push back  send_node_id = " << send_node_id << "\n"; 
       s_source_x.push_back (mypos.x);
       s_source_y.push_back (mypos.y);
       s_time.push_back (Simulator::Now ().GetMicroSeconds ());
+      s_hop.push_back (hopcount);
       s_pri_1_id.push_back (pri_id[1]);
       s_pri_2_id.push_back (pri_id[2]);
       s_pri_3_id.push_back (pri_id[3]);
@@ -1624,6 +1626,8 @@ RoutingProtocol::SimulationResult (void) //
                             << "pri_5_r" << std::endl;
       for (int i = 0; i < packetCount; i++)
         {
+
+
           packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
                            << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
                            << ", " << p_hopcount[i] << ", " << p_recv_id[i] << ", "
@@ -1631,6 +1635,7 @@ RoutingProtocol::SimulationResult (void) //
                            << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
                            << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
                            << p_pri_5[i] << std::endl;
+
         }
       for (int i = 0; i < sendpacketCount; i++)
         {
@@ -1640,6 +1645,7 @@ RoutingProtocol::SimulationResult (void) //
                                 << s_pri_4_id[i] << ", " << s_pri_5_id[i] << ", " << s_pri_1_r[i]
                                 << ", " << s_pri_2_r[i] << ", " << s_pri_3_r[i] << ", "
                                 << s_pri_4_r[i] << ", " << s_pri_5_r[i] << std::endl;
+          
         }
     }
 }
