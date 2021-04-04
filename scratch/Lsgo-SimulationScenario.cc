@@ -2465,12 +2465,12 @@ VanetRoutingExperiment::SetupScenario ()
       //-------------------------------------------------------------------------------------------------
 
       // m_traceFile = "src/wave/examples/LSGO_Grid/test.tcl"; //testモビリティ入力ファイル
-      m_traceFile = "src/wave/examples/no_signal/no_signal_300.tcl"; //モビリティ入力ファイル
+      m_traceFile = "src/wave/examples/no_signal/no_signal_900.tcl"; //モビリティ入力ファイル
 
       m_logFile = "src/wave/examples/LSGO_Grid/LSGO.log"; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 300; //変更すべきところ
+      m_nNodes = 900; //変更すべきところ
       m_TotalSimTime = 40; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;
