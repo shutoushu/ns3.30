@@ -266,7 +266,7 @@ RoutingProtocol::DoInitialize (void)
 
   if(id == 0)
   {
-    Simulator::Schedule (Seconds (2), &RoutingProtocol::SourceAndDestination, this);
+    Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination, this);
   }
 
   //**結果出力******************************************//
@@ -306,7 +306,7 @@ void
 RoutingProtocol::SourceAndDestination()
 {
   std::cout<<"source and                        destination function\n";
-  for(int i = 0; i<300; i++)    ///node数　設定する
+  for(int i = 0; i<numVehicle; i++)    ///node数　設定する
   {
     if(m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY && m_my_posy[i] <= SourceHighY)
     {
@@ -325,7 +325,7 @@ RoutingProtocol::SourceAndDestination()
   std::shuffle( source_list.begin(), source_list.end(), get_rand_mt );
   std::shuffle( des_list.begin(), des_list.end(), get_rand_mt );
 
-  for(int i = 0; i<20; i++)
+  for(int i = 0; i<SourceNodeNum; i++)
   {
     std::cout<<"shuffle source id"<<source_list[i]<<"\n";
     std::cout<<"shuffle destination id"<<des_list[i]<<"\n";
@@ -726,6 +726,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       s_pri_3_r.push_back (m_rt[pri_id[3]]);
       s_pri_4_r.push_back (m_rt[pri_id[4]]);
       s_pri_5_r.push_back (m_rt[pri_id[5]]);
+      s_des_id.push_back(des_id);
 
       m_recvcount.clear ();
       m_first_recv_time.clear ();
@@ -1168,10 +1169,14 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
-      std::string filename = "data/lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +
-                             std::to_string (numVehicle) + ".csv";
-      std::string send_filename = "data/send_lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +
-                                  std::to_string (numVehicle) + ".csv";
+
+
+      std::string filename = "data/sigo/shutoushu-seed_" + std::to_string (Seed) + "nodenum_" +
+                            std::to_string (numVehicle) + ".csv";
+      std::string send_filename = "data/send_sigo/shutoushu-seed_" + std::to_string (Seed) +
+                                "nodenum_" + std::to_string (numVehicle) + ".csv";
+
+                                  
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"
                        << ","
@@ -1235,7 +1240,9 @@ RoutingProtocol::SimulationResult (void) //
                             << ","
                             << "pri_4_r"
                             << ","
-                            << "pri_5_r" << std::endl;
+                            << "pri_5_r" 
+                            << ","
+                            << "des_id" << std::endl;
       for (int i = 0; i < packetCount; i++)
         {
           packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
@@ -1253,7 +1260,7 @@ RoutingProtocol::SimulationResult (void) //
                                 << ", " << s_pri_2_id[i] << ", " << s_pri_3_id[i] << ", "
                                 << s_pri_4_id[i] << ", " << s_pri_5_id[i] << ", " << s_pri_1_r[i]
                                 << ", " << s_pri_2_r[i] << ", " << s_pri_3_r[i] << ", "
-                                << s_pri_4_r[i] << ", " << s_pri_5_r[i] << std::endl;
+                                << s_pri_4_r[i] << ", " << s_pri_5_r[i] << ", " << s_des_id[i] << std::endl;
         }
     }
 }
@@ -1307,6 +1314,8 @@ std::vector<double> RoutingProtocol::s_pri_2_r;
 std::vector<double> RoutingProtocol::s_pri_3_r;
 std::vector<double> RoutingProtocol::s_pri_4_r;
 std::vector<double> RoutingProtocol::s_pri_5_r;
+std::vector<int> RoutingProtocol::s_des_id;
+std::vector<int> RoutingProtocol::s_inter_id;//文字列で交差点にいるIDをぶち込む
 
 } // namespace lsgo
 } // namespace ns3

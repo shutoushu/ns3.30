@@ -52,8 +52,8 @@
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 #define NumInter 64
 #define InterPoint 1.0 //交差点ノードの与えるポイントの重み付け
-#define SimStartMicro 1000000 //broadcast 開始時刻micro秒
-#define SimStartTime 10 //broadcast 開始時刻　秒
+// #define SimStartMicro 1000000 //broadcast 開始時刻micro秒
+#define SimStartTime 4 //broadcast 開始時刻　秒
 #define InterArea 8 //交差点エリア 正方形メートル　
 #define Seed 15000 // ※毎回変える
 #define NodeNum 200 // ※毎回変える
@@ -61,7 +61,7 @@
 #define testId 107 // testで動きを表示させるID
 #define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
-#define SourceNodeNum 10
+#define SourceNodeNum 3
 
 #define SourceLowX -50
 #define SourceHighX 300
@@ -142,7 +142,12 @@ public:
   static std::vector<double> s_pri_3_r;
   static std::vector<double> s_pri_4_r;
   static std::vector<double> s_pri_5_r;
-
+  static std::vector<int> s_des_id;
+  static std::vector<int> s_inter_1_id; //優先度１が交差点に属するかどうか 1 or 0 　　　　１なら交差点にいると判断した
+  static std::vector<int> s_inter_2_id;
+  static std::vector<int> s_inter_3_id;
+  static std::vector<int> s_inter_4_id;
+  static std::vector<int> s_inter_5_id;
   /// constructor
   RoutingProtocol ();
   virtual ~RoutingProtocol ();

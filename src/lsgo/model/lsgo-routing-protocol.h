@@ -37,13 +37,13 @@
 #define WaitT 4000 //待ち時間の差 micro単位
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
-#define SimStartMicro_Time 1000000 //４０秒
-#define SimStartTime 10 //４０秒
+// #define SimStartMicro_Time 1000000 //４０秒
+#define SimStartTime 4 //４０秒
 #define Seed 15000 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
 #define NodeNum 200 //  ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
-#define SourceNodeNum 10
+#define SourceNodeNum 3
 
 
 #define SourceLowX -50
@@ -125,6 +125,8 @@ public:
   static std::vector<double> s_pri_3_r;
   static std::vector<double> s_pri_4_r;
   static std::vector<double> s_pri_5_r;
+  static std::vector<int> s_des_id;
+  static std::vector<int> s_inter_id; //文字列で交差点にいるIDをぶち込む
 
   /// constructor
   RoutingProtocol ();
