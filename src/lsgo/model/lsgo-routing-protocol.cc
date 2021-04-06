@@ -1171,9 +1171,9 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "車両数は" << numVehicle << "\n";
 
 
-      std::string filename = "data/sigo/shutoushu-seed_" + std::to_string (Seed) + "nodenum_" +
+      std::string filename = "data/lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +
                             std::to_string (numVehicle) + ".csv";
-      std::string send_filename = "data/send_sigo/shutoushu-seed_" + std::to_string (Seed) +
+      std::string send_filename = "data/send_lsgo/lsgo-seed_" + std::to_string (Seed) +
                                 "nodenum_" + std::to_string (numVehicle) + ".csv";
 
                                   
