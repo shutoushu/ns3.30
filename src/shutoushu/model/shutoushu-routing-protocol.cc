@@ -1701,7 +1701,7 @@ RoutingProtocol::SimulationResult (void) //
                                 << s_pri_4_r[i] << ", " << s_pri_5_r[i] << ", " << s_des_id[i] << ", " 
                                 << s_inter_1_id[i] << ", "<< s_inter_2_id[i] << ", "
                                 << s_inter_3_id[i] << ", "<< s_inter_4_id[i] << ", "
-                                << s_inter_5_id[i] << ", "<< std::endl;
+                                << s_inter_5_id[i] << std::endl;
           
         }
     }
