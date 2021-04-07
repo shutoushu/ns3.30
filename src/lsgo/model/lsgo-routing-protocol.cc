@@ -347,8 +347,14 @@ RoutingProtocol::Send ()
         Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
         Vector mypos = mobility->GetPosition ();
         int MicroSeconds = Simulator::Now ().GetMicroSeconds ();
-        m_start_time[des_list[index_time]] = MicroSeconds;
-        SendLsgoBroadcast (0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
+        m_start_time[des_list[index_time]] = MicroSeconds+ 100000; //秒数をずらし多分足す
+        std::cout<<"m_start_time"<<m_start_time[des_list[index_time]]<< "\n";
+        double shift_time = 0.1; //送信時間を0.1秒ずらす
+
+
+        // SendLsgoBroadcast (0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
+        Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::SendLsgoBroadcast, this, 
+        0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
         std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
                   << "des node point x=" << m_my_posx[des_list[index_time]] << "y=" << m_my_posy[des_list[index_time]] << "\n";
       }
@@ -565,6 +571,9 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
+
+      std::cout<<"sendlsgobroadcast function が呼ばれた時間 id" << send_node_id <<"time " << 
+      Simulator::Now ().GetMicroSeconds ()<< "\n";
 
       if (m_trans[send_node_id] == 0 && pri_value != 0) //通信許可がないノードならbreakする
         { //pri_value = 0 すなわち　source nodeのときはそのままbroadcast許可する

@@ -53,7 +53,7 @@
 #define NumInter 64
 #define InterPoint 1.0 //交差点ノードの与えるポイントの重み付け
 // #define SimStartMicro 1000000 //broadcast 開始時刻micro秒
-#define SimStartTime 10 //broadcast 開始時刻　秒
+#define SimStartTime 5 //broadcast 開始時刻　秒
 #define InterArea 8 //交差点エリア 正方形メートル　
 #define Seed 65000 // ※毎回変える
 #define NodeNum 200 // ※毎回変える
