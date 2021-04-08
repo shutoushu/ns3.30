@@ -683,8 +683,8 @@ RoutingProtocol::SendHelloPacket (void)
 void
 RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination)
 {
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  std::cout << " send id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
+  // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  // std::cout << " send id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
   socket->SendTo (packet, 0, InetSocketAddress (destination, SHUTOUSHU_PORT));
 }
 
