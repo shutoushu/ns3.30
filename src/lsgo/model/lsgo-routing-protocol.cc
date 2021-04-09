@@ -512,11 +512,8 @@ RoutingProtocol::SendHelloPacket (void)
 
       Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 50000)));
       //socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
-      if (m_trans[id] == 1) //通信可能ノードのみ
-        {
           Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
                                destination);
-        }
     }
 }
 

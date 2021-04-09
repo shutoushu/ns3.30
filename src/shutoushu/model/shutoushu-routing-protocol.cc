@@ -671,12 +671,10 @@ RoutingProtocol::SendHelloPacket (void)
         }
 
       Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 50000)));
+      
       //socket->SendTo (packet, 0, InetSocketAddress (destination, SHUTOUSHU_PORT));
-      if (m_trans[id] == 1) //通信可能ノードのみ
-        {
           Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
                                destination);
-        }
     }
 }
 
@@ -1019,6 +1017,7 @@ RoutingProtocol::RecvShutoushu (Ptr<Socket> socket)
         // std::cout << "Node ID " << id << "が受信したHello packetは"
         //           << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
         //           << recv_hello_posy << "\n";
+        // std::cout << " shuto protocol  hello receive  id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
         // // ////*********************************************////////////////
         SaveXpoint (recv_hello_id, recv_hello_posx);
         SaveYpoint (recv_hello_id, recv_hello_posy);
