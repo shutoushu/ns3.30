@@ -1,0 +1,19 @@
+data 
+memofile 
+
+2021 4 10
+この日send wave の削除に成功　→　衝突が減るはず
+固定モビリティ（ノード数６０１）データを取得する
+seed
+15000
+25000
+35000
+45000
+55000
+65000
+75000
+85000
+95000
+start = 10s, sourcenodenum = 5 InterPoint 1.0
+m_beta (10.5),
+m_gamma (1.4)
