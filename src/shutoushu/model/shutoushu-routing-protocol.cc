@@ -367,9 +367,9 @@ RoutingProtocol::Send ()
         Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
         Vector mypos = mobility->GetPosition ();
         int MicroSeconds = Simulator::Now ().GetMicroSeconds ();
-        m_start_time[des_list[index_time]] = MicroSeconds + 100000; //秒数をずらし多分足す
+        m_start_time[des_list[index_time]] = MicroSeconds + 300000; //秒数をずらし多分足す
         std::cout<<"m_start_time"<<m_start_time[des_list[index_time]]<< "\n";
-        double shift_time = 0.1; //送信時間を0.1秒ずらす
+        double shift_time = 0.3; //送信時間を0.1秒ずらす
 
         //SendShutoushuBroadcast (0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
         Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::SendShutoushuBroadcast, this, 
