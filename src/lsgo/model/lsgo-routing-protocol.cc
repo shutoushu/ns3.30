@@ -678,7 +678,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
             }
         }
 
-      //std::cout << "候補ノード数は" << candidataNum << "\n";
+      std::cout << "候補ノード数は" << candidataNum << "\n";
       switch (candidataNum) //候補ノード数によってダミーノードIDを加える
         {
         case 1:
@@ -705,9 +705,8 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         {
           if (pri_id[i] != 10000000)
             {
-              if (send_node_id == testId)
                 std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
-                          << m_rt[pri_id[i]] << "hello受信回数 " << m_recvcount.size () << "\n";
+                          << m_rt[pri_id[i]] << "hello受信回数 " << m_recvcount[pri_id[i]] << "\n";
             }
         }
 
@@ -1175,6 +1174,7 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
+      std::cout << "trans probability"<< TransProbability << "\n";
 
 
       std::string filename = "data/lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +
@@ -1182,7 +1182,6 @@ RoutingProtocol::SimulationResult (void) //
       std::string send_filename = "data/send_lsgo/lsgo-seed_" + std::to_string (Seed) +
                                 "nodenum_" + std::to_string (numVehicle) + ".csv";
 
-                                  
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"
                        << ","

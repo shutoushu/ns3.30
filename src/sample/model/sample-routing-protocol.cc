@@ -256,7 +256,7 @@ RoutingProtocol::DoInitialize (void)
   //SendXBroadcast();
   for (int i = 0; i < 100; i++)
     {
-      if (id == 3)
+      if (id == 0)
         {
           Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
         }
@@ -360,61 +360,55 @@ RoutingProtocol::SendXBroadcast (void)
 int
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
-  /// 道路1〜56  57〜112
-  int range = 284;
-  int gridRange = 300;
-  int roadWidth = 20;
-  int x = 8;
-  int y = -10;
-  int count = 1;
+    /// 道路1〜30  31〜61
+  int gridRange = 200;
+  int x = 0;
+  int y = 0;
+  int colomnCount = 1;
+  int interRange = 10; //交差点の大きさ interRange × interRange の正方形
 
-  for (int roadId = 1; roadId <= 112; roadId++)
-    {
-      if (roadId <= 56)
-        {
-          if (x <= x_point && x_point <= x + range && y <= y_point &&
-              y_point <= y + roadWidth) //example node1  x 座標 8〜292 y座標 -10〜10
+  for (int roadId = 1; roadId <= 60; roadId++)
+    {   
+        if (roadId <= 30)
+          {
+            if (x + interRange < x_point && x_point < x + gridRange - interRange && y - interRange < y_point && y_point < y + interRange) 
             {
-              return roadId; //条件に当てはまれば
+              return roadId;
             }
-          if (count == 7) //7のときcount変数を初期化
+            if(colomnCount == 5)
             {
-              count = 1;
-              x = x - 1800;
+              colomnCount = 1;
+              x = 0;
               y = y + gridRange;
             }
-          else // 7以外は足していく
-            {
-              x = x + gridRange;
-              count++;
+            else {
+              x = x+ gridRange;
+              colomnCount++;
             }
 
-          if (roadId == 56)
+            if(roadId == 30)
             {
-              x = -10;
-              y = 8;
-              count = 1;
+              x = 0;
+              y = 0;
             }
-        }
-      else //57〜
-        {
-          if (x <= x_point && x_point <= x + roadWidth && y <= y_point &&
-              y_point <= y + range) //example node57 x座標 8〜292 y座標 -10〜10
+          }
+        else //31〜
+          {
+            if (x - interRange < x_point && x_point < x + interRange && y +  interRange < y_point && y_point < y + gridRange -  interRange) 
             {
-              return roadId; //条件に当てはまれば
+              return roadId;
             }
-          if (count == 8) //8のときcount変数を初期化
+            if(colomnCount == 6)
             {
-              count = 1;
-              x = x - 2100;
+              colomnCount = 1;
+              x = 0;
               y = y + gridRange;
             }
-          else // 8以外は足していく
-            {
-              x = x + gridRange;
-              count++;
+            else {
+              x = x+ gridRange;
+              colomnCount++;
             }
-        }
+      }
     }
   return 0; // ０を返す = 交差点ノード
 }
@@ -422,7 +416,7 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
 void
 RoutingProtocol::SimulationResult (void) //
 {
-  if (Simulator::Now ().GetSeconds () == 10)
+  if (Simulator::Now ().GetSeconds () == 16)
     {
       for (auto itr = recvCount.begin (); itr != recvCount.end (); itr++)
         {

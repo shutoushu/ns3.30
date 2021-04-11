@@ -33,7 +33,7 @@ Obstacle::Obstacle ()
       // Radio Shadowing in Urban Environments;
       // m_beta (9.0),
       // m_gamma (0.4) //default値
-m_beta (10.5),
+m_beta (13.5),
 m_gamma (1.4)
 {
   NS_LOG_FUNCTION (this);
