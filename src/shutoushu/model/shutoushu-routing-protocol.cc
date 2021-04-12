@@ -1399,7 +1399,7 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
   int x = 0;
   int y = 0;
   int colomnCount = 1;
-  int interRange = 10; //交差点の大きさ interRange × interRange の正方形
+  int interRange = 15; //交差点の大きさ interRange × interRange の正方形
 
   for (int roadId = 1; roadId <= 60; roadId++)
     {   
