@@ -140,6 +140,24 @@ wave packetなるものが飛んでいることを確認
 
 
 
+2021/4/17日現在
+shadowing 
+m_beta (13.5),
+m_gamma (1.4)
+maxhop 20
+interarea = 15の正方形
+ネクストホップノード5個固定
+sourcenode num 10
+送信開始時間 10second
+AngleGamma 0.4 // ガンマ変換
+nodenum 300 400 500にて精度向上を記録　この時点のソースコードをonedrive にアップロードする
+
+src/sigoを作成し位置予測アルゴリズムを実装する
+
+
+
+
+
 
 
 

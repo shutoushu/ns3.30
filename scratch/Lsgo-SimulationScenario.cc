@@ -112,6 +112,7 @@
 #include "ns3/sample-module.h"
 #include "ns3/lsgo-module.h"
 #include "ns3/shutoushu-module.h"
+#include "ns3/sigo-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/itu-r-1411-los-propagation-loss-model.h"
 #include "ns3/ocb-wifi-mac.h"
@@ -481,7 +482,7 @@ private:
 
   double m_TotalSimTime; ///< seconds
   uint32_t
-      m_protocol; ///< routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR, 5=SAMPLE 6=LSGO 7=SHUTOUSHU
+      m_protocol; ///< routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR, 5=SAMPLE 6=LSGO 7=SHUTOUSHU 8=SIGO
   uint32_t m_port; ///< port
   uint32_t m_nSinks; ///< number of sink nodes (< all nodes)
   int m_routingTables; ///< dump routing table (at t=5 sec).  0=No, 1=Yes
@@ -550,6 +551,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
   SampleHelper sample;
   LsgoHelper lsgo;
   ShutoushuHelper shutoushu;
+  SigoHelper sigo;
   DsrMainHelper dsrMain;
   Ipv4ListRoutingHelper list;
   InternetStackHelper internet;
@@ -617,7 +619,15 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
     case 7:
       list.Add (shutoushu, 100);
       m_protocolName = "SHUTOUSHU";
-      std::cout << "obstacle debug ---------------------------------------------------------lsgo "
+      std::cout << "obstacle debug ---------------------------------------------------------shutoushu "
+                   "protocol done"
+                << "\n\n";
+      break;
+    
+    case 8:
+      list.Add (sigo, 100);
+      m_protocolName = "SIGO";
+      std::cout << "obstacle debug ---------------------------------------------------------sigo "
                    "protocol done"
                 << "\n\n";
       break;

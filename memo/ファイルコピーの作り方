@@ -9,3 +9,6 @@ sudo grep -lr -e "oldname" .| xargs sed -i "s/oldname/newname/g"
 
 sudo grep -lr -e "senko" .| xargs sed -i "s/Shuto/Senko/g"
 で実行する
+
+
+
