@@ -1723,6 +1723,11 @@ std::map<int, int> RoutingProtocol::m_start_time; //key destination_id value　�
 std::map<int, int> RoutingProtocol::m_finish_time; //key destination_id value 受信時間
 std::map<int, double> RoutingProtocol::m_my_posx; // key node id value position x
 std::map<int, double> RoutingProtocol::m_my_posy; // key node id value position y
+std::map<int, double> RoutingProtocol::m_my_p_posx; // key node id value past position x
+std::map<int, double> RoutingProtocol::m_my_p_posy; // key node id value past position y
+std::map<int, double> RoutingProtocol::m_my_speed; // key node id value current speed
+std::map<int, double> RoutingProtocol::m_my_p_speed; // key node id value past speed
+std::map<int, double> RoutingProtocol::m_my_acce; //key node id value acceleration(加速度)
 std::map<int, int> RoutingProtocol::m_trans; //key node id value　通信可能かどうか1or0
 std::map<int, int> RoutingProtocol::m_stop_count; //key node id value 止まっている時間カウント
 std::map<int, int> RoutingProtocol::m_node_start_time; //key node id value 止まっている時間カウント

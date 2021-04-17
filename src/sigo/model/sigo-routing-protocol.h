@@ -97,6 +97,11 @@ public:
   static std::map<int, int> m_finish_time; //key destination_id value 受信時間
   static std::map<int, double> m_my_posx; // key node id value position x
   static std::map<int, double> m_my_posy; // key node id value position y
+  static std::map<int, double> m_my_p_posx; // key node id value past position x
+  static std::map<int, double> m_my_p_posy; // key node id value past position y
+  static std::map<int, double> m_my_speed;  //key node id value speed
+  static std::map<int, double> m_my_p_speed; // key node id value past speed
+  static std::map<int, double> m_my_acce; //key node id value acceleration(加速度)
   static std::map<int, int> m_trans; //key node id 初期値０　＝　通信不可　VALUE＝１　通信可
   static std::map<int, int> m_stop_count; //key node id value 止まっている時間の蓄積
   static std::map<int, int> m_node_start_time; //key id value nodeの発車時刻（秒）
