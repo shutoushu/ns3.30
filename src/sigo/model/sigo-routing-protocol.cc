@@ -264,9 +264,16 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < SimTime; i++)
     {
-      if (id != 0)
-        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
+      if(i >= 2)
+      {
+        Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMySpeed, this);
+      }
+      if (id != 0)
+      {
+        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
+      }
+      
     }
 
       if (id == 0)
@@ -654,7 +661,12 @@ RoutingProtocol::SendHelloPacket (void)
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      HelloHeader helloHeader (id, mypos.x, mypos.y);
+      int32_t acce = m_my_speed[id] - m_my_p_speed[id]; //加速度　
+      // if(id == 1)
+      // std::cout<<"\n-------send hello acce " <<acce << "cur speed " << m_my_speed[id] <<
+      //  "past speed " << m_my_p_speed[id] <<"\n";
+
+      HelloHeader helloHeader (id, mypos.x, mypos.y, m_my_p_posx[id], m_my_p_posy[id], acce);
       packet->AddHeader (helloHeader);
 
       TypeHeader tHeader (SIGOTYPE_HELLO);
@@ -1011,13 +1023,20 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
         int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
         int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
+        int32_t recv_hello_p_posx = helloheader.GetPPosX (); //Node xposition
+        int32_t recv_hello_p_posy = helloheader.GetPPosY (); //Node yposition
+        int32_t recv_hello_acce = helloheader.GetAcce();
         int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
 
         // // ////*********recv hello packet log*****************////////////////
-        // std::cout << "Node ID " << id << "が受信したHello packetは"
-        //           << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
-        //           << recv_hello_posy << "\n";
-        // std::cout << " shuto protocol  hello receive  id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
+        if(recv_hello_id == 1)
+        {
+          std::cout << "-----------------Node ID " << id << "が受信したHello packetは"
+          << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
+          << recv_hello_posy << "past xposition" << recv_hello_p_posx << "past yposition"
+          << recv_hello_p_posy << "acce" << recv_hello_acce << "\n";
+          std::cout << " shuto protocol  hello receive  id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
+        }
         // // ////*********************************************////////////////
         SaveXpoint (recv_hello_id, recv_hello_posx);
         SaveYpoint (recv_hello_id, recv_hello_posy);
@@ -1303,11 +1322,38 @@ RoutingProtocol::SetMyPos (void)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
-  m_my_posx[id] = mypos.x;
+  m_my_p_posx[id] = m_my_posx[id]; //過去の座標を登録
+  m_my_p_posy[id] = m_my_posy[id];
+
+  m_my_posx[id] = mypos.x; //現在の座標を更新
   m_my_posy[id] = mypos.y;
   // std::cout<<"id"<<id<<"x:"<<m_my_posx[id] << "y:"<<m_my_posy[id] << "\n";
 }
 
+void
+RoutingProtocol::SetMySpeed (void)
+{
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
+
+  m_my_p_speed[id] = m_my_speed[id]; //過去の秒速度を保存
+
+  double distance = getDistance(mypos.x, mypos.y, m_my_p_posx[id], m_my_p_posy[id]);
+  double speed = distance; //秒速(m/s)
+  m_my_speed[id] = speed;
+  // if(id == 1)
+  // {
+  //   std::cout<<"id"<<id<<"time"<<Simulator::Now ().GetMicroSeconds () <<"speed " <<m_my_speed[id] 
+  //   << "past speed" << m_my_p_speed[id] << "cur x,y " << mypos.x << "," << mypos.y 
+  //   << "past x,y " << m_my_p_posx[id] << "," << m_my_p_posy[id] << "past speed " << m_my_p_speed[id] << "\n";
+
+  //   double acce = m_my_speed[id] - m_my_p_speed[id];
+  //   std::cout <<  "acce" << acce << "\n";
+  //   //tcl file と ns側で1secondズレが生じている
+
+  // }
+}
 ///SUMO問題解決のためmobility.tclファイルを読み込み→ノードの発車時刻と到着時刻を知る
 void
 RoutingProtocol::ReadFile (void)

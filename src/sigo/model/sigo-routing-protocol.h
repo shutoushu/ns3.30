@@ -210,6 +210,7 @@ private:
   void SetPriValueMap (int32_t des_x, int32_t des_y); //優先度を決める値を格納する　関数
 
   void SetMyPos (void); //自分の位置情報を１秒ずつ保存
+  void SetMySpeed (void); //自分の速度を1秒ずつ保存
   void ReadFile (void); //mobility fileの読み取り
   void WriteFile (void); //packet traceのためのファイル書き込み
   void Trans (int node_id); //通信許可を与える関数
