@@ -504,13 +504,15 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
 
   double Dsd; //ソースノードと目的地までの距離(sendSIGObroadcastするノード)
   double Did; //候補ノードと目的地までの距離
+  double neighbor_d; //近隣ノードとの距離
   int Distination_x = des_x;
   int Distination_y = des_y;
 
   for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
     { ////next                  目的地までの距離とETX値から優先度を示す値をマップに保存する
       Dsd = getDistance (mypos.x, mypos.y, Distination_x, Distination_y);
-      Did = getDistance (m_xpoint[itr->first], m_ypoint[itr->first], Distination_x, Distination_y);
+      Did = getDistance (m_pre_xpoint[itr->first], m_pre_ypoint[itr->first], Distination_x, Distination_y);
+      neighbor_d = getDistance(mypos.x, mypos.y, m_pre_xpoint[itr->first], m_pre_ypoint[itr->first]);
       int inter = 0; //初期値0 intersectionにいる場合は1に変わる
       double dif = Dsd - Did;
       if (dif < 0)
@@ -566,10 +568,21 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
               m_pri_value[itr->first] = m_pri_value[itr->first] + InterPoint * gammaAngle / gammaRp;
               std::cout << "total 交差点 point" << InterPoint * gammaAngle / gammaRp;
             }
+
+          if (neighbor_d > MaxRange)
+          {
+            std::cout<<"send id" << id << "neighbor id" << itr->first << "送信範囲外に出ただろう　\n";
+            m_pri_value[itr->first] = 0;
+          }
         }
       else
         {
           m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
+          if (neighbor_d > MaxRange)
+          {
+            std::cout<<"\n\n send id" << id << "neighbor id" << itr->first << "送信範囲外に出ただろう　\n";
+            m_pri_value[itr->first] = 0;
+          }
         }
       std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "position("
                 << m_xpoint[itr->first] << "," << m_ypoint[itr->first] << ")"
@@ -1257,15 +1270,15 @@ RoutingProtocol::PredictionPosition(void) //近隣ノードの予測位置を保
     m_pre_xpoint[itr->first] = m_xpoint[itr->first] + pre_cos;
     m_pre_ypoint[itr->first] = m_ypoint[itr->first] + pre_sin;
 
-    if(id == 215)
-    {
-      std::cout<< "\n\n\n\n\n\n\n----------id" << itr->first <<"m xpoint" << m_xpoint[itr->first] 
-      << " pre xpoint" << m_pre_xpoint[itr->first] <<"m ypoint" << m_ypoint[itr->first]
-      << "pre ypoint" << m_pre_ypoint[itr->first] << "diftime" << diftime << "\n";
-      std::cout<< "radian " << m_radian[itr->first] <<"degree " << m_radian[itr->first] * 180.0 / M_PI 
-      << "cos" << std::cos(m_radian[itr->first]) <<"sin" << std::sin(m_radian[itr->first]) 
-      << "speed"<< itr->second << "acce" << m_acce[itr->first] << "\n";
-    }
+    // if(id == 215)
+    // {
+    //   std::cout<< "\n\n\n\n\n\n\n----------id" << itr->first <<"m xpoint" << m_xpoint[itr->first] 
+    //   << " pre xpoint" << m_pre_xpoint[itr->first] <<"m ypoint" << m_ypoint[itr->first]
+    //   << "pre ypoint" << m_pre_ypoint[itr->first] << "diftime" << diftime << "\n";
+    //   std::cout<< "radian " << m_radian[itr->first] <<"degree " << m_radian[itr->first] * 180.0 / M_PI 
+    //   << "cos" << std::cos(m_radian[itr->first]) <<"sin" << std::sin(m_radian[itr->first]) 
+    //   << "speed"<< itr->second << "acce" << m_acce[itr->first] << "\n";
+    // }
   }
 }
 

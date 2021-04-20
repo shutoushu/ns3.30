@@ -62,6 +62,7 @@
 #define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
 #define SourceNodeNum 10
+#define MaxRange 250
 
 #define SourceLowX -50
 #define SourceHighX 300
@@ -191,7 +192,7 @@ private:
   //**自作メソッド start**/
   double getDistance (double x, double y, double x2, double y2);
   double getAngle (double a_x, double a_y, double b_x, double b_y, double c_x, double c_y); //3点の角度
-  void setVector (int32_t hello_id, double x, double y, double x2, double y2, int32_t acce); //近隣ノードの速度ベクトルを保存
+  void setVector (int32_t hello_id, double x, double y, double xp, double yp, int32_t acce); //近隣ノードの速度ベクトルを保存
   void PredictionPosition(void);
   void SendHelloPacket (void); //hello packet を broadcast するメソッド
   void SimulationResult (void); //シミュレーション結果を出力する
