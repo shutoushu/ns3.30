@@ -17,3 +17,8 @@ seed
 start = 10s, sourcenodenum = 5 InterPoint 1.0
 m_beta (10.5),
 m_gamma (1.4)
+
+2021 4 19 shutoushu vs lsgoデータ取得完了　sigo実装に進む
+dataは Performance_evaluation_4_15 にsimulation parameter も記載　
+
+shutoushu　プロトコルがsigo　フォルダになっていたのでフォルダを作り直す

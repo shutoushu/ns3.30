@@ -226,6 +226,15 @@ private:
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
+  ///sigo original map
+  std::map<int, int> m_p_xpoint; //近隣車両の位置情報を取得するmap key=nodeid value = past xposition
+  std::map<int, int> m_p_xpoint; 
+  std::map<int, int> m_speed; //近隣車両の速度情報を取得するmap key=nodeid value = speed
+  std::map<int, int> m_acce: //近隣車両の加速度情報を取得するmap key=nodeid value = accerelation 加速度
+  std::map<int, int> m_direction; //近隣車両の方向情報 map key = nodeid value = direction
+  std::map<int, int> m_pre_xpoint; //予測位置ｘ
+  std::map<int, int> m_pre_ypoint; //予測位置y
+
   std::multimap<int, int>
       m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
   std::map<int, int>
