@@ -283,6 +283,8 @@ RoutingProtocol::DoInitialize (void)
 
       RoadCenterPoint ();
       Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination, this);
+      setVector(0,1,1,3,3, 2);
+      setVector(0, -1, -1, -4, -4, 2);
       // double angle = 60;
       // double gammaAngle = angle / 90;
       // gammaAngle = pow (gammaAngle, 1 / AngleGamma);
@@ -771,6 +773,7 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         }
 
       SetEtxMap (); //m_rt と EtX mapをセットする
+      PredictionPosition (); //予測位置を格納する
       SetPriValueMap (des_x, des_y); //優先度を決める値をセットする関数
 
       int32_t pri_id[6];
@@ -1024,7 +1027,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
         int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
         int32_t recv_hello_p_posx = helloheader.GetPPosX (); //Node xposition
-        int32_t recv_hello_p_posy = helloheader.GetPPosY (); //Node yposition
+        int32_t recv_hello_p_posy = helloheader.GetPPosY (); //Node ypositionf
         int32_t recv_hello_acce = helloheader.GetAcce();
         int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
 
@@ -1038,8 +1041,10 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
           std::cout << " shuto protocol  hello receive  id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
         }
         // // ////*********************************************////////////////
-        SaveXpoint (recv_hello_id, recv_hello_posx);
-        SaveYpoint (recv_hello_id, recv_hello_posy);
+        SaveXpoint (recv_hello_id, recv_hello_posx, recv_hello_p_posx);
+        SaveYpoint (recv_hello_id, recv_hello_posy, recv_hello_p_posy);
+        setVector (recv_hello_id, recv_hello_posx, recv_hello_posy, recv_hello_p_posx, 
+        recv_hello_p_posy, recv_hello_acce);
         SaveRecvTime (recv_hello_id, recv_hello_time);
         SaveRelation (recv_hello_id, recv_hello_posx, recv_hello_posy);
         break; //breakがないとエラー起きる
@@ -1201,15 +1206,67 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
 }
 
 void
-RoutingProtocol::SaveXpoint (int32_t map_id, int32_t map_xpoint)
+RoutingProtocol::SaveXpoint (int32_t map_id, int32_t map_xpoint, int32_t map_p_xpoint)
 {
   m_xpoint[map_id] = map_xpoint;
+  m_p_xpoint[map_id] = map_p_xpoint; //過去のx座標
 }
 
 void
-RoutingProtocol::SaveYpoint (int32_t map_id, int32_t map_ypoint)
+RoutingProtocol::SaveYpoint (int32_t map_id, int32_t map_ypoint, int32_t map_p_ypoint)
 {
   m_ypoint[map_id] = map_ypoint;
+  m_p_ypoint[map_id] = map_p_ypoint; //過去のy座標
+}
+//速度　加速度 方向(radian cos sin の計算がしやすいため　) を保存する
+void
+RoutingProtocol::setVector(int hello_id, double x, double y, double xp, double yp, int acce)
+{
+  // double radian = std::atan2(yp - y,xp - x);
+
+  m_acce[hello_id] = acce; //加速度を保存　
+  // double degree = radian * 180.0 / M_PI; //cos sinではradianを用いる　
+  // std::cout<<"\n radian" << radian << "degree" << degree << "\n";
+  double distance = getDistance(x,y,xp,yp); //1secondの位置の移動なのでこれがm/sの秒速になる
+  // double x_vec = distance * std::cos(radian); //x成分
+  // double y_vec = distance * std::sin(radian); //y成分
+  // std::cout<<"distance" << distance << "x_vec" << x_vec << "y_vec" << y_vec << "\n";
+  m_speed[hello_id] = distance;// 速度を保存
+
+  x = x - xp;
+  y = y - yp;
+  double radian = std::atan2(y , x );
+
+  m_radian[hello_id] = radian;
+
+}
+
+void
+RoutingProtocol::PredictionPosition(void) //近隣ノードの予測位置を保存する
+{
+  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  for (auto itr = m_speed.begin (); itr != m_speed.end (); itr++) //近隣テーブルをループ
+  {
+
+    double diftime = Simulator::Now ().GetMicroSeconds () - m_last_recv_time[itr->first];
+    diftime = diftime / 1000000; //secondに変換
+    double pre = itr->second*diftime + m_acce[itr->first]/2*diftime*diftime;
+    double pre_cos = pre * std::cos(m_radian[itr->first]);
+    double pre_sin = pre * std::sin(m_radian[itr->first]);
+
+    m_pre_xpoint[itr->first] = m_xpoint[itr->first] + pre_cos;
+    m_pre_ypoint[itr->first] = m_ypoint[itr->first] + pre_sin;
+
+    if(id == 215)
+    {
+      std::cout<< "\n\n\n\n\n\n\n----------id" << itr->first <<"m xpoint" << m_xpoint[itr->first] 
+      << " pre xpoint" << m_pre_xpoint[itr->first] <<"m ypoint" << m_ypoint[itr->first]
+      << "pre ypoint" << m_pre_ypoint[itr->first] << "diftime" << diftime << "\n";
+      std::cout<< "radian " << m_radian[itr->first] <<"degree " << m_radian[itr->first] * 180.0 / M_PI 
+      << "cos" << std::cos(m_radian[itr->first]) <<"sin" << std::sin(m_radian[itr->first]) 
+      << "speed"<< itr->second << "acce" << m_acce[itr->first] << "\n";
+    }
+  }
 }
 
 //ノード間の関係性を更新するメソッド
@@ -1281,6 +1338,7 @@ RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
 {
   //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   m_recvtime.insert (std::make_pair (map_id, map_recvtime));
+  m_last_recv_time[map_id] = map_recvtime;
 }
 
 void
@@ -1288,12 +1346,12 @@ RoutingProtocol::SendXBroadcast (void)
 {
 }
 
-int
+double
 RoutingProtocol::getDistance (double x, double y, double x2, double y2)
 {
   double distance = std::sqrt ((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
 
-  return (int) distance;
+  return distance;
 }
 
 double

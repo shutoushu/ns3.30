@@ -189,16 +189,18 @@ private:
   void RecvSigo (Ptr<Socket> socket);
 
   //**自作メソッド start**/
-  int getDistance (double x, double y, double x2, double y2);
-  double getAngle (double a_x, double a_y, double b_x, double b_y, double c_x, double c_y);
+  double getDistance (double x, double y, double x2, double y2);
+  double getAngle (double a_x, double a_y, double b_x, double b_y, double c_x, double c_y); //3点の角度
+  void setVector (int32_t hello_id, double x, double y, double x2, double y2, int32_t acce); //近隣ノードの速度ベクトルを保存
+  void PredictionPosition(void);
   void SendHelloPacket (void); //hello packet を broadcast するメソッド
   void SimulationResult (void); //シミュレーション結果を出力する
   void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,
                     Ipv4Address destination); //Hello packet の送信
   void SendToSigo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination,
                         int32_t hopcount, int32_t des_id); //Sigo broadcast の送信
-  void SaveXpoint (int32_t map_id, int32_t map_xpoint); //近隣ノードのHello packetの情報を
-  void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
+  void SaveXpoint (int32_t map_id, int32_t map_xpoint, int32_t map_p_xpoint); //近隣ノードのHello packetの情報を
+  void SaveYpoint (int32_t map_id, int32_t map_ypoint, int32_t map_p_ypoint); //mapに保存する
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
   void SaveRelation (int32_t map_id, int32_t map_xpoint,
                      int32_t map_ypoint); //近隣ノードの道路IDを保存
@@ -228,10 +230,10 @@ private:
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
   ///sigo original map
   std::map<int, int> m_p_xpoint; //近隣車両の位置情報を取得するmap key=nodeid value = past xposition
-  std::map<int, int> m_p_xpoint; 
-  std::map<int, int> m_speed; //近隣車両の速度情報を取得するmap key=nodeid value = speed
-  std::map<int, int> m_acce: //近隣車両の加速度情報を取得するmap key=nodeid value = accerelation 加速度
-  std::map<int, int> m_direction; //近隣車両の方向情報 map key = nodeid value = direction
+  std::map<int, int> m_p_ypoint; 
+  std::map<int, double> m_speed; //近隣車両の速度情報を取得するmap key=nodeid value = speed
+  std::map<int, int> m_acce; //近隣車両の加速度情報を取得するmap key=nodeid value = accerelation 加速度
+  std::map<int, double> m_radian; //近隣車両の角度情報 map key = nodeid value = direction
   std::map<int, int> m_pre_xpoint; //予測位置ｘ
   std::map<int, int> m_pre_ypoint; //予測位置y
 
@@ -243,6 +245,7 @@ private:
   ///以下のマップは使ったら消去する
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数
   std::map<int, int> m_first_recv_time; //近隣ノードからのWINDOWSIZE内の最初の取得時間
+  std::map<int, int> m_last_recv_time; //近隣ノードから最後にhello packet を取得した時間　
   std::map<int, double> m_etx; //近隣ノードのkeyがIDでvalueがETX値
   std::map<int, double> m_rt; //近隣ノードの keyがIDでvalueが予想伝送確率
   std::map<int, double> m_pri_value; //ノードの優先度を図る値　大きいほど優先度が高い
