@@ -1,36 +1,36 @@
-$node_(0) set X_ 200.0
-$node_(0) set Y_ 230
+$node_(0) set X_ 0.0
+$node_(0) set Y_ 0.0
 $node_(0) set Z_ 0
-$ns_ at 0.0 "$node_(0) setdest 200.0 230.0 0.00"
-$ns_ at 1.0 "$node_(0) setdest 200.0 230.0 0.00"
-$node_(1) set X_ 205.0
-$node_(1) set Y_ 200.0
+$ns_ at 0.0 "$node_(0) setdest 0.0 0.0 0.00"
+$ns_ at 1.0 "$node_(0) setdest 0.0 0.0 0.00"
+$node_(1) set X_ 0.0
+$node_(1) set Y_ 250.0
 $node_(1) set Z_ 0
-$ns_ at 1.0 "$node_(1) setdest 205.0 200.0 0.00"
-$node_(2) set X_ 210.0
-$node_(2) set Y_ 200.0
+$ns_ at 1.0 "$node_(1) setdest 0.0 250.0 0.00"
+$node_(2) set X_ 0.0
+$node_(2) set Y_ 260.0
 $node_(2) set Z_ 0
-$ns_ at 1.0 "$node_(2) setdest 210.0 200.0 0.00"
-$node_(3) set X_ 215.0
-$node_(3) set Y_ 200.0
+$ns_ at 1.0 "$node_(2) setdest 0.0 260.0 0.00"
+$node_(3) set X_ 0.0
+$node_(3) set Y_ 240.0
 $node_(3) set Z_ 0
-$ns_ at 1.0 "$node_(3) setdest 215.0 200.0 0.00"
-$node_(4) set X_ 220.0
-$node_(4) set Y_ 200.0
+$ns_ at 1.0 "$node_(3) setdest 0.0 240.0 0.00"
+$node_(4) set X_ 0.0
+$node_(4) set Y_ 230.0
 $node_(4) set Z_ 0
-$ns_ at 1.0 "$node_(4) setdest 220.0 200.0 0.00"
-$node_(5) set X_ 225.0
-$node_(5) set Y_ 200.0
+$ns_ at 1.0 "$node_(4) setdest 0.0 230.0 0.00"
+$node_(5) set X_ 0.0
+$node_(5) set Y_ 270.0
 $node_(5) set Z_ 0
-$ns_ at 1.0 "$node_(5) setdest 325.0 200.0 0.00"
-$node_(6) set X_ 230.0
-$node_(6) set Y_ 200.0
+$ns_ at 1.0 "$node_(5) setdest 0.0 270.0 0.00"
+$node_(6) set X_ 0.0
+$node_(6) set Y_ 280.0
 $node_(6) set Z_ 0
 $ns_ at 1.0 "$node_(6) setdest 230.0 200.0 0.00"
-$node_(7) set X_ 235.0
+$node_(7) set X_ 0.0
 $node_(7) set Y_ 200.0
 $node_(7) set Z_ 0
-$ns_ at 1.0 "$node_(7) setdest 235.0 200.0 0.00"
+$ns_ at 1.0 "$node_(7) setdest 0.0 200.0 0.00"
 $node_(8) set X_ 240.0
 $node_(8) set Y_ 200.0
 $node_(8) set Z_ 0

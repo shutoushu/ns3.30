@@ -72,6 +72,7 @@ int roadCenterPointX[113]; //道路の中心x座標を格納
 int roadCenterPointY[113]; //道路の中心y座標を格納
 int packetCount = 0; //パケット出力数のカウント
 int sendpacketCount = 0; //sendpacket 出力数のカウント
+int maxLenge = 0; // 受信者との距離マックス
 
 RoutingProtocol::RoutingProtocol ()
 {
@@ -260,6 +261,7 @@ RoutingProtocol::DoInitialize (void)
   //int32_t time = Simulator::Now ().GetMicroSeconds ();
   m_trans[id] = 1;
   numVehicle++;
+
 
 
   for (int i = 1; i < SimTime; i++)
@@ -522,11 +524,11 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
       //std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
 
       ///交差点にいるか　いないかの場合分け
-      if (distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first]) == 0)
+      if (distinctionRoad (m_pre_xpoint[itr->first], m_pre_ypoint[itr->first]) == 0)
         { //roadid=0 すなわち交差点ノードならば
           std::cout << "候補ノードid" << itr->first << "は交差点にいます(" << m_xpoint[itr->first]
-                    << "," << m_ypoint[itr->first] << ")"
-                    << "\n";
+                    << "," << m_ypoint[itr->first] << ")"<< "予測位置は("<< m_pre_xpoint[itr->first] 
+                    << "," << m_pre_ypoint[itr->first] << "\n";
           inter = 1;
         }
 
@@ -572,7 +574,7 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
           if (neighbor_d > MaxRange)
           {
             std::cout<<"send id" << id << "neighbor id" << itr->first << "送信範囲外に出ただろう　\n";
-            m_pri_value[itr->first] = 0;
+            m_pri_value[itr->first] = 1;
           }
         }
       else
@@ -581,7 +583,11 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
           if (neighbor_d > MaxRange)
           {
             std::cout<<"\n\n send id" << id << "neighbor id" << itr->first << "送信範囲外に出ただろう　\n";
-            m_pri_value[itr->first] = 0;
+            std::cout<<"neighbor の予測位置は x" << m_pre_xpoint[itr->first] << "y" << 
+            m_pre_ypoint[itr->first] << "\n";
+            std::cout<<"大体の正確な位置は x" << m_my_posx[itr->first] << "y"
+            << m_my_posy[itr->first] << "\n";
+            m_pri_value[itr->first] = 1;
           }
         }
       std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "position("
@@ -1045,14 +1051,14 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
 
         // // ////*********recv hello packet log*****************////////////////
-        if(recv_hello_id == 1)
-        {
-          std::cout << "-----------------Node ID " << id << "が受信したHello packetは"
-          << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
-          << recv_hello_posy << "past xposition" << recv_hello_p_posx << "past yposition"
-          << recv_hello_p_posy << "acce" << recv_hello_acce << "\n";
-          std::cout << " shuto protocol  hello receive  id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
-        }
+        // if(recv_hello_id == 1)
+        // {
+        //   std::cout << "-----------------Node ID " << id << "が受信したHello packetは"
+        //   << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
+        //   << recv_hello_posy << "past xposition" << recv_hello_p_posx << "past yposition"
+        //   << recv_hello_p_posy << "acce" << recv_hello_acce << "\n";
+        //   std::cout << " shuto protocol  hello receive  id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
+        // }
         // // ////*********************************************////////////////
         SaveXpoint (recv_hello_id, recv_hello_posx, recv_hello_p_posx);
         SaveYpoint (recv_hello_id, recv_hello_posy, recv_hello_p_posy);
@@ -1076,6 +1082,12 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         int32_t hopcount = sendheader.GetHopcount ();
         int32_t pri_id[] = {sendheader.GetId1 (), sendheader.GetId2 (), sendheader.GetId3 (),
                             sendheader.GetId4 (), sendheader.GetId5 ()};
+
+        double distance = getDistance(mypos.x, mypos.y, send_x, send_y);
+        if (distance > maxLenge)
+        {
+          maxLenge = distance;
+        }
 
         if (des_id == id) //宛先が自分だったら
           {
@@ -1257,7 +1269,7 @@ RoutingProtocol::setVector(int hello_id, double x, double y, double xp, double y
 void
 RoutingProtocol::PredictionPosition(void) //近隣ノードの予測位置を保存する
 {
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   for (auto itr = m_speed.begin (); itr != m_speed.end (); itr++) //近隣テーブルをループ
   {
 
@@ -1708,6 +1720,7 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "sum_br" << sum_br << "\n";
       std::cout << "recvCount" << recvCount << "\n";
       std::cout << "sum_end_time" << sum_end_time << "\n";
+      std::cout << "max Lenge" << maxLenge << "\n";
       double average_overhead = (double) sum_br / (double) recvCount;
       double packet_recv_rate = (double) recvCount / (double) m_start_time.size ();
       average_end_time = (double) sum_end_time / (double) recvCount;
