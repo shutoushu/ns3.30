@@ -762,8 +762,8 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
       
-      std::cout<<"sendsigobroadcast function が呼ばれた時間 id" << send_node_id <<"time " << 
-      Simulator::Now ().GetMicroSeconds ()<< "\n";
+      std::cout<<"\n-----------------sendsigobroadcast function が呼ばれた時間 id" << send_node_id <<"time " << 
+      Simulator::Now ().GetMicroSeconds ()<< "------------------------------------------------------------\n";
 
       if (m_trans[send_node_id] == 0 && pri_value != 0) //通信許可がないノードならbreakする
         { //pri_value = 0 すなわち　source nodeのときはそのままbroadcast許可する
