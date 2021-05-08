@@ -38,12 +38,12 @@
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 // #define SimStartMicro_Time 1000000 //４０秒
-#define SimStartTime 5 //４０秒
-#define Seed 40000 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
+#define SimStartTime 10 //４０秒
+#define Seed 10000 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
 #define NodeNum 200 //  ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
-#define SourceNodeNum 3
+#define SourceNodeNum 10
 
 #define SourceLowX -50
 #define SourceHighX 300
@@ -124,7 +124,7 @@ public:
   static std::vector<double> s_pri_4_r;
   static std::vector<double> s_pri_5_r;
   static std::vector<int> s_des_id;
-  static std::vector<int> s_inter_id; //文字列で交差点にいるIDをぶち込む
+  static std::vector<int> s_send_log;
 
   /// constructor
   RoutingProtocol ();
@@ -191,6 +191,7 @@ private:
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
   std::multimap<int, int>
       m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
+  std::map<int, int> m_send_check; //key = destination_id value = send_logファイルのindex
 
   ///以下のマップは使ったら消去する
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数
