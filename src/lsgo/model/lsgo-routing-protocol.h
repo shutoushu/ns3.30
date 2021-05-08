@@ -38,13 +38,12 @@
 #define ProcessTime 0 //擬似的処理時間
 #define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
 // #define SimStartMicro_Time 1000000 //４０秒
-#define SimStartTime 10 //４０秒
-#define Seed 30000 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
+#define SimStartTime 5 //４０秒
+#define Seed 40000 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
 #define NodeNum 200 //  ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
-#define SourceNodeNum 10
-
+#define SourceNodeNum 3
 
 #define SourceLowX -50
 #define SourceHighX 300
@@ -88,7 +87,6 @@ public:
   static std::map<int, int> m_des_id; //key 1~10 value sourceid
   static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
   static std::vector<int> des_list;
-
 
   //パケット軌跡出力用の変数 recv
   static std::vector<int> p_source_x;

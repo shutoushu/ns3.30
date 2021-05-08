@@ -258,7 +258,7 @@ RoutingProtocol::DoInitialize (void)
     {
       if (id == 0)
         {
-          Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
+          // Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXBroadcast, this);
         }
     }
   for (int i = 1; i < 100; i++)

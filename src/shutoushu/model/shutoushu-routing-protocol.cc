@@ -261,7 +261,6 @@ RoutingProtocol::DoInitialize (void)
   m_trans[id] = 1;
   numVehicle++;
 
-
   for (int i = 1; i < SimTime; i++)
     {
       if (id != 0)
@@ -269,13 +268,14 @@ RoutingProtocol::DoInitialize (void)
       Simulator::Schedule (Seconds (i), &RoutingProtocol::SetMyPos, this);
     }
 
-      if (id == 0)
+  if (id == 0)
     {
       ///やることリスト
       ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
 
       RoadCenterPoint ();
-      Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination, this);
+      Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination,
+                           this);
       // double angle = 60;
       // double gammaAngle = angle / 90;
       // gammaAngle = pow (gammaAngle, 1 / AngleGamma);
@@ -300,7 +300,6 @@ RoutingProtocol::DoInitialize (void)
   // if (id == 1) // 送信車両　
   //   Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 9); //宛先ノード
 
-
   ////////////////////////////////////random
 
   // if (id == 0)
@@ -322,34 +321,36 @@ RoutingProtocol::DoInitialize (void)
 }
 
 void
-RoutingProtocol::SourceAndDestination()
+RoutingProtocol::SourceAndDestination ()
 {
-  std::cout<<"source and                        destination function\n";
-  std::cout<<"NumVehicle"<<numVehicle<<"\n";
-  for(int i = 0; i< numVehicle; i++)    ///node数　設定する
-  {
-    if(m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY && m_my_posy[i] <= SourceHighY)
+  std::cout << "source and                        destination function\n";
+  std::cout << "NumVehicle" << numVehicle << "\n";
+  for (int i = 0; i < numVehicle; i++) ///node数　設定する
     {
-      source_list.push_back(i);
-      // std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+      if (m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY &&
+          m_my_posy[i] <= SourceHighY)
+        {
+          source_list.push_back (i);
+          // std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+        }
+      if (m_my_posx[i] >= DesLowX && m_my_posx[i] <= DesHighX && m_my_posy[i] >= DesLowY &&
+          m_my_posy[i] <= DesHighY)
+        {
+          des_list.push_back (i);
+          // std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+        }
     }
-    if(m_my_posx[i] >= DesLowX && m_my_posx[i] <= DesHighX && m_my_posy[i] >= DesLowY && m_my_posy[i] <= DesHighY)
+
+  std::mt19937 get_rand_mt (Seed);
+
+  std::shuffle (source_list.begin (), source_list.end (), get_rand_mt);
+  std::shuffle (des_list.begin (), des_list.end (), get_rand_mt);
+
+  for (int i = 0; i < SourceNodeNum; i++)
     {
-      des_list.push_back(i);
-      // std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+      std::cout << "shuffle source id" << source_list[i] << "\n";
+      std::cout << "shuffle destination id" << des_list[i] << "\n";
     }
-  }
-
-  std::mt19937 get_rand_mt(Seed);
-
-  std::shuffle( source_list.begin(), source_list.end(), get_rand_mt );
-  std::shuffle( des_list.begin(), des_list.end(), get_rand_mt );
-
-  for(int i = 0; i<SourceNodeNum; i++)
-  {
-    std::cout<<"shuffle source id"<<source_list[i]<<"\n";
-    std::cout<<"shuffle destination id"<<des_list[i]<<"\n";
-  }
 }
 
 void
@@ -358,29 +359,33 @@ RoutingProtocol::Send ()
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   int time = Simulator::Now ().GetSeconds ();
 
-  if(time >= SimStartTime)
-  {
-    if(id == source_list[time - SimStartTime])
-      {
-        int index_time = time - SimStartTime; //example time16 simstarttime15のときm_source_id = 1 すなわち２つめのsourceid
+  if (time >= SimStartTime)
+    {
+      if (id == source_list[time - SimStartTime])
+        {
+          int index_time =
+              time -
+              SimStartTime; //example time16 simstarttime15のときm_source_id = 1 すなわち２つめのsourceid
 
-        Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
-        Vector mypos = mobility->GetPosition ();
-        int MicroSeconds = Simulator::Now ().GetMicroSeconds ();
-        m_start_time[des_list[index_time]] = MicroSeconds + 300000; //秒数をずらし多分足す
-        std::cout<<"m_start_time"<<m_start_time[des_list[index_time]]<< "\n";
-        double shift_time = 0.3; //送信時間を0.1秒ずらす
+          Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+          Vector mypos = mobility->GetPosition ();
+          int MicroSeconds = Simulator::Now ().GetMicroSeconds ();
+          m_start_time[des_list[index_time]] = MicroSeconds + 300000; //秒数をずらし多分足す
+          std::cout << "m_start_time" << m_start_time[des_list[index_time]] << "\n";
+          double shift_time = 0.3; //送信時間を0.1秒ずらす
 
-        //SendShutoushuBroadcast (0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
-        Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::SendShutoushuBroadcast, this, 
-        0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
-        std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
-                  << "des node point x=" << m_my_posx[des_list[index_time]] << "y=" << m_my_posy[des_list[index_time]] << "\n";
+          //SendShutoushuBroadcast (0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
+          Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::SendShutoushuBroadcast, this,
+                               0, des_list[index_time], m_my_posx[des_list[index_time]],
+                               m_my_posy[des_list[index_time]], 1);
+          std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
+                    << "des node point x=" << m_my_posx[des_list[index_time]]
+                    << "y=" << m_my_posy[des_list[index_time]] << "\n";
 
-        // Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToShutoushu, this,
-        //                          socket, packet, destination, hopcount, des_id);
-      }
-  }
+          // Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToShutoushu, this,
+          //                          socket, packet, destination, hopcount, des_id);
+        }
+    }
 }
 
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
@@ -671,10 +676,10 @@ RoutingProtocol::SendHelloPacket (void)
         }
 
       Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 50000)));
-      
+
       //socket->SendTo (packet, 0, InetSocketAddress (destination, SHUTOUSHU_PORT));
-          Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
-                               destination);
+      Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
+                           destination);
     }
 }
 
@@ -704,6 +709,7 @@ RoutingProtocol::SendToShutoushu (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Ad
       m_wait.erase (des_id);
       if (m_finish_time[des_id] == 0) // まだ受信車両が受信してなかったら
         {
+          s_send_log[m_send_check[des_id]] = 1;
           broadcount[des_id] = broadcount[des_id] + 1;
         }
     }
@@ -712,6 +718,7 @@ RoutingProtocol::SendToShutoushu (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Ad
       // std::cout << "id " << id
       //           << " ブロードキャストキャンセル----------------------------------------------------"
       //           << "m_wait" << m_wait[id] << "time" << current_time << "\n";
+      m_send_check.clear (); //broadcast canselされたのでsend checkしたindexをクリア
     }
 }
 
@@ -728,9 +735,9 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
       int send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
-      
-      std::cout<<"sendshutoushubroadcast function が呼ばれた時間 id" << send_node_id <<"time " << 
-      Simulator::Now ().GetMicroSeconds ()<< "\n";
+
+      std::cout << "sendshutoushubroadcast function が呼ばれた時間 id" << send_node_id << "time "
+                << Simulator::Now ().GetMicroSeconds () << "\n";
 
       if (m_trans[send_node_id] == 0 && pri_value != 0) //通信許可がないノードならbreakする
         { //pri_value = 0 すなわち　source nodeのときはそのままbroadcast許可する
@@ -877,9 +884,8 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
           hopcount++;
         }
 
-      sendpacketCount++;
       s_source_id.push_back (send_node_id);
-      std::cout<<"s_source_id push back  send_node_id = " << send_node_id << "\n"; 
+      std::cout << "s_source_id push back  send_node_id = " << send_node_id << "\n";
       s_source_x.push_back (mypos.x);
       s_source_y.push_back (mypos.y);
       s_time.push_back (Simulator::Now ().GetMicroSeconds ());
@@ -894,44 +900,62 @@ RoutingProtocol::SendShutoushuBroadcast (int32_t pri_value, int32_t des_id, int3
       s_pri_3_r.push_back (m_rt[pri_id[3]]);
       s_pri_4_r.push_back (m_rt[pri_id[4]]);
       s_pri_5_r.push_back (m_rt[pri_id[5]]);
-      s_des_id.push_back(des_id);
+      s_des_id.push_back (des_id);
+      s_send_log.push_back (0); //一旦0にする send関数で本当にsendしたら1 に変える
+      m_send_check[des_id] = sendpacketCount;
+
+      sendpacketCount++;
       ////////////////////////交差点判定
-      if(distinctionRoad(m_xpoint[pri_id[1]], m_ypoint[pri_id[1]]) == 0) //優先度 iのノードが交差点ノードならば
-      {
-        s_inter_1_id.push_back(1);
-      }else{
-        s_inter_1_id.push_back(0);
-      }
+      if (distinctionRoad (m_xpoint[pri_id[1]], m_ypoint[pri_id[1]]) ==
+          0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_1_id.push_back (1);
+        }
+      else
+        {
+          s_inter_1_id.push_back (0);
+        }
 
-      if(distinctionRoad(m_xpoint[pri_id[2]], m_ypoint[pri_id[2]]) == 0) //優先度 iのノードが交差点ノードならば
-      {
-        s_inter_2_id.push_back(1);
-      }else{
-        s_inter_2_id.push_back(0);
-      }
-      
-      if(distinctionRoad(m_xpoint[pri_id[3]], m_ypoint[pri_id[3]]) == 0) //優先度 iのノードが交差点ノードならば
-      {
-        s_inter_3_id.push_back(1);
-      }else{
-        s_inter_3_id.push_back(0);
-      }
+      if (distinctionRoad (m_xpoint[pri_id[2]], m_ypoint[pri_id[2]]) ==
+          0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_2_id.push_back (1);
+        }
+      else
+        {
+          s_inter_2_id.push_back (0);
+        }
 
-      if(distinctionRoad(m_xpoint[pri_id[4]], m_ypoint[pri_id[4]]) == 0) //優先度 iのノードが交差点ノードならば
-      {
-        s_inter_4_id.push_back(1);
-      }else{
-        s_inter_4_id.push_back(0);
-      }
+      if (distinctionRoad (m_xpoint[pri_id[3]], m_ypoint[pri_id[3]]) ==
+          0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_3_id.push_back (1);
+        }
+      else
+        {
+          s_inter_3_id.push_back (0);
+        }
 
-      if(distinctionRoad(m_xpoint[pri_id[5]], m_ypoint[pri_id[5]]) == 0) //優先度 iのノードが交差点ノードならば
-      {
-        s_inter_5_id.push_back(1);
-      }else{
-        s_inter_5_id.push_back(0);
-      }
+      if (distinctionRoad (m_xpoint[pri_id[4]], m_ypoint[pri_id[4]]) ==
+          0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_4_id.push_back (1);
+        }
+      else
+        {
+          s_inter_4_id.push_back (0);
+        }
 
-      
+      if (distinctionRoad (m_xpoint[pri_id[5]], m_ypoint[pri_id[5]]) ==
+          0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_5_id.push_back (1);
+        }
+      else
+        {
+          s_inter_5_id.push_back (0);
+        }
+
       m_recvcount.clear ();
       m_first_recv_time.clear ();
       m_etx.clear ();
@@ -1402,47 +1426,51 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
   int interRange = 15; //交差点の大きさ interRange × interRange の正方形
 
   for (int roadId = 1; roadId <= 60; roadId++)
-    {   
-        if (roadId <= 30)
-          {
-            if (x + interRange < x_point && x_point < x + gridRange - interRange && y - interRange < y_point && y_point < y + interRange) 
+    {
+      if (roadId <= 30)
+        {
+          if (x + interRange < x_point && x_point < x + gridRange - interRange &&
+              y - interRange < y_point && y_point < y + interRange)
             {
               return roadId;
             }
-            if(colomnCount == 5)
+          if (colomnCount == 5)
             {
               colomnCount = 1;
               x = 0;
               y = y + gridRange;
             }
-            else {
-              x = x+ gridRange;
+          else
+            {
+              x = x + gridRange;
               colomnCount++;
             }
 
-            if(roadId == 30)
+          if (roadId == 30)
             {
               x = 0;
               y = 0;
             }
-          }
-        else //31〜
-          {
-            if (x - interRange < x_point && x_point < x + interRange && y +  interRange < y_point && y_point < y + gridRange -  interRange) 
+        }
+      else //31〜
+        {
+          if (x - interRange < x_point && x_point < x + interRange && y + interRange < y_point &&
+              y_point < y + gridRange - interRange)
             {
               return roadId;
             }
-            if(colomnCount == 6)
+          if (colomnCount == 6)
             {
               colomnCount = 1;
               x = 0;
               y = y + gridRange;
             }
-            else {
-              x = x+ gridRange;
+          else
+            {
+              x = x + gridRange;
               colomnCount++;
             }
-      }
+        }
     }
   return 0; // ０を返す = 交差点ノード
 }
@@ -1525,7 +1553,7 @@ RoutingProtocol::SimulationResult (void) //
 {
   std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
   // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (Simulator::Now ().GetSeconds () == SimStartTime + SourceNodeNum + 1 )
+  if (Simulator::Now ().GetSeconds () == SimStartTime + SourceNodeNum + 1)
     {
       // //*******************************ノードが持つ座標の確認ログ***************************//
       //std::cout << "id=" << id << "の\n";
@@ -1605,11 +1633,11 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
       std::cout << "Seed値は" << Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
-      std::cout << "trans probability"<< TransProbability << "\n";
+      std::cout << "trans probability" << TransProbability << "\n";
 
-        std::string filename = "data/sigo/shutoushu-seed_" + std::to_string (Seed) + "nodenum_" +
+      std::string filename = "data/shutoushu/shutoushu-seed_" + std::to_string (Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
-        std::string send_filename = "data/send_sigo/shutoushu-seed_" + std::to_string (Seed) +
+      std::string send_filename = "data/send_shutoushu/shutoushu-seed_" + std::to_string (Seed) +
                                   "nodenum_" + std::to_string (numVehicle) + ".csv";
 
       std::ofstream packetTrajectory (filename);
@@ -1675,9 +1703,9 @@ RoutingProtocol::SimulationResult (void) //
                             << ","
                             << "pri_4_r"
                             << ","
-                            << "pri_5_r" 
+                            << "pri_5_r"
                             << ","
-                            << "des_id" 
+                            << "des_id"
                             << ","
                             << "inter_1id "
                             << ","
@@ -1687,11 +1715,12 @@ RoutingProtocol::SimulationResult (void) //
                             << ","
                             << "inter_4id "
                             << ","
-                            << "inter_5id " << std::endl;
+                            << "inter_5id "
+                            << ","
+                            << "send_check " << std::endl;
 
       for (int i = 0; i < packetCount; i++)
         {
-
 
           packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
                            << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
@@ -1700,7 +1729,6 @@ RoutingProtocol::SimulationResult (void) //
                            << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
                            << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
                            << p_pri_5[i] << std::endl;
-
         }
       for (int i = 0; i < sendpacketCount; i++)
         {
@@ -1709,11 +1737,10 @@ RoutingProtocol::SimulationResult (void) //
                                 << ", " << s_pri_2_id[i] << ", " << s_pri_3_id[i] << ", "
                                 << s_pri_4_id[i] << ", " << s_pri_5_id[i] << ", " << s_pri_1_r[i]
                                 << ", " << s_pri_2_r[i] << ", " << s_pri_3_r[i] << ", "
-                                << s_pri_4_r[i] << ", " << s_pri_5_r[i] << ", " << s_des_id[i] << ", " 
-                                << s_inter_1_id[i] << ", "<< s_inter_2_id[i] << ", "
-                                << s_inter_3_id[i] << ", "<< s_inter_4_id[i] << ", "
-                                << s_inter_5_id[i] << std::endl;
-          
+                                << s_pri_4_r[i] << ", " << s_pri_5_r[i] << ", " << s_des_id[i]
+                                << ", " << s_inter_1_id[i] << ", " << s_inter_2_id[i] << ", "
+                                << s_inter_3_id[i] << ", " << s_inter_4_id[i] << ", "
+                                << s_inter_5_id[i] << ", " << s_send_log[i] << std::endl;
         }
     }
 }
@@ -1767,12 +1794,12 @@ std::vector<double> RoutingProtocol::s_pri_3_r;
 std::vector<double> RoutingProtocol::s_pri_4_r;
 std::vector<double> RoutingProtocol::s_pri_5_r;
 std::vector<int> RoutingProtocol::s_des_id;
-std::vector<int> RoutingProtocol::s_inter_1_id;//文字列で交差点にいるIDをぶち込む
+std::vector<int> RoutingProtocol::s_inter_1_id; //文字列で交差点にいるIDをぶち込む
 std::vector<int> RoutingProtocol::s_inter_2_id;
 std::vector<int> RoutingProtocol::s_inter_3_id;
 std::vector<int> RoutingProtocol::s_inter_4_id;
 std::vector<int> RoutingProtocol::s_inter_5_id;
-
+std::vector<int> RoutingProtocol::s_send_log;
 
 } // namespace shutoushu
 } // namespace ns3

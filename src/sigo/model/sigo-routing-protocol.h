@@ -53,15 +53,15 @@
 #define NumInter 64
 #define InterPoint 1.0 //交差点ノードの与えるポイントの重み付け
 // #define SimStartMicro 1000000 //broadcast 開始時刻micro秒
-#define SimStartTime 10 //broadcast 開始時刻　秒
+#define SimStartTime 5 //broadcast 開始時刻　秒
 #define InterArea 8 //交差点エリア 正方形メートル　
-#define Seed 30000 // ※毎回変える
+#define Seed 40000 // ※毎回変える
 #define NodeNum 200 // ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define testId 107 // testで動きを表示させるID
 #define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
-#define SourceNodeNum 10
+#define SourceNodeNum 3
 #define MaxRange 260
 
 #define SourceLowX -50
@@ -100,7 +100,7 @@ public:
   static std::map<int, double> m_my_posy; // key node id value position y
   static std::map<int, double> m_my_p_posx; // key node id value past position x
   static std::map<int, double> m_my_p_posy; // key node id value past position y
-  static std::map<int, double> m_my_speed;  //key node id value speed
+  static std::map<int, double> m_my_speed; //key node id value speed
   static std::map<int, double> m_my_p_speed; // key node id value past speed
   static std::map<int, double> m_my_acce; //key node id value acceleration(加速度)
   static std::map<int, int> m_trans; //key node id 初期値０　＝　通信不可　VALUE＝１　通信可
@@ -111,7 +111,6 @@ public:
   static std::map<int, int> m_des_id; //key 1~10 value sourceid
   static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
   static std::vector<int> des_list;
-  
 
   //パケット軌跡出力用の変数 recv
   static std::vector<int> p_source_x;
@@ -149,7 +148,8 @@ public:
   static std::vector<double> s_pri_4_r;
   static std::vector<double> s_pri_5_r;
   static std::vector<int> s_des_id;
-  static std::vector<int> s_inter_1_id; //優先度１が交差点に属するかどうか 1 or 0 　　　　１なら交差点にいると判断した
+  static std::vector<int>
+      s_inter_1_id; //優先度１が交差点に属するかどうか 1 or 0 　　　　１なら交差点にいると判断した
   static std::vector<int> s_inter_2_id;
   static std::vector<int> s_inter_3_id;
   static std::vector<int> s_inter_4_id;
@@ -191,22 +191,24 @@ private:
 
   //**自作メソッド start**/
   double getDistance (double x, double y, double x2, double y2);
-  double getAngle (double a_x, double a_y, double b_x, double b_y, double c_x, double c_y); //3点の角度
-  void setVector (int32_t hello_id, double x, double y, double xp, double yp, int32_t acce); //近隣ノードの速度ベクトルを保存
-  void PredictionPosition(void);
+  double getAngle (double a_x, double a_y, double b_x, double b_y, double c_x,
+                   double c_y); //3点の角度
+  void setVector (int32_t hello_id, double x, double y, double xp, double yp,
+                  int32_t acce); //近隣ノードの速度ベクトルを保存
+  void PredictionPosition (void);
   void SendHelloPacket (void); //hello packet を broadcast するメソッド
   void SimulationResult (void); //シミュレーション結果を出力する
   void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,
                     Ipv4Address destination); //Hello packet の送信
   void SendToSigo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination,
-                        int32_t hopcount, int32_t des_id); //Sigo broadcast の送信
-  void SaveXpoint (int32_t map_id, int32_t map_xpoint, int32_t map_p_xpoint); //近隣ノードのHello packetの情報を
+                   int32_t hopcount, int32_t des_id); //Sigo broadcast の送信
+  void SaveXpoint (int32_t map_id, int32_t map_xpoint,
+                   int32_t map_p_xpoint); //近隣ノードのHello packetの情報を
   void SaveYpoint (int32_t map_id, int32_t map_ypoint, int32_t map_p_ypoint); //mapに保存する
   void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
   void SaveRelation (int32_t map_id, int32_t map_xpoint,
                      int32_t map_ypoint); //近隣ノードの道路IDを保存
-  void
-  SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
+  void SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
                           int32_t hopcount); //候補ノードの優先順位を計算してpacketを送信する関数
   void SetCountTimeMap (void); //window size より古いmapを削除していく関数
   void SetEtxMap (void); //etx map をセットする関数
@@ -231,9 +233,10 @@ private:
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
   ///sigo original map
   std::map<int, int> m_p_xpoint; //近隣車両の位置情報を取得するmap key=nodeid value = past xposition
-  std::map<int, int> m_p_ypoint; 
+  std::map<int, int> m_p_ypoint;
   std::map<int, double> m_speed; //近隣車両の速度情報を取得するmap key=nodeid value = speed
-  std::map<int, int> m_acce; //近隣車両の加速度情報を取得するmap key=nodeid value = accerelation 加速度
+  std::map<int, int>
+      m_acce; //近隣車両の加速度情報を取得するmap key=nodeid value = accerelation 加速度
   std::map<int, double> m_radian; //近隣車両の角度情報 map key = nodeid value = direction
   std::map<int, int> m_pre_xpoint; //予測位置ｘ
   std::map<int, int> m_pre_ypoint; //予測位置y

@@ -126,7 +126,6 @@
 #include "ns3/topology.h" ///obstacle
 #include "ns3/netanim-module.h"
 #include "ns3/yans-wifi-helper.h"
-
 using namespace ns3;
 using namespace dsr;
 
@@ -619,11 +618,12 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
     case 7:
       list.Add (shutoushu, 100);
       m_protocolName = "SHUTOUSHU";
-      std::cout << "obstacle debug ---------------------------------------------------------shutoushu "
-                   "protocol done"
-                << "\n\n";
+      std::cout
+          << "obstacle debug ---------------------------------------------------------shutoushu "
+             "protocol done"
+          << "\n\n";
       break;
-    
+
     case 8:
       list.Add (sigo, 100);
       m_protocolName = "SIGO";
@@ -1299,7 +1299,6 @@ private:
   double m_txp; ///< distance
   bool m_traceMobility; ///< trace mobility
   uint32_t m_protocol; ///< protocol
-
   uint32_t m_lossModel; ///< loss model
   uint32_t m_fading; ///< fading
   uint32_t m_loadBuildings; ///obstacle
@@ -1713,10 +1712,10 @@ VanetRoutingExperiment::Run ()
   CheckThroughput ();
   Simulator::Stop (Seconds (m_TotalSimTime));
   //command NetAnim
-  AnimationInterface anim ("compare-routing");
+  AnimationInterface anim ("no_signal_500");
 
-  anim.UpdateNodeSize (1, 20, 1);
-  anim.UpdateNodeSize (40, 20, 1);
+  // anim.UpdateNodeSize (1, 20, 1);
+  // anim.UpdateNodeSize (40, 20, 1);
 
   anim.EnablePacketMetadata ();
   anim.EnableIpv4L3ProtocolCounters (Seconds (0), Seconds (m_TotalSimTime));
@@ -2476,17 +2475,17 @@ VanetRoutingExperiment::SetupScenario ()
       //-------------------------------------------------------------------------------------------------
 
       // m_traceFile = "src/wave/examples/LSGO_Grid/test2.tcl"; //testモビリティ入力ファイル
-      m_traceFile = "src/wave/examples/no_signal/no_signal_500.tcl"; //モビリティ入力ファイル
+      m_traceFile = "src/wave/examples/no_signal/no_signal_300.tcl"; //モビリティ入力ファイル
 
       m_logFile = ""; //出力ファイル
 
       m_mobility = 1;
-      m_nNodes = 500; //変更すべきところ
+      m_nNodes = 300; //変更すべきところ
       m_TotalSimTime = 23; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;
-      m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare.csv";
-      m_CSVfileName = "Raleigh_Downtown50_vanet-routing-compare2.csv";
+      m_CSVfileName = "";
+      m_CSVfileName = "";
       std::cout << "\n\n\n\n\n\n\n tcl file = " << m_traceFile << "\n\n\n\n\n\n";
       // WAVE BSM only, no routing data
       // m_protocol = 0;////////////////////////////////////////////////////////////////////初期状態 なぜprotocolを0にするのか不明
