@@ -41,6 +41,7 @@
 #include "ns3/adhoc-wifi-mac.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
+#include "../../shutoushu/model/shutoushu-routing-protocol.h"
 #include <algorithm>
 #include <limits>
 #include <math.h>
@@ -55,6 +56,8 @@
 #include <iterator>
 
 #include "ns3/mobility-module.h"
+
+int Buildings = 0; //grobal変数
 
 namespace ns3 {
 
@@ -283,8 +286,7 @@ RoutingProtocol::DoInitialize (void)
       RoadCenterPoint ();
       Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
-      setVector (0, 1, 1, 3, 3, 2);
-      setVector (0, -1, -1, -4, -4, 2);
+      std::cout << "\n \n buildings" << Buildings << "\n";
       // double angle = 60;
       // double gammaAngle = angle / 90;
       // gammaAngle = pow (gammaAngle, 1 / AngleGamma);

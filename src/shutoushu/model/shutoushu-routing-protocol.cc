@@ -56,7 +56,7 @@
 
 #include "ns3/mobility-module.h"
 
-int Grobal_num = 100;
+int Buildings = 0;
 
 namespace ns3 {
 
@@ -278,6 +278,8 @@ RoutingProtocol::DoInitialize (void)
       RoadCenterPoint ();
       Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
+
+      std::cout << "\n \n buildings" << Buildings << "\n";
       // double angle = 60;
       // double gammaAngle = angle / 90;
       // gammaAngle = pow (gammaAngle, 1 / AngleGamma);

@@ -633,9 +633,6 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
                    "protocol done"
                 << "\n\n";
 
-      std::cout << " \n\n\n\n\n\n\n\n\n---------------------------------------------------------"
-                   "grobal num "
-                << Grobal_num << "\n";
       break;
     default:
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);
@@ -2421,6 +2418,9 @@ VanetRoutingExperiment::SetupScenario ()
           "./src/wave/examples/no_signal/poly_1000.xml"; //謎にWaveのディレクトリなら動く 変更すべきところ
 
       std::cout << "building ファイルを入力しましたそのファイルは " << bldgFile << "\n";
+      std::cout << "grobal Buildings 更新 \n";
+      Buildings = m_loadBuildings;
+      std::cout << "更新後のgrobal Builidings =" << Buildings << "\n";
 
       //NS_LOG_UNCOND ("Loading buildings file " << bldgFile);
       Topology::LoadBuildings (bldgFile);

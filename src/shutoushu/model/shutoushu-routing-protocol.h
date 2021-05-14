@@ -73,7 +73,7 @@
 #define DesLowY 700
 #define DesHighY 1050
 
-extern int Grobal_num;
+extern int Buildings;
 
 namespace ns3 {
 namespace shutoushu {
