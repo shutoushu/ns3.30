@@ -126,6 +126,8 @@
 #include "ns3/topology.h" ///obstacle
 #include "ns3/netanim-module.h"
 #include "ns3/yans-wifi-helper.h"
+#include "../src/shutoushu/model/shutoushu-routing-protocol.h"
+
 using namespace ns3;
 using namespace dsr;
 
@@ -630,6 +632,10 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
       std::cout << "obstacle debug ---------------------------------------------------------sigo "
                    "protocol done"
                 << "\n\n";
+
+      std::cout << " \n\n\n\n\n\n\n\n\n---------------------------------------------------------"
+                   "grobal num "
+                << Grobal_num << "\n";
       break;
     default:
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);

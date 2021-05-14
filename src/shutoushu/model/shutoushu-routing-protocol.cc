@@ -56,6 +56,8 @@
 
 #include "ns3/mobility-module.h"
 
+int Grobal_num = 100;
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ShutoushuRoutingProtocol");
