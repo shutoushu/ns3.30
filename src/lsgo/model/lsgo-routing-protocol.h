@@ -35,14 +35,9 @@
 #define WindowSize 10000000 //LSGOのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
 #define WaitT 4000 //待ち時間の差 micro単位
-#define ProcessTime 0 //擬似的処理時間
-#define StopTransTime 100 // 10秒以上静止していた場合通信の許可を剥奪する
-// #define SimStartMicro_Time 1000000 //４０秒
 #define SimStartTime 10 //４０秒
 #define Seed 10000 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
-#define NodeNum 200 //  ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
-#define testId 107 // testで動きを表示させるID
 #define SourceNodeNum 10
 
 #define SourceLowX -50
@@ -79,12 +74,6 @@ public:
   static std::map<int, int> m_finish_time; //key destination_id value 受信時間
   static std::map<int, double> m_my_posx; // key node id value position x
   static std::map<int, double> m_my_posy; // key node id value position y
-  static std::map<int, int> m_trans; //key node id 初期値０　＝　通信不可　VALUE＝１　通信可
-  static std::map<int, int> m_stop_count; //key node id value 止まっている時間の蓄積
-  static std::map<int, int> m_node_start_time; //key id value nodeの発車時刻（秒）
-  static std::map<int, int> m_node_finish_time; //key id value nodeの到着時刻（秒）
-  static std::map<int, int> m_source_id; //key 1~10 value sourceid
-  static std::map<int, int> m_des_id; //key 1~10 value sourceid
   static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
   static std::vector<int> des_list;
 

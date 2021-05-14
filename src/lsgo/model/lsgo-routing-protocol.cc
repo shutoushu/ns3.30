@@ -254,7 +254,6 @@ RoutingProtocol::DoInitialize (void)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   //int32_t time = Simulator::Now ().GetMicroSeconds ();
-  m_trans[id] = 1;
   numVehicle++;
 
   for (int i = 1; i < SimTime; i++)
@@ -277,24 +276,6 @@ RoutingProtocol::DoInitialize (void)
         Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
                              this); //結果出力関数
     }
-
-  //sourse node**********************source node は優先度0 hopcount = 1*************************
-
-  //////////////////////////////////////test 用
-  // if (id == testId) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 0), &RoutingProtocol::Send, this, 10); //宛先ノード
-
-  /////////////////////////////////random
-  // if (id == 0)
-  //   {
-  //     std::mt19937 rand_src (Seed); //シード値
-  //     std::uniform_int_distribution<int> rand_dist (0, NodeNum);
-  //     for (int i = 0; i < 20; i++)
-  //       {
-  //         m_source_id[i] = rand_dist (rand_src);
-  //         m_des_id[i] = rand_dist (rand_src);
-  //       }
-  //   }
 
   for (int i = 0; i < SourceNodeNum; i++)
     {
@@ -354,7 +335,7 @@ RoutingProtocol::Send ()
           int MicroSeconds = Simulator::Now ().GetMicroSeconds ();
           m_start_time[des_list[index_time]] = MicroSeconds + 300000; //秒数をずらし多分足す
           std::cout << "m_start_time" << m_start_time[des_list[index_time]] << "\n";
-          double shift_time = 0.3; //送信時間を0.1秒ずらす
+          double shift_time = 0.3; //送信時間を0.3秒ずらす
 
           // SendLsgoBroadcast (0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
           Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::SendLsgoBroadcast, this, 0,
@@ -432,18 +413,12 @@ void
 RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
 {
   int32_t current_time = Simulator::Now ().GetMicroSeconds ();
-  //current_time = current_time / 1000000; //secondになおす
-
   for (auto itr = m_first_recv_time.begin (); itr != m_first_recv_time.end (); itr++)
     {
-      //double micro_second = 1000000;
       double diftime; //論文のt-t0と同意
       double first_recv = (double) itr->second;
       diftime = (current_time - first_recv) / 1000000;
-      //difftime = difftime / 1000000;
-      //std::cout << "id" << itr->first << "dif_time" << diftime << "\n";
       double rt = (double) m_recvcount[itr->first] / diftime; //論文のrtの計算
-      //std::cout << "id" << itr->first << "のrtは" << rt << "rt*rt" << rt * rt << "\n";
       if (rt > 1)
         rt = 1.0;
       m_rt[itr->first] = rt;
@@ -451,9 +426,6 @@ RoutingProtocol::SetEtxMap (void) //////ETXをセットする関数
       if (etx < 1)
         etx = 1;
       m_etx[itr->first] = etx;
-
-      //std::cout << "id " << itr->first << " m_etx" << m_etx[itr->first] << "\n";
-      // std::cout << "\n";
     }
 }
 
@@ -466,9 +438,6 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
   int Distination_y = des_y;
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (id == testId)
-    std::cout << "id" << id << "が持つ\n";
 
   for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
     { ////next                  目的地までの距離とETX値から優先度を示す値をマップに保存する
@@ -479,10 +448,7 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
         {
           continue;
         }
-      //std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
-
       m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
-      //std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "\n";
     }
 }
 
@@ -526,8 +492,6 @@ RoutingProtocol::SendHelloPacket (void)
 void
 RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination)
 {
-  // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  // std::cout << " send id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
   socket->SendTo (packet, 0, InetSocketAddress (destination, LSGO_PORT));
 }
 
@@ -576,18 +540,6 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       int32_t send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
-
-      std::cout << "sendlsgobroadcast function が呼ばれた時間 id" << send_node_id << "time "
-                << Simulator::Now ().GetMicroSeconds () << "\n";
-
-      if (m_trans[send_node_id] == 0 && pri_value != 0) //通信許可がないノードならbreakする
-        { //pri_value = 0 すなわち　source nodeのときはそのままbroadcast許可する
-          std::cout << "通信許可が得られていないノードが　sendlsgo broadcast id" << send_node_id
-                    << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
-
-          std::cout << "m_trans = " << m_trans[send_node_id] << "\n";
-          break;
-        }
 
       SetCountTimeMap (); //window sizeないの最初のhelloを受け取った時間と回数をマップに格納する関数
       for (auto itr = m_first_recv_time.begin (); itr != m_first_recv_time.end (); itr++)
@@ -815,9 +767,6 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
     {
       case LSGOTYPE_HELLO: { //hello message を受け取った場合
 
-        if (m_trans[id] == 0)
-          break;
-
         HelloHeader helloheader;
         packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
         int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
@@ -878,9 +827,6 @@ RoutingProtocol::RecvLsgo (Ptr<Socket> socket)
             packetCount++;
             break;
           }
-
-        if (m_trans[id] == 0)
-          break; //通信不能のノードだった場合はbreak
 
         ////*********recv hello packet log*****************////////////////
         // std::cout << " id " << id << "が受信したlsgo packetは\n";
@@ -1023,84 +969,6 @@ RoutingProtocol::SetMyPos (void)
   m_my_posy[id] = mypos.y;
 }
 
-///SUMO問題解決のためmobility.tclファイルを読み込み→ノードの発車時刻と到着時刻を知る
-void
-RoutingProtocol::ReadFile (void)
-{
-  // std::vector<std::string> v;
-  // std::ifstream ifs ("src/wave/examples/LSGO_Grid/mobility.tcl");
-  // if (!ifs)
-  //   {
-  //     std::cerr << "ファイルオープンに失敗" << std::endl;
-  //     std::exit (1);
-  //   }
-
-  // std::string tmp;
-  // std::string str;
-  // int time, node_id;
-  // int row_count = 1; //何列目かを判断するカウンター　atが１列目 time が２列目 $nodeが３列め
-
-  // // getline()で1行ずつ読み込む
-  // while (getline (ifs, tmp, ' '))
-  //   {
-  //     if (tmp.find ("at") != std::string::npos)
-  //       {
-  //         //puts ("文字列atが見つかりました");
-  //         row_count = 1; //at は１列目
-  //       }
-  //     if (row_count == 2)
-  //       {
-  //         time = atoi (tmp.c_str ());
-  //         //std::cout << "time" << time << "\n";
-  //       }
-  //     if (row_count == 3)
-  //       {
-  //         tmp.replace (0, 1, "a"); //１番目の文字 " をaに変換
-  //         //std::cout << "node id string test " << tmp << "\n";
-  //         sscanf (tmp.c_str (), "a$node_(%d", &node_id); //文字列から数字だけをnode_idに代入
-  //         if (m_node_start_time[node_id] == 0)
-  //           {
-  //             if (time > 0 && time < 1000)
-  //               {
-  //                 m_node_start_time[node_id] = time;
-  //               }
-  //           }
-  //         if (time != 0)
-  //           {
-  //             m_node_finish_time[node_id] = time; //常に更新させた最終更新時間が到着時間
-  //           }
-  //       }
-  //     row_count++;
-  //   }
-
-  // if (!ifs.eof ())
-  //   {
-  //     std::cerr << "読み込みに失敗" << std::endl;
-  //     std::exit (1);
-  //   }
-
-  // std::cout << std::flush;
-}
-
-void
-RoutingProtocol::WriteFile (void)
-{
-}
-void
-RoutingProtocol::Trans (int node_id)
-{
-  m_trans[node_id] = 1;
-  //std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
-  //<< "が通信可能になりました\n";
-}
-
-void
-RoutingProtocol::NoTrans (int node_id)
-{
-  //m_trans[node_id] = 0;
-  //std::cout << "time" << Simulator::Now ().GetSeconds () << "node id" << node_id
-  // << "が通信不可能になりました\n";
-}
 // シミュレーション結果の出力関数
 void
 RoutingProtocol::SimulationResult (void) //
@@ -1109,38 +977,6 @@ RoutingProtocol::SimulationResult (void) //
   //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   if (Simulator::Now ().GetSeconds () == SimStartTime + SourceNodeNum + 1)
     {
-      // //*******************************ノードが持つ座標の確認ログ***************************//
-      //std::cout << "id=" << id << "の\n";
-      // for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++)
-      //   {
-      //     std::cout << "recv hello packet id = " << itr->first // キーを表示
-      //               << ", x座標 = " << itr->second << "\n"; // 値を表示
-      //   }
-      // for (auto itr = m_ypoint.begin (); itr != m_ypoint.end (); itr++)
-      //   {
-      //     std::cout << "recv hello packet id = " << itr->first // キーを表示
-      //               << ", y座標 = " << itr->second << "\n"; // 値を表示
-      //   }
-      //**************************************************************************************//
-
-      //*******************************ノードが持つ受信時刻ログ***************************//
-      //std::cout << "id=" << id << "recv数" << m_recvtime.size () << "\n";
-
-      // auto itr = m_recvtime.find (1);
-      // if (itr != m_recvtime.end ())
-      //   { // 見つかった場合
-
-      //     for (auto itr = m_recvtime.begin (); itr != m_recvtime.end (); itr++)
-      //       {
-      //         std::cout << itr->first << " " << itr->second << "\n"; //  キー、値を表示
-      //       }
-      //   }
-      // itr = m_recvtime.find (1);
-      // if (itr == m_recvtime.end ())
-      //   { // 見つからなかった場合
-      //     std::cout << "not found.\n";
-      //   }
-      //**************************************************************************************//
       int sum_end_time = 0;
       int sum_br = 0; //ブロードキャスト数の平均
       double average_end_time = 0;
@@ -1286,12 +1122,6 @@ std::map<int, int> RoutingProtocol::m_start_time; //key destination_id value　�
 std::map<int, int> RoutingProtocol::m_finish_time; //key destination_id value 受信時間
 std::map<int, double> RoutingProtocol::m_my_posx; // key node id value position x
 std::map<int, double> RoutingProtocol::m_my_posy; // key node id value position y
-std::map<int, int> RoutingProtocol::m_trans; //key node id value　通信可能かどうか1or0
-std::map<int, int> RoutingProtocol::m_stop_count; //key node id value 止まっている時間カウント
-std::map<int, int> RoutingProtocol::m_node_start_time; //key node id value 止まっている時間カウント
-std::map<int, int> RoutingProtocol::m_node_finish_time; //key node id value 止まっている時間カウント
-std::map<int, int> RoutingProtocol::m_source_id;
-std::map<int, int> RoutingProtocol::m_des_id;
 std::vector<int> RoutingProtocol::source_list;
 std::vector<int> RoutingProtocol::des_list;
 
