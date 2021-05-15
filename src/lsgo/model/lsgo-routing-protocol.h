@@ -29,16 +29,12 @@
 #include "ns3/ipv4-interface.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include <map>
-
 #define maxHop 20 //max hop数
 #define SimTime 40 //シミュレーション時間 second
 #define WindowSize 10000000 //LSGOのウィンドウサイズ microsecond   = 10second
 #define HelloInterval 1 //Hello packet のインターバル
 #define WaitT 4000 //待ち時間の差 micro単位
-#define SimStartTime 10 //４０秒
-#define Seed 10000 //送信車両と宛先車両をランダムに配置する Seed値 ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
-#define SourceNodeNum 10
 
 #define SourceLowX -50
 #define SourceHighX 300

@@ -49,12 +49,12 @@
 #define HelloInterval 1 //Hello packet のインターバル
 #define WaitT 4000 //待ち時間の差 micro単位
 #define InterPoint 1.0 //交差点ノードの与えるポイントの重み付け
-#define SimStartTime 10 //broadcast 開始時刻　秒
-#define Seed 10000 // ※毎回変える
+// #define SimStartTime 10 //broadcast 開始時刻　秒
+// #define Seed 10000 // ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
 #define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
-#define SourceNodeNum 10
+// #define SourceNodeNum 10
 
 #define SourceLowX -50
 #define SourceHighX 300
@@ -66,8 +66,11 @@
 #define DesLowY 700
 #define DesHighY 1050
 
+//各protocol共通のグローバル変数　
 extern int Buildings; //grobal shadowing ありなし shadowing 1 noshadowing 0
 extern int Grobal_Seed;
+extern int Grobal_StartTime;
+extern int Grobal_SourceNodeNum;
 
 namespace ns3 {
 namespace shutoushu {

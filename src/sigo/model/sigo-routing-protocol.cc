@@ -283,16 +283,12 @@ RoutingProtocol::DoInitialize (void)
       ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
 
       RoadCenterPoint ();
-      Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination,
+      Simulator::Schedule (Seconds (Grobal_StartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
       std::cout << "\n \n buildings" << Buildings << "\n";
-      // double angle = 60;
-      // double gammaAngle = angle / 90;
-      // gammaAngle = pow (gammaAngle, 1 / AngleGamma);
-      // gammaAngle = 90 * gammaAngle;
-      // double Rp = 0.25;
-      // double gammaRp = pow (Rp, 1 / RpGamma);
-      // std::cout << "angle check" << gammaAngle << "Rp" << gammaRp << "\n";
+      std::cout << "\n \n grobal seed" << Grobal_Seed << "\n";
+      std::cout << "\n \n grobal startTime" << Grobal_StartTime << "\n";
+      std::cout << "\n \n grobal " << Grobal_SourceNodeNum << "\n";
     }
 
   //**結果出力******************************************//
@@ -303,29 +299,9 @@ RoutingProtocol::DoInitialize (void)
                              this); //結果出力関数
     }
 
-  //sourse node**********************source node は優先度0 hopcount = 1*************************
-  //500~1000//////////////////////////////////////////////////////////////////////////////////
-
-  //////////////////////////////////////test 用
-  // if (id == 1) // 送信車両　
-  //   Simulator::Schedule (Seconds (SimStartTime + 10), &RoutingProtocol::Send, this, 9); //宛先ノード
-
-  ////////////////////////////////////random
-
-  // if (id == 0)
-  //   {
-  //     std::mt19937 rand_src (Seed); //シード値
-  //     std::uniform_int_distribution<int> rand_dist (0, NodeNum);
-  //     for (int i = 0; i < 20; i++)
-  //       {
-  //         m_source_id[i] = rand_dist (rand_src);
-  //         m_des_id[i] = rand_dist (rand_src);
-  //       }
-  //   }
-
-  for (int i = 0; i < SourceNodeNum; i++)
+  for (int i = 0; i < Grobal_SourceNodeNum; i++)
     {
-      Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this);
+      Simulator::Schedule (Seconds (Grobal_StartTime + i * 1), &RoutingProtocol::Send, this);
     }
   /////////////////////////////random
 }
@@ -351,12 +327,12 @@ RoutingProtocol::SourceAndDestination ()
         }
     }
 
-  std::mt19937 get_rand_mt (Seed);
+  std::mt19937 get_rand_mt (Grobal_Seed);
 
   std::shuffle (source_list.begin (), source_list.end (), get_rand_mt);
   std::shuffle (des_list.begin (), des_list.end (), get_rand_mt);
 
-  for (int i = 0; i < SourceNodeNum; i++)
+  for (int i = 0; i < Grobal_SourceNodeNum; i++)
     {
       std::cout << "shuffle source id" << source_list[i] << "\n";
       std::cout << "shuffle destination id" << des_list[i] << "\n";
@@ -369,13 +345,13 @@ RoutingProtocol::Send ()
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   int time = Simulator::Now ().GetSeconds ();
 
-  if (time >= SimStartTime)
+  if (time >= Grobal_StartTime)
     {
-      if (id == source_list[time - SimStartTime])
+      if (id == source_list[time - Grobal_StartTime])
         {
           int index_time =
               time -
-              SimStartTime; //example time16 simstarttime15のときm_source_id = 1 すなわち２つめのsourceid
+              Grobal_StartTime; //example time16 simstarttime15のときm_source_id = 1 すなわち２つめのsourceid
 
           Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
           Vector mypos = mobility->GetPosition ();
@@ -1540,7 +1516,7 @@ RoutingProtocol::SimulationResult (void) //
 {
   std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
   // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (Simulator::Now ().GetSeconds () == SimStartTime + SourceNodeNum + 1)
+  if (Simulator::Now ().GetSeconds () == Grobal_StartTime + Grobal_SourceNodeNum + 1)
     {
       // //*******************************ノードが持つ座標の確認ログ***************************//
       //std::cout << "id=" << id << "の\n";
@@ -1614,17 +1590,17 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "本シミュレーションのパケットEnd to End遅延時間は" << average_end_time << "\n";
       std::cout << "本シミュレーションのパケット平均オーバーヘッドは" << average_overhead << "\n";
       std::cout << "交差点ノードにおける重み付けは" << InterPoint << "\n";
-      std::cout << "本シミュレーションのシミュレーション開始時刻は" << SimStartTime << "\n";
+      std::cout << "本シミュレーションのシミュレーション開始時刻は" << Grobal_StartTime << "\n";
       std::cout << "送信数は" << m_start_time.size () << "\n";
       std::cout << "受信数は" << recvCount << "\n";
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
-      std::cout << "Seed値は" << Seed << "\n";
+      std::cout << "Seed値は" << Grobal_Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
       std::cout << "trans probability" << TransProbability << "\n";
 
-      std::string filename = "data/sigo/sigo-seed_" + std::to_string (Seed) + "nodenum_" +
+      std::string filename = "data/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
-      std::string send_filename = "data/send_sigo/sigo-seed_" + std::to_string (Seed) + "nodenum_" +
+      std::string send_filename = "data/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                   std::to_string (numVehicle) + ".csv";
 
       std::ofstream packetTrajectory (filename);

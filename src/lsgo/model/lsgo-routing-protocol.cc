@@ -41,6 +41,7 @@
 #include "ns3/adhoc-wifi-mac.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
+#include "../../shutoushu/model/shutoushu-routing-protocol.h"
 #include <algorithm>
 #include <limits>
 #include <math.h>
@@ -265,7 +266,7 @@ RoutingProtocol::DoInitialize (void)
 
   if (id == 0)
     {
-      Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination,
+      Simulator::Schedule (Seconds (Grobal_StartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
     }
 
@@ -277,9 +278,9 @@ RoutingProtocol::DoInitialize (void)
                              this); //結果出力関数
     }
 
-  for (int i = 0; i < SourceNodeNum; i++)
+  for (int i = 0; i < Grobal_SourceNodeNum; i++)
     {
-      Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this);
+      Simulator::Schedule (Seconds (Grobal_StartTime + i * 1), &RoutingProtocol::Send, this);
     }
   ///////////////////////////////////////////////////////////////////////////////////////////
 }
@@ -304,12 +305,12 @@ RoutingProtocol::SourceAndDestination ()
         }
     }
 
-  std::mt19937 get_rand_mt (Seed);
+  std::mt19937 get_rand_mt (Grobal_Seed);
 
   std::shuffle (source_list.begin (), source_list.end (), get_rand_mt);
   std::shuffle (des_list.begin (), des_list.end (), get_rand_mt);
 
-  for (int i = 0; i < SourceNodeNum; i++)
+  for (int i = 0; i < Grobal_SourceNodeNum; i++)
     {
       std::cout << "shuffle source id" << source_list[i] << "\n";
       std::cout << "shuffle destination id" << des_list[i] << "\n";
@@ -322,13 +323,13 @@ RoutingProtocol::Send ()
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   int time = Simulator::Now ().GetSeconds ();
 
-  if (time >= SimStartTime)
+  if (time >= Grobal_StartTime)
     {
-      if (id == source_list[time - SimStartTime])
+      if (id == source_list[time - Grobal_StartTime])
         {
           int index_time =
               time -
-              SimStartTime; //example time16 simstarttime15のときm_source_id = 1 すなわち２つめのsourceid
+              Grobal_StartTime; //example time16 simstarttime15のときm_source_id = 1 すなわち２つめのsourceid
 
           Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
           Vector mypos = mobility->GetPosition ();
@@ -975,7 +976,7 @@ RoutingProtocol::SimulationResult (void) //
 {
   std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
   //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (Simulator::Now ().GetSeconds () == SimStartTime + SourceNodeNum + 1)
+  if (Simulator::Now ().GetSeconds () == Grobal_StartTime + Grobal_SourceNodeNum + 1)
     {
       int sum_end_time = 0;
       int sum_br = 0; //ブロードキャスト数の平均
@@ -1015,17 +1016,17 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "本シミュレーションのパケット到達率は" << packet_recv_rate << "\n";
       std::cout << "本シミュレーションのパケットEnd to End遅延時間は" << average_end_time << "\n";
       std::cout << "本シミュレーションのパケット平均オーバーヘッドは" << average_overhead << "\n";
-      std::cout << "本シミュレーションのシミュレーション開始時刻は" << SimStartTime << "\n";
+      std::cout << "本シミュレーションのシミュレーション開始時刻は" << Grobal_StartTime << "\n";
       std::cout << "送信数は" << m_start_time.size () << "\n";
       std::cout << "受信数は" << recvCount << "\n";
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
-      std::cout << "Seed値は" << Seed << "\n";
+      std::cout << "Seed値は" << Grobal_Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
       std::cout << "trans probability" << TransProbability << "\n";
 
-      std::string filename = "data/lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +
+      std::string filename = "data/lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
-      std::string send_filename = "data/send_lsgo/lsgo-seed_" + std::to_string (Seed) + "nodenum_" +
+      std::string send_filename = "data/send_lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                   std::to_string (numVehicle) + ".csv";
 
       std::ofstream packetTrajectory (filename);

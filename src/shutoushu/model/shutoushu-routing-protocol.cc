@@ -58,6 +58,8 @@
 
 int Buildings = 0;
 int Grobal_Seed = 10000;
+int Grobal_StartTime = 10;
+int Grobal_SourceNodeNum = 10;
 
 namespace ns3 {
 
@@ -276,7 +278,7 @@ RoutingProtocol::DoInitialize (void)
       ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
 
       RoadCenterPoint ();
-      Simulator::Schedule (Seconds (SimStartTime - 2), &RoutingProtocol::SourceAndDestination,
+      Simulator::Schedule (Seconds (Grobal_StartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
 
       std::cout << "\n \n buildings" << Buildings << "\n";
@@ -297,9 +299,9 @@ RoutingProtocol::DoInitialize (void)
                              this); //結果出力関数
     }
 
-  for (int i = 0; i < SourceNodeNum; i++)
+  for (int i = 0; i < Grobal_SourceNodeNum; i++)
     {
-      Simulator::Schedule (Seconds (SimStartTime + i * 1), &RoutingProtocol::Send, this);
+      Simulator::Schedule (Seconds (Grobal_StartTime + i * 1), &RoutingProtocol::Send, this);
     }
   /////////////////////////////random
 }
@@ -325,12 +327,12 @@ RoutingProtocol::SourceAndDestination ()
         }
     }
 
-  std::mt19937 get_rand_mt (Seed);
+  std::mt19937 get_rand_mt (Grobal_Seed);
 
   std::shuffle (source_list.begin (), source_list.end (), get_rand_mt);
   std::shuffle (des_list.begin (), des_list.end (), get_rand_mt);
 
-  for (int i = 0; i < SourceNodeNum; i++)
+  for (int i = 0; i < Grobal_SourceNodeNum; i++)
     {
       std::cout << "shuffle source id" << source_list[i] << "\n";
       std::cout << "shuffle destination id" << des_list[i] << "\n";
@@ -343,11 +345,11 @@ RoutingProtocol::Send ()
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   int time = Simulator::Now ().GetSeconds ();
 
-  if (time >= SimStartTime)
+  if (time >= Grobal_StartTime)
     {
-      if (id == source_list[time - SimStartTime])
+      if (id == source_list[time - Grobal_StartTime])
         {
-          int index_time = time - SimStartTime;
+          int index_time = time - Grobal_StartTime;
 
           Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
           Vector mypos = mobility->GetPosition ();
@@ -1399,7 +1401,7 @@ RoutingProtocol::SimulationResult (void) //
 {
   std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
   // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  if (Simulator::Now ().GetSeconds () == SimStartTime + SourceNodeNum + 1)
+  if (Simulator::Now ().GetSeconds () == Grobal_StartTime + Grobal_SourceNodeNum + 1)
     {
       // //*******************************ノードが持つ座標の確認ログ***************************//
       //std::cout << "id=" << id << "の\n";
@@ -1472,17 +1474,17 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "本シミュレーションのパケットEnd to End遅延時間は" << average_end_time << "\n";
       std::cout << "本シミュレーションのパケット平均オーバーヘッドは" << average_overhead << "\n";
       std::cout << "交差点ノードにおける重み付けは" << InterPoint << "\n";
-      std::cout << "本シミュレーションのシミュレーション開始時刻は" << SimStartTime << "\n";
+      std::cout << "本シミュレーションのシミュレーション開始時刻は" << Grobal_StartTime << "\n";
       std::cout << "送信数は" << m_start_time.size () << "\n";
       std::cout << "受信数は" << recvCount << "\n";
       std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
-      std::cout << "Seed値は" << Seed << "\n";
+      std::cout << "Seed値は" << Grobal_Seed << "\n";
       std::cout << "車両数は" << numVehicle << "\n";
       std::cout << "trans probability" << TransProbability << "\n";
 
-      std::string filename = "data/shutoushu/shutoushu-seed_" + std::to_string (Seed) + "nodenum_" +
+      std::string filename = "data/shutoushu/shutoushu-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
-      std::string send_filename = "data/send_shutoushu/shutoushu-seed_" + std::to_string (Seed) +
+      std::string send_filename = "data/send_shutoushu/shutoushu-seed_" + std::to_string (Grobal_Seed) +
                                   "nodenum_" + std::to_string (numVehicle) + ".csv";
 
       std::ofstream packetTrajectory (filename);
