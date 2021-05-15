@@ -1715,7 +1715,10 @@ VanetRoutingExperiment::Run ()
   CheckThroughput ();
   Simulator::Stop (Seconds (m_TotalSimTime));
   //command NetAnim
-  AnimationInterface anim ("no_signal_500");
+
+  // m_traceFile = "src/wave/examples/no_signal/no_signal_" + std::to_string(node_num) + ".tcl"; //モビリティ入力ファイル
+
+  AnimationInterface anim ("no_signal_300_animFile");
 
   // anim.UpdateNodeSize (1, 20, 1);
   // anim.UpdateNodeSize (40, 20, 1);
@@ -2484,8 +2487,8 @@ VanetRoutingExperiment::SetupScenario ()
 
       //シミュレーションパラメータ 要変更 or check------------------------------
       //***********************
-      int node_num = 300;
-      Grobal_Seed = 33331;
+      int node_num = 400;
+      Grobal_Seed = 44441;
       Grobal_StartTime = 10;
       Grobal_SourceNodeNum = 10;
 
