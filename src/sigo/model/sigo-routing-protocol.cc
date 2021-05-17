@@ -1598,10 +1598,23 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "車両数は" << numVehicle << "\n";
       std::cout << "trans probability" << TransProbability << "\n";
 
-      std::string filename = "data/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+      std::string filename;
+      std::string send_filename;
+
+      if(Buildings == 1)
+      {
+        std::cout<<"shadowing packet csv \n";
+        filename = "data/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
-      std::string send_filename = "data/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+        send_filename = "data/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                   std::to_string (numVehicle) + ".csv";
+      }else{
+        std::cout<<"no_shadowing packet csv \n";
+        filename = "data/no_buildings/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                             std::to_string (numVehicle) + ".csv";
+        send_filename = "data/no_buildings/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                                  std::to_string (numVehicle) + ".csv";
+      }
 
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_x"

@@ -2488,7 +2488,7 @@ VanetRoutingExperiment::SetupScenario ()
       //シミュレーションパラメータ 要変更 or check------------------------------
       //***********************
       int node_num = 300;
-      Grobal_Seed = 44400;
+      Grobal_Seed = 10000;
       Grobal_StartTime = 10;
       Grobal_SourceNodeNum = 10;
 
