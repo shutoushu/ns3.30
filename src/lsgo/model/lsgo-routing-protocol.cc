@@ -1094,7 +1094,9 @@ RoutingProtocol::SimulationResult (void) //
                             << ","
                             << "pri_5_r"
                             << ","
-                            << "des_id" << std::endl;
+                            << "des_id"
+                            << ","
+                            << "send_log" << std::endl;
       for (int i = 0; i < packetCount; i++)
         {
           packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "

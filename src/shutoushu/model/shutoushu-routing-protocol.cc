@@ -1564,7 +1564,7 @@ RoutingProtocol::SimulationResult (void) //
                             << ","
                             << "inter_5id "
                             << ","
-                            << "send_check " << std::endl;
+                            << "send_log " << std::endl;
 
       for (int i = 0; i < packetCount; i++)
         {
