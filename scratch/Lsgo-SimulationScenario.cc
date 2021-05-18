@@ -131,6 +131,8 @@
 using namespace ns3;
 using namespace dsr;
 
+int Grobal_Node_Num = 0;
+
 NS_LOG_COMPONENT_DEFINE ("vanet-lsgo-routing-compare");
 
 /**
@@ -2018,7 +2020,7 @@ VanetRoutingExperiment::CommandSetup (int argc, char **argv)
   cmd.AddValue ("CSVfileName", "The name of the CSV output file name", m_CSVfileName);
   cmd.AddValue ("CSVfileName2", "The name of the CSV output file name2", m_CSVfileName2);
   cmd.AddValue ("totaltime", "Simulation end time", m_TotalSimTime);
-  cmd.AddValue ("nodes", "Number of nodes (i.e. vehicles)", m_nNodes);
+  cmd.AddValue ("nodes", "Number of nodes (i.e. vehicles)", Grobal_Node_Num);
   cmd.AddValue ("sinks", "Number of routing sinks", m_nSinks);
   cmd.AddValue ("txp", "Transmit power (dB), e.g. txp=7.5", m_txp);
   cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
@@ -2487,8 +2489,8 @@ VanetRoutingExperiment::SetupScenario ()
 
       //シミュレーションパラメータ 要変更 or check------------------------------
       //***********************
-      int node_num = 300;
-      Grobal_Seed = 10000;
+      int node_num = Grobal_Node_Num;
+      Grobal_Seed = 50000;
       Grobal_StartTime = 10;
       Grobal_SourceNodeNum = 10;
 
