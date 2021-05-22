@@ -2491,8 +2491,8 @@ VanetRoutingExperiment::SetupScenario ()
       //***********************
       int node_num = Grobal_Node_Num;
       Grobal_Seed = 50000;
-      Grobal_StartTime = 10;
-      Grobal_SourceNodeNum = 10;
+      Grobal_StartTime = 5;
+      Grobal_SourceNodeNum = 1;
 
 
 
@@ -2505,7 +2505,7 @@ VanetRoutingExperiment::SetupScenario ()
 
       m_mobility = 1;
       m_nNodes = node_num; //変更すべきところ
-      m_TotalSimTime = 23; //変更すべきところ
+      m_TotalSimTime = Grobal_StartTime + Grobal_SourceNodeNum + 2; //変更すべきところ
       m_nodeSpeed = 0;
       m_nodePause = 0;
       m_CSVfileName = "";
