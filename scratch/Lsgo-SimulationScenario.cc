@@ -2021,6 +2021,7 @@ VanetRoutingExperiment::CommandSetup (int argc, char **argv)
   cmd.AddValue ("CSVfileName2", "The name of the CSV output file name2", m_CSVfileName2);
   cmd.AddValue ("totaltime", "Simulation end time", m_TotalSimTime);
   cmd.AddValue ("nodes", "Number of nodes (i.e. vehicles)", Grobal_Node_Num);
+  cmd.AddValue ("seed", "Number of seed (vehicle's movement parameter)", Grobal_Seed);
   cmd.AddValue ("sinks", "Number of routing sinks", m_nSinks);
   cmd.AddValue ("txp", "Transmit power (dB), e.g. txp=7.5", m_txp);
   cmd.AddValue ("traceMobility", "Enable mobility tracing", m_traceMobility);
@@ -2490,7 +2491,6 @@ VanetRoutingExperiment::SetupScenario ()
       //シミュレーションパラメータ 要変更 or check------------------------------
       //***********************
       int node_num = Grobal_Node_Num;
-      Grobal_Seed = 50000;
       Grobal_StartTime = 5;
       Grobal_SourceNodeNum = 1;
 

@@ -958,6 +958,10 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       packet->AddHeader (tHeader);
 
       int32_t wait_time = (pri_value * WaitT) - WaitT; //待ち時間
+      std::mt19937 rand_src (Grobal_Seed); //シード値
+      std::uniform_int_distribution<int> wait_Jitter (100, 500);
+
+      wait_time = wait_time + wait_Jitter(rand_src);
       m_wait[des_id] = hopcount; //今から待機するホップカウント
 
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
