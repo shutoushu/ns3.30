@@ -63,27 +63,27 @@ sudo apt install -y python3-sphinx dia
 ---------------------------------------------------------------------------------------------
 
 NS3のインストール
-$ cd
-$ mkdir workspace
-$ cd workspace
-$ git clone https://gitlab.com/nsnam/ns-3-allinone.git
-$ cd ns-3-allinone
+$ cd  
+$ mkdir workspace  
+$ cd workspace  
+$ git clone https://gitlab.com/nsnam/ns-3-allinone.git  
+$ cd ns-3-allinone  
 
 ns-3-allioneディレクトリで私のNS３ファイル群を利用する方はgit cloneでインストールしてください(NS3インストール時に
-デフォルトでインストールされるものも含まれます)
-git clone https://github.com/shutoushu/ns3.30.git
+デフォルトでインストールされるものも含まれます)  
+git clone https://github.com/shutoushu/ns3.30.git  
 
-また、私のNS３のファイル群にはCGALライブラリが必要なので、CGALライブラリをインストールします
-sudo apt-get install libcgal-dev
+また、私のNS３のファイル群にはCGALライブラリが必要なので、CGALライブラリをインストールします  
+sudo apt-get install libcgal-dev  
 
 
 
 
 ## ns-3実行
 
-./waf configure
-./waf build
+./waf configure  
+./waf build  
 
-実行コマンド(例)
-./waf --run "Lsgo-SimulationScenario --buildings=0  --protocol=6 --lossModel=4 --scenario=3 --nodes=300 --seed=10000"
+実行コマンド(例)  
+./waf --run "Lsgo-SimulationScenario --buildings=0  --protocol=6 --lossModel=4 --scenario=3 --nodes=300 --seed=10000"  
 
