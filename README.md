@@ -22,6 +22,7 @@ https://qiita.com/dorapon2000/items/5c0c0a399aeee629be63
 
 インストール前の必要なライブラリのインストール
 -------------------------------------------------------------------
+```
 !#/bin/bash
 
 # minimal requirements for Python users (release 3.30 and ns-3-dev)
@@ -58,6 +59,7 @@ sudo apt install -y doxygen graphviz imagemagick
 sudo apt install -y texlive texlive-extra-utils texlive-latex-extra texlive-font-utils texlive-lang-portuguese dvipng latexmk
 # The ns-3 manual and tutorial are written in reStructuredText for Sphinx (doc/tutorial, doc/manual, doc/models), and figures typically in dia (also needs the texlive packages above)
 sudo apt install -y python3-sphinx dia
+```
 ---------------------------------------------------------------------------------------------
 
 NS3のインストール
