@@ -71,6 +71,8 @@ extern int Buildings; //grobal shadowing ありなし shadowing 1 noshadowing 0
 extern int Grobal_Seed;
 extern int Grobal_StartTime;
 extern int Grobal_SourceNodeNum;
+extern double Grobal_m_beta;
+extern double Grobal_m_gamma;
 
 namespace ns3 {
 namespace shutoushu {

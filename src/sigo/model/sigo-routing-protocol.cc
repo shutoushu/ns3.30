@@ -54,6 +54,7 @@
 #include <random>
 #include <numeric>
 #include <iterator>
+#include <sys/stat.h> // stat
 
 #include "ns3/mobility-module.h"
 
@@ -1607,12 +1608,32 @@ RoutingProtocol::SimulationResult (void) //
 
       if(Buildings == 1)
       {
+        std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
-        filename = "data/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+        filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
-        send_filename = "data/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+        send_filename = shadow_dir + "/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                   std::to_string (numVehicle) + ".csv";
-      }else{
+        
+        const char *dir = shadow_dir.c_str();
+        struct stat statBuf;
+
+        if (stat(dir, &statBuf) != 0) //directoryがなかったら
+        {
+          std::cout<<"ディレクトリが存在しないので作成します\n";
+          mkdir(dir, S_IRWXU);
+        }
+        std::string s_sigo_dir = shadow_dir + "/sigo";
+        std::string  s_send_sigo_dir = shadow_dir + "/send_sigo";
+        const char * c_sigo_dir = s_sigo_dir.c_str();
+        const char * c_send_sigo_dir = s_send_sigo_dir.c_str();
+        if(stat(c_sigo_dir, &statBuf) != 0)
+        {
+          mkdir(c_sigo_dir, S_IRWXU);
+          mkdir(c_send_sigo_dir, S_IRWXU);
+        }
+      }
+      else{
         std::cout<<"no_shadowing packet csv \n";
         filename = "data/no_buildings/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";

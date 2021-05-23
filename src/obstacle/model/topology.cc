@@ -432,7 +432,6 @@ Topology::GetObstructedLossBetween (const Point &p1, const Point &p2, double r)
                 {
                   double beta = obstacle.GetBeta ();
                   double gamma = obstacle.GetGamma ();
-                  // std::cout << "gamma" << gamma;
                   obstructedLoss =
                       beta * (double) intersections + gamma * obstructedDistanceBetween;
                   // std::cout << "obstacted loss" << obstructedLoss << "\n";

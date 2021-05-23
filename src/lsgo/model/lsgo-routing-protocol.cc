@@ -54,6 +54,7 @@
 #include <random>
 #include <numeric>
 #include <iterator>
+#include <sys/stat.h> // stat
 
 #include "ns3/mobility-module.h"
 
@@ -256,6 +257,7 @@ RoutingProtocol::DoInitialize (void)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   //int32_t time = Simulator::Now ().GetMicroSeconds ();
   numVehicle++;
+
 
   for (int i = 1; i < SimTime; i++)
     {
@@ -1033,12 +1035,32 @@ RoutingProtocol::SimulationResult (void) //
 
       if(Buildings == 1)
       {
+       std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
-        filename = "data/lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+        filename = shadow_dir + "/lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
-        send_filename = "data/send_lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+        send_filename = shadow_dir + "/send_lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                   std::to_string (numVehicle) + ".csv";
-      }else{
+        
+        const char *dir = shadow_dir.c_str();
+        struct stat statBuf;
+
+        if (stat(dir, &statBuf) != 0) //directoryがなかったら
+        {
+          std::cout<<"ディレクトリが存在しないので作成します\n";
+          mkdir(dir, S_IRWXU);
+        }
+        std::string s_lsgo_dir = shadow_dir + "/lsgo";
+        std::string  s_send_lsgo_dir = shadow_dir + "/send_lsgo";
+        const char * c_lsgo_dir = s_lsgo_dir.c_str();
+        const char * c_send_lsgo_dir = s_send_lsgo_dir.c_str();
+        if(stat(c_lsgo_dir, &statBuf) != 0)
+        {
+          mkdir(c_lsgo_dir, S_IRWXU);
+          mkdir(c_send_lsgo_dir, S_IRWXU);
+        }
+      }
+      else{
         std::cout<<"no_shadowing packet csv \n";
         filename = "data/no_buildings/lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";

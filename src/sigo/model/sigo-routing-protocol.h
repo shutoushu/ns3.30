@@ -59,10 +59,10 @@
 #define SourceLowY -50
 #define SourceHighY 300
 
-#define DesLowX 700
-#define DesHighX 1050
-#define DesLowY 700
-#define DesHighY 1050
+#define DesLowX 650
+#define DesHighX 950
+#define DesLowY 650
+#define DesHighY 950
 
 namespace ns3 {
 namespace sigo {

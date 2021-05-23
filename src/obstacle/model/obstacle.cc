@@ -20,6 +20,7 @@
  */
 
 #include "obstacle.h"
+#include "../../shutoushu/model/shutoushu-routing-protocol.h"
 
 namespace ns3 {
 
@@ -33,8 +34,8 @@ Obstacle::Obstacle ()
       // Radio Shadowing in Urban Environments;
       // m_beta (9.0),
       // m_gamma (0.4) //default値
-m_beta (13.5),
-m_gamma (1.4)
+m_beta (Grobal_m_beta),
+m_gamma (Grobal_m_gamma)
 {
   NS_LOG_FUNCTION (this);
 }
