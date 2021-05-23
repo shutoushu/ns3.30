@@ -62,7 +62,7 @@ sudo apt install -y python3-sphinx dia
 ```
 ---------------------------------------------------------------------------------------------
 
-NS3のインストール
+NS3のインストール  
 $ cd  
 $ mkdir workspace  
 $ cd workspace  
