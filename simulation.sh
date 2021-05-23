@@ -8,7 +8,7 @@ read node_num
 echo -n node_num
 Seed=10000
 #simulation finish seed
-Finish_Seed=10030
+Finish_Seed=10050
 while true
 do
   echo $Seed
