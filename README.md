@@ -1,9 +1,9 @@
 
 The Network Simulator, Version 3.30
 
-推奨　環境
-ubuntu 18.04 (Shadowing modelでCGALというライブラリを使用するため)
-ubuntuの最新版ではCGALのインストールができなかった
+推奨　環境  
+ubuntu 18.04 (Shadowing modelでCGALというライブラリを使用するため)  
+ubuntuの最新版ではCGALのインストールができなかった  
 ================================
 
 ## 目次:
