@@ -62,9 +62,9 @@
 #define SourceHighY 300
 
 #define DesLowX 650
-#define DesHighX 950
+#define DesHighX 1050
 #define DesLowY 650
-#define DesHighY 950
+#define DesHighY 1050
 
 //各protocol共通のグローバル変数　
 extern int Buildings; //grobal shadowing ありなし shadowing 1 noshadowing 0
