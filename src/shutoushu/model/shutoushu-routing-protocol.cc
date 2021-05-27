@@ -60,7 +60,7 @@ int Buildings = 0;
 int Grobal_Seed = 10000;
 int Grobal_StartTime = 10;
 int Grobal_SourceNodeNum = 10;
-double Grobal_m_beta = 13.5;
+double Grobal_m_beta = 16.5;
 double Grobal_m_gamma = 1.4;
 
 namespace ns3 {
