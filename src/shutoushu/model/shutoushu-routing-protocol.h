@@ -68,11 +68,13 @@
 
 //各protocol共通のグローバル変数　
 extern int Buildings; //grobal shadowing ありなし shadowing 1 noshadowing 0
-extern int Grobal_Seed;
-extern int Grobal_StartTime;
-extern int Grobal_SourceNodeNum;
-extern double Grobal_m_beta;
+extern int Grobal_Seed; //grobal seed値
+extern int Grobal_StartTime; //grobal data packet  送信開始タイム
+extern int Grobal_SourceNodeNum; //grobal data packet 送信ノード数
+extern double Grobal_m_beta; //grobal shadowing parameter 
 extern double Grobal_m_gamma;
+extern double Grobal_InterPoint; //grobal 交差点ノードのポイント重み付け
+
 
 namespace ns3 {
 namespace shutoushu {

@@ -534,8 +534,8 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
 
           if (Rp != 0 && angle > 45 && Rp != 1)
             {
-              m_pri_value[itr->first] = m_pri_value[itr->first] + InterPoint * gammaAngle / gammaRp;
-              std::cout << "total 交差点 point" << InterPoint * gammaAngle / gammaRp;
+              m_pri_value[itr->first] = m_pri_value[itr->first] + Grobal_InterPoint * gammaAngle / gammaRp;
+              std::cout << "total 交差点 point" << Grobal_InterPoint * gammaAngle / gammaRp;
             }
 
           if (neighbor_d > MaxRange)
@@ -1594,7 +1594,7 @@ RoutingProtocol::SimulationResult (void) //
       std::cout << "本シミュレーションのパケット到達率は" << packet_recv_rate << "\n";
       std::cout << "本シミュレーションのパケットEnd to End遅延時間は" << average_end_time << "\n";
       std::cout << "本シミュレーションのパケット平均オーバーヘッドは" << average_overhead << "\n";
-      std::cout << "交差点ノードにおける重み付けは" << InterPoint << "\n";
+      std::cout << "交差点ノードにおける重み付けは" << Grobal_InterPoint << "\n";
       std::cout << "本シミュレーションのシミュレーション開始時刻は" << Grobal_StartTime << "\n";
       std::cout << "送信数は" << m_start_time.size () << "\n";
       std::cout << "受信数は" << recvCount << "\n";
@@ -1608,7 +1608,8 @@ RoutingProtocol::SimulationResult (void) //
 
       if(Buildings == 1)
       {
-        std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+        std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
+        + "/" + std::to_string (Grobal_InterPoint);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";

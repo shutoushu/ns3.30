@@ -58,10 +58,11 @@
 
 int Buildings = 0;
 int Grobal_Seed = 10000;
-int Grobal_StartTime = 10;
+int Grobal_StartTime = 10; //Lsgo-simulationScenario似て変更する
 int Grobal_SourceNodeNum = 10;
-double Grobal_m_beta = 50.5;
+double Grobal_m_beta = 13.5;
 double Grobal_m_gamma = 1.4;
+double Grobal_InterPoint = 0.5;
 
 namespace ns3 {
 
