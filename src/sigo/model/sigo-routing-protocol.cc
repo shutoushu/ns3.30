@@ -1608,8 +1608,10 @@ RoutingProtocol::SimulationResult (void) //
 
       if(Buildings == 1)
       {
+        // std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
+        // + "/" + std::to_string (Grobal_InterPoint);
         std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
-        + "/" + std::to_string (Grobal_InterPoint);
+        + "/" + std::to_string (Grobal_InterPoint) + "/AngleGamma" + std::to_string (AngleGamma);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
