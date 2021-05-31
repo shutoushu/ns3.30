@@ -50,7 +50,7 @@
 #define WaitT 4000 //待ち時間の差 micro単位
 #define InterPoint 1.0 //交差点ノードの与えるポイントの重み付け
 #define TransProbability 1.2 //予想伝送確率の閾値
-#define AngleGamma 0.3 // ガンマ変換　
+#define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
 #define MaxRange 260
 
