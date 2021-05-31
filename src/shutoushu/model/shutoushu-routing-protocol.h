@@ -52,7 +52,7 @@
 // #define SimStartTime 10 //broadcast 開始時刻　秒
 // #define Seed 10000 // ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
-#define AngleGamma 0.4 // ガンマ変換　
+#define AngleGamma 0.3 // ガンマ変換　
 #define RpGamma 1.0
 // #define SourceNodeNum 10
 
