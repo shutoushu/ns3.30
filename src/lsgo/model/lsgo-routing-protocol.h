@@ -41,10 +41,10 @@
 #define SourceLowY -50
 #define SourceHighY 300
 
-#define DesLowX 650
-#define DesHighX 1050
-#define DesLowY 650
-#define DesHighY 1050
+#define DesLowX 550
+#define DesHighX 850
+#define DesLowY 550
+#define DesHighY 850
 
 namespace ns3 {
 namespace lsgo {

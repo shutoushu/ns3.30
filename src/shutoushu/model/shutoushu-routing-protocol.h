@@ -52,7 +52,7 @@
 // #define SimStartTime 10 //broadcast 開始時刻　秒
 // #define Seed 10000 // ※毎回変える
 #define TransProbability 1.2 //予想伝送確率の閾値
-#define AngleGamma 0.3 // ガンマ変換　
+#define AngleGamma 0.4 // ガンマ変換　
 #define RpGamma 1.0
 // #define SourceNodeNum 10
 
@@ -61,18 +61,18 @@
 #define SourceLowY -50
 #define SourceHighY 300
 
-#define DesLowX 650
-#define DesHighX 1050
-#define DesLowY 650
-#define DesHighY 1050
+#define DesLowX 550
+#define DesHighX 850
+#define DesLowY 550
+#define DesHighY 850
 
 //各protocol共通のグローバル変数　
 extern int Buildings; //grobal shadowing ありなし shadowing 1 noshadowing 0
 extern int Grobal_Seed; //grobal seed値
 extern int Grobal_StartTime; //grobal data packet  送信開始タイム
 extern int Grobal_SourceNodeNum; //grobal data packet 送信ノード数
-extern double Grobal_m_beta; //grobal shadowing parameter 
-extern double Grobal_m_gamma;
+extern int Grobal_m_beta; //grobal shadowing parameter 
+extern int Grobal_m_gamma;
 extern double Grobal_InterPoint; //grobal 交差点ノードのポイント重み付け
 
 
