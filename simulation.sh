@@ -5,12 +5,17 @@ read protocol
 echo $protocol
 echo -n NODE_NUM
 read node_num
-echo -n node_num
+echo -n $node_num
+echo -n START_SEED
+read input_s_seed
+echo $input_s_seed
 Seed=10000
 #simulation finish seed
+Seed=$input_s_seed
 Finish_Seed=10050
 while true
 do
+  echo 'simulation run seed'
   echo $Seed
   Seed=`echo "$Seed+1" | bc`
   if [ $Seed -eq $Finish_Seed ]; then
