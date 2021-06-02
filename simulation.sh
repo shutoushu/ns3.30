@@ -6,12 +6,12 @@ echo $protocol
 echo -n NODE_NUM
 read node_num
 echo -n $node_num
-echo -n START_SEED
-read input_s_seed
-echo $input_s_seed
+# echo -n START_SEED
+# read input_s_seed
+# echo $input_s_seed
 Seed=10050
 #simulation finish seed
-Seed=$input_s_seed
+# Seed=$input_s_seed
 Finish_Seed=10100
 while true
 do
