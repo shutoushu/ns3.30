@@ -54,13 +54,22 @@
 #define RpGamma 1.0
 #define MaxRange 260
 
-#define SourceLowX -50
-#define SourceHighX 300
-#define SourceLowY -50
-#define SourceHighY 300
+// #define SourceLowX -50
+// #define SourceHighX 300
+// #define SourceLowY -50
+// #define SourceHighY 300
 
-#define DesLowX 550
-#define DesHighX 850
+// #define DesLowX 550
+// #define DesHighX 850
+// #define DesLowY 550
+// #define DesHighY 850
+#define SourceLowX 50
+#define SourceHighX 150
+#define SourceLowY -50
+#define SourceHighY 250
+
+#define DesLowX 650
+#define DesHighX 750
 #define DesLowY 550
 #define DesHighY 850
 

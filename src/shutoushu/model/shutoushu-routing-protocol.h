@@ -56,13 +56,13 @@
 #define RpGamma 1.0
 // #define SourceNodeNum 10
 
-#define SourceLowX -50
-#define SourceHighX 300
+#define SourceLowX 50
+#define SourceHighX 150
 #define SourceLowY -50
-#define SourceHighY 300
+#define SourceHighY 250
 
-#define DesLowX 550
-#define DesHighX 850
+#define DesLowX 650
+#define DesHighX 750
 #define DesLowY 550
 #define DesHighY 850
 

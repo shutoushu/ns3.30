@@ -312,19 +312,46 @@ RoutingProtocol::SourceAndDestination ()
 {
   std::cout << "source and                        destination function\n";
   std::cout << "NumVehicle" << numVehicle << "\n";
+  // for (int i = 0; i < numVehicle; i++) ///node数　設定する
+  //   {
+  //     if (m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY &&
+  //         m_my_posy[i] <= SourceHighY)
+  //       {
+  //         source_list.push_back (i);
+  //         std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+  //       }
+  //     if (m_my_posx[i] >= DesLowX && m_my_posx[i] <= DesHighX && m_my_posy[i] >= DesLowY &&
+  //         m_my_posy[i] <= DesHighY)
+  //       {
+  //         des_list.push_back (i);
+  //         std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+  //       }
+  //   }
   for (int i = 0; i < numVehicle; i++) ///node数　設定する
     {
-      if (m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY &&
-          m_my_posy[i] <= SourceHighY)
+      if (m_my_posx[i] >= 650 && m_my_posx[i] <= 950 && m_my_posy[i] >= 750 &&
+          m_my_posy[i] <= 850)
         {
           source_list.push_back (i);
-          // std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+          std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
         }
-      if (m_my_posx[i] >= DesLowX && m_my_posx[i] <= DesHighX && m_my_posy[i] >= DesLowY &&
-          m_my_posy[i] <= DesHighY)
+      if (m_my_posx[i] >= 650 && m_my_posx[i] <= 950 && m_my_posy[i] >= 550 &&
+          m_my_posy[i] <= 650)
+        {
+          source_list.push_back (i);
+          std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+        }
+      if (m_my_posx[i] >= 50 && m_my_posx[i] <= 250 && m_my_posy[i] >= 150 &&
+          m_my_posy[i] <= 250)
         {
           des_list.push_back (i);
-          // std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+          std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
+        }
+      if (m_my_posx[i] >= 50 && m_my_posx[i] <= 350 && m_my_posy[i] >= -50 &&
+          m_my_posy[i] <= 50)
+        {
+          des_list.push_back (i);
+          std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
         }
     }
 
@@ -1610,7 +1637,7 @@ RoutingProtocol::SimulationResult (void) //
       {
         // std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
         // + "/" + std::to_string (Grobal_InterPoint);
-        std::string shadow_dir = "data/get_data/new/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+        std::string shadow_dir = "data/get_data/Horizontal_axis/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
