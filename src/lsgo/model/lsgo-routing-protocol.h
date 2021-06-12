@@ -36,15 +36,16 @@
 #define WaitT 4000 //待ち時間の差 micro単位
 #define TransProbability 1.2 //予想伝送確率の閾値
 
-#define SourceLowX 50
-#define SourceHighX 150
+#define SourceLowX -50
+#define SourceHighX 300
 #define SourceLowY -50
-#define SourceHighY 250
+#define SourceHighY 300
 
-#define DesLowX 650
-#define DesHighX 750
+#define DesLowX 550
+#define DesHighX 850
 #define DesLowY 550
 #define DesHighY 850
+
 namespace ns3 {
 namespace lsgo {
 /**

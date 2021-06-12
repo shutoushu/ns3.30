@@ -107,7 +107,9 @@ export SUMO_HOME=/usr/share/sumo(pathを通す)
 
 
 **********************2021 3/20 モビリティ再作成 ********************************
+https://qiita.com/hiromasano/items/fa598bd4902456e8c7f5
 
+参考
 1.sumo netedit で道路を作成する
 
 例
