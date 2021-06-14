@@ -2492,7 +2492,7 @@ VanetRoutingExperiment::SetupScenario ()
       //***********************
       int node_num = Grobal_Node_Num;
       Grobal_StartTime = 10;
-      Grobal_SourceNodeNum = 1;
+      Grobal_SourceNodeNum = 10;
 
 
 
