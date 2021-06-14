@@ -9,10 +9,10 @@ echo -n $node_num
 # echo -n START_SEED
 # read input_s_seed
 # echo $input_s_seed
-Seed=10000
+Seed=10100
 #simulation finish seed
 # Seed=$input_s_seed
-Finish_Seed=10100
+Finish_Seed=10200
 while true
 do
   echo 'simulation run seed'
