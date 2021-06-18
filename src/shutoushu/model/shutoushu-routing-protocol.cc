@@ -60,7 +60,7 @@ int Buildings = 0;
 int Grobal_Seed = 10000;
 int Grobal_StartTime = 10; //Lsgo-simulationScenario似て変更する
 int Grobal_SourceNodeNum = 10;
-int Grobal_m_beta = 30;
+int Grobal_m_beta = 0;
 int Grobal_m_gamma = 2;
 double Grobal_InterPoint = 1.0;
 
