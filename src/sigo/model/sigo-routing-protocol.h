@@ -94,6 +94,9 @@ public:
   static std::map<int, double> m_my_speed; //key node id value speed
   static std::map<int, double> m_my_p_speed; // key node id value past speed
   static std::map<int, double> m_my_acce; //key node id value acceleration(加速度)
+  static std::map<std::string, double> m_junction_x; // key junction id value xposition
+  static std::map<std::string, double> m_junction_y; // key junction id value yposition
+  static std::map<std::string, double> m_road_from_to; // key road id value junction from to
   static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
   static std::vector<int> des_list;
 
@@ -214,6 +217,7 @@ private:
   int NearRoadId (int32_t des_x, int32_t des_y); //目的地に最も近い道路IDを返す関数
   double CalculateRp (int nearRoadId); //近い道路IDを受取その道路のRpを返す
   void SourceAndDestination (void); //source,destinationの指定エリアに存在する
+  int ReadSumoFile (void); //sumoからnetfileを読み込む
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition

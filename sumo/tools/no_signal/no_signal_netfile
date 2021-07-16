@@ -1,0 +1,156 @@
+road A0A1 A0_A1
+road A0B0 A0_B0
+road A1A0 A1_A0
+road A1A2 A1_A2
+road A1B1 A1_B1
+road A2A1 A2_A1
+road A2A3 A2_A3
+road A2B2 A2_B2
+road A3A2 A3_A2
+road A3A4 A3_A4
+road A3B3 A3_B3
+road A4A3 A4_A3
+road A4A5 A4_A5
+road A4B4 A4_B4
+road A5A4 A5_A4
+road A5B5 A5_B5
+road B0A0 B0_A0
+road B0B1 B0_B1
+road B0C0 B0_C0
+road B1A1 B1_A1
+road B1B0 B1_B0
+road B1B2 B1_B2
+road B1C1 B1_C1
+road B2A2 B2_A2
+road B2B1 B2_B1
+road B2B3 B2_B3
+road B2C2 B2_C2
+road B3A3 B3_A3
+road B3B2 B3_B2
+road B3B4 B3_B4
+road B3C3 B3_C3
+road B4A4 B4_A4
+road B4B3 B4_B3
+road B4B5 B4_B5
+road B4C4 B4_C4
+road B5A5 B5_A5
+road B5B4 B5_B4
+road B5C5 B5_C5
+road C0B0 C0_B0
+road C0C1 C0_C1
+road C0D0 C0_D0
+road C1B1 C1_B1
+road C1C0 C1_C0
+road C1C2 C1_C2
+road C1D1 C1_D1
+road C2B2 C2_B2
+road C2C1 C2_C1
+road C2C3 C2_C3
+road C2D2 C2_D2
+road C3B3 C3_B3
+road C3C2 C3_C2
+road C3C4 C3_C4
+road C3D3 C3_D3
+road C4B4 C4_B4
+road C4C3 C4_C3
+road C4C5 C4_C5
+road C4D4 C4_D4
+road C5B5 C5_B5
+road C5C4 C5_C4
+road C5D5 C5_D5
+road D0C0 D0_C0
+road D0D1 D0_D1
+road D0E0 D0_E0
+road D1C1 D1_C1
+road D1D0 D1_D0
+road D1D2 D1_D2
+road D1E1 D1_E1
+road D2C2 D2_C2
+road D2D1 D2_D1
+road D2D3 D2_D3
+road D2E2 D2_E2
+road D3C3 D3_C3
+road D3D2 D3_D2
+road D3D4 D3_D4
+road D3E3 D3_E3
+road D4C4 D4_C4
+road D4D3 D4_D3
+road D4D5 D4_D5
+road D4E4 D4_E4
+road D5C5 D5_C5
+road D5D4 D5_D4
+road D5E5 D5_E5
+road E0D0 E0_D0
+road E0E1 E0_E1
+road E0F0 E0_F0
+road E1D1 E1_D1
+road E1E0 E1_E0
+road E1E2 E1_E2
+road E1F1 E1_F1
+road E2D2 E2_D2
+road E2E1 E2_E1
+road E2E3 E2_E3
+road E2F2 E2_F2
+road E3D3 E3_D3
+road E3E2 E3_E2
+road E3E4 E3_E4
+road E3F3 E3_F3
+road E4D4 E4_D4
+road E4E3 E4_E3
+road E4E5 E4_E5
+road E4F4 E4_F4
+road E5D5 E5_D5
+road E5E4 E5_E4
+road E5F5 E5_F5
+road F0E0 F0_E0
+road F0F1 F0_F1
+road F1E1 F1_E1
+road F1F0 F1_F0
+road F1F2 F1_F2
+road F2E2 F2_E2
+road F2F1 F2_F1
+road F2F3 F2_F3
+road F3E3 F3_E3
+road F3F2 F3_F2
+road F3F4 F3_F4
+road F4E4 F4_E4
+road F4F3 F4_F3
+road F4F5 F4_F5
+road F5E5 F5_E5
+road F5F4 F5_F4
+junction A0 0.00 0.00
+junction A1 0.00 200.00
+junction A2 0.00 400.00
+junction A3 0.00 600.00
+junction A4 0.00 800.00
+junction A5 0.00 1000.00
+junction B0 200.00 0.00
+junction B1 200.00 200.00
+junction B2 200.00 400.00
+junction B3 200.00 600.00
+junction B4 200.00 800.00
+junction B5 200.00 1000.00
+junction C0 400.00 0.00
+junction C1 400.00 200.00
+junction C2 400.00 400.00
+junction C3 400.00 600.00
+junction C4 400.00 800.00
+junction C5 400.00 1000.00
+junction D0 600.00 0.00
+junction D1 600.00 200.00
+junction D2 600.00 400.00
+junction D3 600.00 600.00
+junction D4 600.00 800.00
+junction D5 600.00 1000.00
+junction E0 800.00 0.00
+junction E1 800.00 200.00
+junction E2 800.00 400.00
+junction E3 800.00 600.00
+junction E4 800.00 800.00
+junction E5 800.00 1000.00
+junction F0 1000.00 0.00
+junction F1 1000.00 200.00
+junction F2 1000.00 400.00
+junction F3 1000.00 600.00
+junction F4 1000.00 800.00
+junction F5 1000.00 1000.00

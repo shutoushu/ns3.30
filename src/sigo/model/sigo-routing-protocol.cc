@@ -284,6 +284,7 @@ RoutingProtocol::DoInitialize (void)
       ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
 
       RoadCenterPoint ();
+      ReadSumoFile ();
       Simulator::Schedule (Seconds (Grobal_StartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
       std::cout << "\n \n buildings" << Buildings << "\n";
@@ -1410,65 +1411,114 @@ RoutingProtocol::SetMySpeed (void)
   m_my_speed[id] = speed;
 }
 
+// int
+// RoutingProtocol::distinctionRoad (int x_point, int y_point)
+// {
+//   /// 道路1〜30  31〜61
+//   int gridRange = 200;
+//   int x = 0;
+//   int y = 0;
+//   int colomnCount = 1;
+//   int interRange = 20; //交差点の大きさ interRange × interRange の正方形
+
+//   for (int roadId = 1; roadId <= 60; roadId++)
+//     {
+//       if (roadId <= 30)
+//         {
+//           if (x + interRange < x_point && x_point < x + gridRange - interRange &&
+//               y - interRange < y_point && y_point < y + interRange)
+//             {
+//               return roadId;
+//             }
+//           if (colomnCount == 5)
+//             {
+//               colomnCount = 1;
+//               x = 0;
+//               y = y + gridRange;
+//             }
+//           else
+//             {
+//               x = x + gridRange;
+//               colomnCount++;
+//             }
+
+//           if (roadId == 30)
+//             {
+//               x = 0;
+//               y = 0;
+//             }
+//         }
+//       else //31〜
+//         {
+//           if (x - interRange < x_point && x_point < x + interRange && y + interRange < y_point &&
+//               y_point < y + gridRange - interRange)
+//             {
+//               return roadId;
+//             }
+//           if (colomnCount == 6)
+//             {
+//               colomnCount = 1;
+//               x = 0;
+//               y = y + gridRange;
+//             }
+//           else
+//             {
+//               x = x + gridRange;
+//               colomnCount++;
+//             }
+//         }
+//     }
+//   return 0; // ０を返す = 交差点ノード
+// }
+
+///home/shuto/workspace/ns-3-allinone/ns3.30/sumo/tools/no_signal/original_net.xmlファイルから取得
+
 int
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
-  /// 道路1〜30  31〜61
-  int gridRange = 200;
-  int x = 0;
-  int y = 0;
-  int colomnCount = 1;
-  int interRange = 20; //交差点の大きさ interRange × interRange の正方形
-
-  for (int roadId = 1; roadId <= 60; roadId++)
-    {
-      if (roadId <= 30)
-        {
-          if (x + interRange < x_point && x_point < x + gridRange - interRange &&
-              y - interRange < y_point && y_point < y + interRange)
-            {
-              return roadId;
-            }
-          if (colomnCount == 5)
-            {
-              colomnCount = 1;
-              x = 0;
-              y = y + gridRange;
-            }
-          else
-            {
-              x = x + gridRange;
-              colomnCount++;
-            }
-
-          if (roadId == 30)
-            {
-              x = 0;
-              y = 0;
-            }
-        }
-      else //31〜
-        {
-          if (x - interRange < x_point && x_point < x + interRange && y + interRange < y_point &&
-              y_point < y + gridRange - interRange)
-            {
-              return roadId;
-            }
-          if (colomnCount == 6)
-            {
-              colomnCount = 1;
-              x = 0;
-              y = y + gridRange;
-            }
-          else
-            {
-              x = x + gridRange;
-              colomnCount++;
-            }
-        }
-    }
-  return 0; // ０を返す = 交差点ノード
+  return 0;
 }
+
+
+
+//sumoからnet fileを読み込む
+int
+RoutingProtocol::ReadSumoFile (void)
+{
+  //std::ifstream ifs("../../../sumo/tools/no_signal/200/original_net.xml");
+  std::ifstream ifs("sumo/tools/no_signal/no_signal_netfile");
+  std::string str;
+
+  if (ifs.fail()) {
+      std::cerr << "Failed to open file." << std::endl;
+      return -1;
+  }
+  while (getline(ifs, str)) { //1行ずつstrに格納
+      std::cout<<"---------------------input road segment -----------------------------\n";
+      std::cout << "#" << str << std::endl;
+      std::istringstream iss(str);
+      std::string split;
+
+      std::vector<std::string> v_road;
+      while (iss >> split) {
+          v_road.push_back(split);
+      }
+      if(v_road[0] == "junction") //junction
+      {
+        std::cout<<"junction id" << v_road[1] <<"\n";
+        std::cout<<"junction x" << v_road[2] <<"\n";
+        std::cout<<"junction y" << v_road[3] <<"\n";
+
+      }
+      else{ //road segment
+        std::cout<<"road id" << v_road[1] <<"\n";
+        std::cout<<"road segment from to" << v_road[2] <<"\n";
+      }
+
+  }
+  return 0;
+}
+
 
 void
 RoutingProtocol::RoadCenterPoint (void)
@@ -1785,6 +1835,9 @@ std::map<int, double> RoutingProtocol::m_my_p_posy; // key node id value past po
 std::map<int, double> RoutingProtocol::m_my_speed; // key node id value current speed
 std::map<int, double> RoutingProtocol::m_my_p_speed; // key node id value past speed
 std::map<int, double> RoutingProtocol::m_my_acce; //key node id value acceleration(加速度)
+std::map<std::string, double> m_junction_x; // key junction id value xposition
+std::map<std::string, double> m_junction_y; // key junction id value yposition
+std::map<std::string, double> m_road_from_to; // key road id value junction from to
 std::vector<int> RoutingProtocol::source_list;
 std::vector<int> RoutingProtocol::des_list;
 
