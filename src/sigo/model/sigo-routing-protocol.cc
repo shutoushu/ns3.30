@@ -285,6 +285,7 @@ RoutingProtocol::DoInitialize (void)
 
       RoadCenterPoint ();
       ReadSumoFile ();
+      distinctionRoad (200,200);
       Simulator::Schedule (Seconds (Grobal_StartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
       std::cout << "\n \n buildings" << Buildings << "\n";
@@ -1476,6 +1477,18 @@ RoutingProtocol::SetMySpeed (void)
 int
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
+  // junction judgement roop
+  // for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
+  //   {
+  //     std::cout << "junction id = " << itr->first // キーを表示
+  //               << "junction x = " << itr->second << "\n"; // 値を表示
+  //   }
+  std::cout<<" junction size test" << m_junction_x.size() << std::endl;
+  // for (auto itr = m_ypoint.begin (); itr != m_ypoint.end (); itr++)
+  //   {
+  //     std::cout << "recv hello packet id = " << itr->first // キーを表示
+  //               << ", y座標 = " << itr->second << "\n"; // 値を表示
+  //   }
   return 0;
 }
 
@@ -1508,11 +1521,15 @@ RoutingProtocol::ReadSumoFile (void)
         std::cout<<"junction id" << v_road[1] <<"\n";
         std::cout<<"junction x" << v_road[2] <<"\n";
         std::cout<<"junction y" << v_road[3] <<"\n";
-
+        m_junction_x[v_road[1]] = stod(v_road[2]);
+        m_junction_y[v_road[1]] = stod(v_road[3]);
+        std::cout<<"junction x test " << m_junction_x[v_road[1]] <<"\n";
       }
       else{ //road segment
         std::cout<<"road id" << v_road[1] <<"\n";
         std::cout<<"road segment from to" << v_road[2] <<"\n";
+        m_road_from_to[v_road[1]] = v_road[2];
+        std::cout << " road from to test " <<  m_road_from_to[v_road[1]] << std::endl;
       }
 
   }
@@ -1835,9 +1852,9 @@ std::map<int, double> RoutingProtocol::m_my_p_posy; // key node id value past po
 std::map<int, double> RoutingProtocol::m_my_speed; // key node id value current speed
 std::map<int, double> RoutingProtocol::m_my_p_speed; // key node id value past speed
 std::map<int, double> RoutingProtocol::m_my_acce; //key node id value acceleration(加速度)
-std::map<std::string, double> m_junction_x; // key junction id value xposition
-std::map<std::string, double> m_junction_y; // key junction id value yposition
-std::map<std::string, double> m_road_from_to; // key road id value junction from to
+std::map<std::string, double> RoutingProtocol::m_junction_x; // key junction id value xposition
+std::map<std::string, double> RoutingProtocol::m_junction_y; // key junction id value yposition
+std::map<std::string, std::string> RoutingProtocol::m_road_from_to; // key road id value junction from to
 std::vector<int> RoutingProtocol::source_list;
 std::vector<int> RoutingProtocol::des_list;
 
