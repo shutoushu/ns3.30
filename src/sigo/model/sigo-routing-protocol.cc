@@ -285,7 +285,10 @@ RoutingProtocol::DoInitialize (void)
 
       RoadCenterPoint ();
       ReadSumoFile ();
-      distinctionRoad (200,200);
+      std::cout<<"distinction road log start--------------------------------------------------" << std::endl;
+      distinctionRoad (220,200);
+      distinctionRoad (230,200);
+      std::cout<<"distinction road log finish--------------------------------------------------" << std::endl;
       Simulator::Schedule (Seconds (Grobal_StartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
       std::cout << "\n \n buildings" << Buildings << "\n";
@@ -1477,13 +1480,25 @@ RoutingProtocol::SetMySpeed (void)
 int
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
+  int interRange = 20; //交差点の半径
   // junction judgement roop
-  // for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
-  //   {
-  //     std::cout << "junction id = " << itr->first // キーを表示
-  //               << "junction x = " << itr->second << "\n"; // 値を表示
-  //   }
-  std::cout<<" junction size test" << m_junction_x.size() << std::endl;
+  for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
+    {
+      std::cout << "junction id = " << itr->first // キーを表示
+                << "junction x = " << itr->second << "junction y = " << m_junction_y[itr->first] << "\n"; // 値を表示
+      double distance = getDistance(x_point, y_point, itr->second, m_junction_y[itr->first]);
+      std::cout<<"get distance" << distance << std::endl;
+
+      if (distance <= interRange) //交差点の内部の座標だったら
+      {
+        std::cout << "the node exists in " << itr->first << std::endl;
+      }
+    
+    }
+    else {
+      std::cout << "no junction " << std::endl;
+    }
+  //std::cout<<" junction size test" << m_junction_x.size() << std::endl;
   // for (auto itr = m_ypoint.begin (); itr != m_ypoint.end (); itr++)
   //   {
   //     std::cout << "recv hello packet id = " << itr->first // キーを表示
