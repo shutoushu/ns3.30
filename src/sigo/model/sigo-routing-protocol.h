@@ -97,6 +97,8 @@ public:
   static std::map<std::string, double> m_junction_x; // key junction id value xposition
   static std::map<std::string, double> m_junction_y; // key junction id value yposition
   static std::map<std::string, std::string> m_road_from_to; // key road id value junction from to
+  static std::map<std::string, double> m_road_center_x;  // key road id value road center position x
+  static std::map<std::string, double> m_road_center_y;  // key road id value road center position y
   static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
   static std::vector<int> des_list;
 

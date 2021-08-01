@@ -282,9 +282,8 @@ RoutingProtocol::DoInitialize (void)
     {
       ///やることリスト
       ///送信者rのIDと位置情報をパケットに加える　車両数を ReadFile関数で読み取れるようにする
-
-      RoadCenterPoint ();
       ReadSumoFile ();
+      RoadCenterPoint ();
       Simulator::Schedule (Seconds (Grobal_StartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
       std::cout << "\n \n buildings" << Buildings << "\n";
@@ -1673,6 +1672,28 @@ RoutingProtocol::ReadSumoFile (void)
 //     }
 // }
 
+//road の中心座標をmapにセットする関数
+void
+RoutingProtocol::RoadCenterPoint (void)
+{
+  std::string from_to;
+  for (auto itr = m_road_from_to.begin (); itr != m_road_from_to.end (); itr++)
+    {
+      from_to = itr->second;
+      replace(from_to.begin(), from_to.end(), '_', ' ');
+      std::istringstream iss(from_to);
+
+      std::string from, to;
+      iss >> from >> to ;  //road = junction from  〜 junction to
+
+      m_road_center_x[itr->first] = (m_junction_x[from] + m_junction_x[to]) / 2;
+      m_road_center_y[itr->first] = (m_junction_y[from] + m_junction_y[to]) / 2;
+
+      // std::cout << "road center  point check  --> center x = " << m_road_center_x[itr->first]  << 
+      // "center y = " << m_road_center_y[itr->first] << "road id = " << itr->first << std::endl;
+    }
+}
+
 // シミュレーション結果の出力関数
 void
 RoutingProtocol::SimulationResult (void) //
@@ -1918,6 +1939,8 @@ std::map<int, double> RoutingProtocol::m_my_p_speed; // key node id value past s
 std::map<int, double> RoutingProtocol::m_my_acce; //key node id value acceleration(加速度)
 std::map<std::string, double> RoutingProtocol::m_junction_x; // key junction id value xposition
 std::map<std::string, double> RoutingProtocol::m_junction_y; // key junction id value yposition
+std::map<std::string, double> RoutingProtocol:: m_road_center_x;  // key road id value road center position x
+std::map<std::string, double> RoutingProtocol:: m_road_center_y;  // key road id value road center position y
 std::map<std::string, std::string> RoutingProtocol::m_road_from_to; // key road id value junction from to
 std::vector<int> RoutingProtocol::source_list;
 std::vector<int> RoutingProtocol::des_list;
