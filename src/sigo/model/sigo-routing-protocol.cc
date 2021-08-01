@@ -285,10 +285,6 @@ RoutingProtocol::DoInitialize (void)
 
       RoadCenterPoint ();
       ReadSumoFile ();
-      std::cout<<"distinction road log start--------------------------------------------------" << std::endl;
-      distinctionRoad (220,200);
-      distinctionRoad (230,200);
-      std::cout<<"distinction road log finish--------------------------------------------------" << std::endl;
       Simulator::Schedule (Seconds (Grobal_StartTime - 2), &RoutingProtocol::SourceAndDestination,
                            this);
       std::cout << "\n \n buildings" << Buildings << "\n";
@@ -1482,30 +1478,83 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
   int interRange = 20; //交差点の半径
   // junction judgement roop
+  std::cout << "\n\n\n\n\n\n --------distinction Road the node's position is " << x_point << ", " << y_point << std::endl;
   for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
     {
-      std::cout << "junction id = " << itr->first // キーを表示
-                << "junction x = " << itr->second << "junction y = " << m_junction_y[itr->first] << "\n"; // 値を表示
+      // std::cout << "junction id = " << itr->first // キーを表示
+      //           << "junction x = " << itr->second << "junction y = " << m_junction_y[itr->first] << "\n"; // 値を表示
       double distance = getDistance(x_point, y_point, itr->second, m_junction_y[itr->first]);
-      std::cout<<"get distance" << distance << std::endl;
+      // std::cout<<"get distance" << distance << std::endl;
 
       if (distance <= interRange) //交差点の内部の座標だったら
       {
-        std::cout << "the node exists in " << itr->first << std::endl;
+        std::cout << "the node exists in junction" << itr->first << std::endl;
+        return 0; //一旦0
       }
+    }
+
+    //std::cout << " -----------the node does not exist in junction x=" << x_point << "y=" << y_point <<   "----------\n\n\n\n\n\n\n\n" << std::endl;
+
+    //road judgement
+    //std::cout << "\n\n\n-----------------------road judgement roop start \n";
+    std::string separator = "_"; //区切り文字指定
+    std::string from_to;
+    double min_distance = 100.0; //数値は仮おき　最小距離の道路にノードは存在する
+    std::string road_id;
+
+    for (auto itr = m_road_from_to.begin (); itr != m_road_from_to.end (); itr++)
+    {
+      from_to = itr->second;
+      replace(from_to.begin(), from_to.end(), '_', ' ');
+      std::istringstream iss(from_to);
+
+      std::string from, to;
+      iss >> from >> to ;  //road = junction from  〜 junction to
+
+      double distance = lineDistance(m_junction_x[from], m_junction_y[from], m_junction_x[to], m_junction_y[to], 
+            x_point, y_point);//線分と座標の距離
+      
+      if(min_distance > distance)
+      {
+        min_distance = distance;
+        road_id = itr->first;
+      }
+    }
+  std::cout << "the node exits in road id " << road_id << std::endl;
     
-    }
-    else {
-      std::cout << "no junction " << std::endl;
-    }
-  //std::cout<<" junction size test" << m_junction_x.size() << std::endl;
-  // for (auto itr = m_ypoint.begin (); itr != m_ypoint.end (); itr++)
-  //   {
-  //     std::cout << "recv hello packet id = " << itr->first // キーを表示
-  //               << ", y座標 = " << itr->second << "\n"; // 値を表示
-  //   }
+  std::cout<<"\n\n\n\n\n\n------- finish distinction Road method ------------------- " << std::endl;
   return 0;
 }
+
+double
+RoutingProtocol::lineDistance(double line_x1, double line_y1, double line_x2, double line_y2, 
+  double dot_x, double dot_y)
+{
+  double a,b,c; // ax + by + c = 0
+  double root;
+  double distance; //求める距離
+
+  a = line_y1 - line_y2;
+  b = line_x2 - line_x1;
+  c = (-b * line_y1) + (-a * line_x1);
+  root = sqrt(a*a + b*b);
+
+  //std::cout << "a " << a << " b " << b << " c " << c << std::endl;
+
+  if (root == 0.0) {
+    std::cout << " root が求められません" << std::endl;
+  }
+
+  distance = ((a * dot_x) + (b * dot_y) + c) / root;
+
+  if (distance < 0.0)
+  {
+    distance  = -distance;
+  }
+
+  return distance;
+}
+
 
 
 
@@ -1552,77 +1601,77 @@ RoutingProtocol::ReadSumoFile (void)
 }
 
 
-void
-RoutingProtocol::RoadCenterPoint (void)
-{
-  int count = 1;
-  int gridRange = 200;
+// void
+// RoutingProtocol::RoadCenterPoint (void)
+// {
+//   int count = 1;
+//   int gridRange = 200;
 
-  for (int roadId = 1; roadId <= 60; roadId++)
-    {
-      if (roadId <= 30)
-        {
-          if (count == 5) //7のときcount変数を初期化
-            {
-              count = 1;
-              roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
-              roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
-            }
-          else // 5以外は足していく
-            {
-              if (roadId == 1)
-                {
-                  roadCenterPointX[roadId] = 100;
-                  roadCenterPointY[roadId] = 0;
-                }
-              else if (count == 1)
-                {
-                  roadCenterPointX[roadId] = 100;
-                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + 200;
-                }
-              else
-                {
-                  roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
-                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
-                }
-              count++;
-            }
+//   for (int roadId = 1; roadId <= 60; roadId++)
+//     {
+//       if (roadId <= 30)
+//         {
+//           if (count == 5) //7のときcount変数を初期化
+//             {
+//               count = 1;
+//               roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
+//               roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
+//             }
+//           else // 5以外は足していく
+//             {
+//               if (roadId == 1)
+//                 {
+//                   roadCenterPointX[roadId] = 100;
+//                   roadCenterPointY[roadId] = 0;
+//                 }
+//               else if (count == 1)
+//                 {
+//                   roadCenterPointX[roadId] = 100;
+//                   roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + 200;
+//                 }
+//               else
+//                 {
+//                   roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
+//                   roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
+//                 }
+//               count++;
+//             }
 
-          if (roadId == 30)
-            {
-              count = 1;
-            }
-        }
-      else //31〜
-        {
-          if (count == 6) //6のときcount変数を初期化
-            {
-              count = 1;
-              roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
-              roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
-            }
-          else // 6以外は足していく
-            {
-              if (roadId == 31)
-                {
-                  roadCenterPointX[roadId] = 0;
-                  roadCenterPointY[roadId] = 100;
-                }
-              else if (count == 1)
-                {
-                  roadCenterPointX[roadId] = 0;
-                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + gridRange;
-                }
-              else
-                {
-                  roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
-                  roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
-                }
-              count++;
-            }
-        }
-    }
-}
+//           if (roadId == 30)
+//             {
+//               count = 1;
+//             }
+//         }
+//       else //31〜
+//         {
+//           if (count == 6) //6のときcount変数を初期化
+//             {
+//               count = 1;
+//               roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
+//               roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
+//             }
+//           else // 6以外は足していく
+//             {
+//               if (roadId == 31)
+//                 {
+//                   roadCenterPointX[roadId] = 0;
+//                   roadCenterPointY[roadId] = 100;
+//                 }
+//               else if (count == 1)
+//                 {
+//                   roadCenterPointX[roadId] = 0;
+//                   roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + gridRange;
+//                 }
+//               else
+//                 {
+//                   roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
+//                   roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
+//                 }
+//               count++;
+//             }
+//         }
+//     }
+// }
 
 // シミュレーション結果の出力関数
 void

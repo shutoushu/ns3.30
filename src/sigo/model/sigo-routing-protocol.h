@@ -218,6 +218,8 @@ private:
   double CalculateRp (int nearRoadId); //近い道路IDを受取その道路のRpを返す
   void SourceAndDestination (void); //source,destinationの指定エリアに存在する
   int ReadSumoFile (void); //sumoからnetfileを読み込む
+  double lineDistance (double line_x1, double line_y1, double line_x2, double line_y2, 
+  double dot_x, double dot_y); //線分と座標の距離を返す
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
