@@ -1680,8 +1680,7 @@ RoutingProtocol::RoadCenterPoint (void)
   for (auto itr = m_road_from_to.begin (); itr != m_road_from_to.end (); itr++)
     {
       from_to = itr->second;
-      replace(from_to.begin(), from_to.end(), '_', ' ');std::cout << "road center  point check  --> center x = " << m_road_center_x[itr->first]  << 
-      // "center y = " << m_road_center_y[itr->first] << "road id = " << itr->first << std::endl;
+      replace(from_to.begin(), from_to.end(), '_', ' ');
       std::istringstream iss(from_to);
 
       std::string from, to;
