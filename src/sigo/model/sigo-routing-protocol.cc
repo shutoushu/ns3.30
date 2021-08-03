@@ -647,7 +647,7 @@ RoutingProtocol::NearRoadId (int32_t des_x, int32_t des_y)
   ////////*********road id string ver****************************
   std::string nearRoadId;
   double minDistance;
-  int count;
+  int count = 0;
   for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
     {
       //近隣ノードが位置する道路の中心座標を取得　
