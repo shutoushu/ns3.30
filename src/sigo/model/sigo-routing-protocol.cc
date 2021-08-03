@@ -1477,7 +1477,7 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
   int interRange = 20; //交差点の半径
   // junction judgement roop
-  std::cout << "\n\n\n\n\n\n --------distinction Road the node's position is " << x_point << ", " << y_point << std::endl;
+  // std::cout << "\n\n\n\n\n\n --------distinction Road the node's position is " << x_point << ", " << y_point << std::endl;
   for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
     {
       // std::cout << "junction id = " << itr->first // キーを表示
@@ -1487,7 +1487,7 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
 
       if (distance <= interRange) //交差点の内部の座標だったら
       {
-        std::cout << "the node exists in junction" << itr->first << std::endl;
+        // std::cout << "the node exists in junction" << itr->first << std::endl;
         return 0; //一旦0
       }
     }
@@ -1519,9 +1519,9 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
         road_id = itr->first;
       }
     }
-  std::cout << "the node exits in road id " << road_id << std::endl;
+  // std::cout << "the node exits in road id " << road_id << std::endl;
     
-  std::cout<<"\n\n\n\n\n\n------- finish distinction Road method ------------------- " << std::endl;
+  // std::cout<<"\n\n\n\n\n\n------- finish distinction Road method ------------------- " << std::endl;
   return 0;
 }
 

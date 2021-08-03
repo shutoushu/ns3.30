@@ -63,7 +63,6 @@ int Grobal_SourceNodeNum = 10;
 int Grobal_m_beta = 0;
 int Grobal_m_gamma = 2;
 double Grobal_InterPoint = 1.0;
-
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("ShutoushuRoutingProtocol");
