@@ -213,11 +213,15 @@ private:
   void Trans (int node_id); //通信許可を与える関数
   void NoTrans (int node_id); //通信不許可を与える関数
   void Send (void); //シミュレーションソースIDとDestinationIDを指定する関数
-  int distinctionRoad (int x_point,
-                       int y_ypoint); //ｘ座標とy座標から道路番号を割り出す関数　return 道路番号
+  // int distinctionRoad (int x_point,
+  //                      int y_ypoint); //ｘ座標とy座標から道路番号を割り出す関数　return 道路番号
+  std::string distinctionRoad (int x_point, int y_point); //x座標 y座標からroad id or junction idを返す関数
+  int judgeIntersection (int x_point, int y_point); //x座標 y座標から　1(no intersection) or 0(intersection)を返す　
   void RoadCenterPoint (); //roadの中心座標を格納するだけの関数
-  int NearRoadId (int32_t des_x, int32_t des_y); //目的地に最も近い道路IDを返す関数
-  double CalculateRp (int nearRoadId); //近い道路IDを受取その道路のRpを返す
+  //int NearRoadId (int32_t des_x, int32_t des_y); //目的地に最も近い道路IDを返す関数
+  std::string NearRoadId (int32_t des_x, int32_t des_y); //目的地に最も近い道路IDを返す関数
+  // double CalculateRp (int nearRoadId); //近い道路IDを受取その道路のRpを返す
+  double CalculateRp (std::string nearRoadId); //近い道路IDを受取その道路のRpを返す
   void SourceAndDestination (void); //source,destinationの指定エリアに存在する
   int ReadSumoFile (void); //sumoからnetfileを読み込む
   double lineDistance (double line_x1, double line_y1, double line_x2, double line_y2, 

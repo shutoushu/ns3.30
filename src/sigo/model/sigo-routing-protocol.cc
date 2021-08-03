@@ -500,7 +500,8 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
   Vector mypos = mobility->GetPosition ();
 
   double Rp;
-  int nearRoadId;
+  // int nearRoadId;
+  std::string nearRoadId;
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   //int myRoadId = distinctionRoad (mypos.x, mypos.y);
 
@@ -534,16 +535,27 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
       //std::cout << "id " << itr->first << " Dsd" << Dsd << " Did" << Did << "\n";
 
       ///交差点にいるか　いないかの場合分け
-      if (distinctionRoad (m_pre_xpoint[itr->first], m_pre_ypoint[itr->first]) == 0)
-        { //roadid=0 すなわち交差点ノードならば
-          std::cout << "候補ノードid" << itr->first << "は交差点にいます(" << m_xpoint[itr->first]
-                    << "," << m_ypoint[itr->first] << ")"
-                    << "予測位置は(" << m_pre_xpoint[itr->first] << "," << m_pre_ypoint[itr->first]
-                    << "\n";
-          inter = 1;
-        }
+      // ************use distinctionRoad ver**********************
+      // if (distinctionRoad (m_pre_xpoint[itr->first], m_pre_ypoint[itr->first]) == 0)
+      //   { //roadid=0 すなわち交差点ノードならば
+      //     std::cout << "候補ノードid" << itr->first << "は交差点にいます(" << m_xpoint[itr->first]
+      //               << "," << m_ypoint[itr->first] << ")"
+      //               << "予測位置は(" << m_pre_xpoint[itr->first] << "," << m_pre_ypoint[itr->first]
+      //               << "\n";
+      //     inter = 1;
+      //   }
 
-      if (inter == 1)
+      // **************use judgeIntersection ver********************
+      if (judgeIntersection (m_pre_xpoint[itr->first], m_pre_ypoint[itr->first]) == 0)
+      {
+        std::cout << "候補ノードid" << itr->first << "は交差点にいます(" << m_xpoint[itr->first]
+                  << "," << m_ypoint[itr->first] << ")"
+                  << "予測位置は(" << m_pre_xpoint[itr->first] << "," << m_pre_ypoint[itr->first]
+                  << "\n";
+        inter = 1;
+      }
+
+      if (inter == 1)//neighbor node = intersection node
         {
           m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
           double angle = getAngle (
@@ -572,7 +584,7 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
               m_pri_value[itr->first] = 1;
             }
         }
-      else
+      else // neighbor node = simple node
         {
           m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
           if (neighbor_d > MaxRange)
@@ -593,21 +605,60 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
 }
 
 //目的地に最も近い道路IDを返す関数
-int
+std::string
 RoutingProtocol::NearRoadId (int32_t des_x, int32_t des_y)
 {
-  int nearRoadId;
+  /////////********************road id int ver
+  // int nearRoadId;
+  // double minDistance;
+  // int count = 0;
+  // for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
+  //   {
+  //     //近隣ノードが位置する道路の中心座標を取得　
+  //     int roadCenterX =
+  //         roadCenterPointX[distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first])];
+  //     int roadCenterY =
+  //         roadCenterPointY[distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first])];
+  //     if (distinctionRoad (roadCenterX, roadCenterY) == 0)
+  //       continue;
+
+  //     //std::cout << "id" << itr->first << "のroad idは" << distinctionRoad (roadCenterX, roadCenterY)
+  //     //<< "roadCenterX" << roadCenterX << "roadCenterY" << roadCenterY << "\n";
+  //     //目的地とそれぞれの道路の中心座標の距離を計算
+  //     double distance = getDistance (roadCenterX, roadCenterY, des_x, des_y);
+  //     //std::cout << "id" << itr->first << "distance" << distance << "\n";
+  //     if (count == 0)
+  //       {
+  //         minDistance = distance;
+  //         nearRoadId = distinctionRoad (roadCenterX, roadCenterY);
+  //       }
+  //     else
+  //       {
+  //         if (distance < minDistance)
+  //           {
+  //             minDistance = distance;
+  //             nearRoadId = distinctionRoad (roadCenterX, roadCenterY);
+  //           }
+  //       }
+  //     count++;
+  //   }
+  // return nearRoadId;
+
+  ////////*********road id string ver****************************
+  std::string nearRoadId;
   double minDistance;
-  int count = 0;
+  int count;
   for (auto itr = m_etx.begin (); itr != m_etx.end (); itr++)
     {
       //近隣ノードが位置する道路の中心座標を取得　
       int roadCenterX =
-          roadCenterPointX[distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first])];
+          m_road_center_x[distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first])];
       int roadCenterY =
-          roadCenterPointY[distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first])];
-      if (distinctionRoad (roadCenterX, roadCenterY) == 0)
+          m_road_center_y[distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first])];
+      if (judgeIntersection (roadCenterX, roadCenterY) == 0) //intersection nodeは対象外なのでcontinue
+      {
         continue;
+      }
 
       //std::cout << "id" << itr->first << "のroad idは" << distinctionRoad (roadCenterX, roadCenterY)
       //<< "roadCenterX" << roadCenterX << "roadCenterY" << roadCenterY << "\n";
@@ -634,7 +685,7 @@ RoutingProtocol::NearRoadId (int32_t des_x, int32_t des_y)
 
 //近い道路IDを受取その道路のRpを返す
 double
-RoutingProtocol::CalculateRp (int nearRoadId)
+RoutingProtocol::CalculateRp (std::string nearRoadId)
 {
   double Rp = 0;
   double missProbability = 1; //道路に存在するすべてのノードとの伝送が失敗する確率
@@ -917,8 +968,7 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
 
       sendpacketCount++;
       ////////////////////////交差点判定
-      if (distinctionRoad (m_xpoint[pri_id[1]], m_ypoint[pri_id[1]]) ==
-          0) //優先度 iのノードが交差点ノードならば
+      if (judgeIntersection (m_xpoint[pri_id[1]], m_ypoint[pri_id[1]]) == 0) //優先度 iのノードが交差点ノードならば
         {
           s_inter_1_id.push_back (1);
         }
@@ -927,8 +977,7 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
           s_inter_1_id.push_back (0);
         }
 
-      if (distinctionRoad (m_xpoint[pri_id[2]], m_ypoint[pri_id[2]]) ==
-          0) //優先度 iのノードが交差点ノードならば
+      if (judgeIntersection (m_xpoint[pri_id[2]], m_ypoint[pri_id[2]]) == 0) //優先度 iのノードが交差点ノードならば
         {
           s_inter_2_id.push_back (1);
         }
@@ -937,8 +986,7 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
           s_inter_2_id.push_back (0);
         }
 
-      if (distinctionRoad (m_xpoint[pri_id[3]], m_ypoint[pri_id[3]]) ==
-          0) //優先度 iのノードが交差点ノードならば
+      if (judgeIntersection (m_xpoint[pri_id[3]], m_ypoint[pri_id[3]]) == 0) //優先度 iのノードが交差点ノードならば
         {
           s_inter_3_id.push_back (1);
         }
@@ -947,8 +995,7 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
           s_inter_3_id.push_back (0);
         }
 
-      if (distinctionRoad (m_xpoint[pri_id[4]], m_ypoint[pri_id[4]]) ==
-          0) //優先度 iのノードが交差点ノードならば
+      if (judgeIntersection (m_xpoint[pri_id[4]], m_ypoint[pri_id[4]]) == 0) //優先度 iのノードが交差点ノードならば
         {
           s_inter_4_id.push_back (1);
         }
@@ -957,8 +1004,7 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
           s_inter_4_id.push_back (0);
         }
 
-      if (distinctionRoad (m_xpoint[pri_id[5]], m_ypoint[pri_id[5]]) ==
-          0) //優先度 iのノードが交差点ノードならば
+      if (judgeIntersection (m_xpoint[pri_id[5]], m_ypoint[pri_id[5]]) == 0) //優先度 iのノードが交差点ノードならば
         {
           s_inter_5_id.push_back (1);
         }
@@ -1067,7 +1113,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         setVector (recv_hello_id, recv_hello_posx, recv_hello_posy, recv_hello_p_posx,
                    recv_hello_p_posy, recv_hello_acce);
         SaveRecvTime (recv_hello_id, recv_hello_time);
-        SaveRelation (recv_hello_id, recv_hello_posx, recv_hello_posy);
+        // SaveRelation (recv_hello_id, recv_hello_posx, recv_hello_posy);
         break; //breakがないとエラー起きる
       }
       case SIGOTYPE_SEND: {
@@ -1294,52 +1340,52 @@ RoutingProtocol::PredictionPosition (void) //近隣ノードの予測位置を�
 }
 
 //ノード間の関係性を更新するメソッド
-void
-RoutingProtocol::SaveRelation (int32_t map_id, int32_t map_xpoint, int32_t map_ypoint)
-{
-  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
-  Vector mypos = mobility->GetPosition ();
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  int myRoadId = distinctionRoad (mypos.x, mypos.y); //自分の道路ID
-  int NeighborRoadId = distinctionRoad (map_xpoint, map_ypoint); // 近隣ノードの道路ID
-  int currentRelation = 0; //現在ノードとの関係性
-  if (myRoadId == 0 || NeighborRoadId == 0) // どちらかが交差点道路なら
-    {
-      currentRelation = 1; //同一道路なら1
-    }
+// void
+// RoutingProtocol::SaveRelation (int32_t map_id, int32_t map_xpoint, int32_t map_ypoint)
+// {
+//   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+//   Vector mypos = mobility->GetPosition ();
+//   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+//   int myRoadId = distinctionRoad (mypos.x, mypos.y); //自分の道路ID
+//   int NeighborRoadId = distinctionRoad (map_xpoint, map_ypoint); // 近隣ノードの道路ID
+//   int currentRelation = 0; //現在ノードとの関係性
+//   if (myRoadId == 0 || NeighborRoadId == 0) // どちらかが交差点道路なら
+//     {
+//       currentRelation = 1; //同一道路なら1
+//     }
 
-  if (myRoadId == NeighborRoadId)
-    {
-      currentRelation = 1; //同一道路なら1
-    }
-  else
-    {
-      currentRelation = 2; //異なる道路なら2
-    }
+//   if (myRoadId == NeighborRoadId)
+//     {
+//       currentRelation = 1; //同一道路なら1
+//     }
+//   else
+//     {
+//       currentRelation = 2; //異なる道路なら2
+//     }
 
-  if (m_relation[map_id] != 0) //以前にリンクを持っていたら
-    {
-      if (currentRelation != m_relation[map_id]) //以前と関係性が異なるなら
-        {
-          if (NeighborRoadId == 0 || myRoadId == 0) // どちらかが交差点ノードの場合
-            {
-              currentRelation = m_relation[map_id]; //前の関係性を維持する
-            }
-          else
-            {
-              if (id == 0)
-                {
-                  std::cout << "以前と関係性が違います　破棄する前の取得数 " << m_recvtime.size ()
-                            << "\n";
-                  std::cout << "関係性が変わった IDは" << id << "pare id" << map_id << "\n";
-                  //m_recvtime.erase (map_id); // helloパケット取得履歴を破棄
-                  std::cout << "破棄後の取得数 " << m_recvtime.size () << "\n";
-                }
-            }
-        }
-    }
-  m_relation[map_id] = currentRelation; // 現在の関係をマップに保存
-}
+//   if (m_relation[map_id] != 0) //以前にリンクを持っていたら
+//     {
+//       if (currentRelation != m_relation[map_id]) //以前と関係性が異なるなら
+//         {
+//           if (NeighborRoadId == 0 || myRoadId == 0) // どちらかが交差点ノードの場合
+//             {
+//               currentRelation = m_relation[map_id]; //前の関係性を維持する
+//             }
+//           else
+//             {
+//               if (id == 0)
+//                 {
+//                   std::cout << "以前と関係性が違います　破棄する前の取得数 " << m_recvtime.size ()
+//                             << "\n";
+//                   std::cout << "関係性が変わった IDは" << id << "pare id" << map_id << "\n";
+//                   //m_recvtime.erase (map_id); // helloパケット取得履歴を破棄
+//                   std::cout << "破棄後の取得数 " << m_recvtime.size () << "\n";
+//                 }
+//             }
+//         }
+//     }
+//   m_relation[map_id] = currentRelation; // 現在の関係をマップに保存
+// }
 
 void
 RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
@@ -1473,6 +1519,25 @@ RoutingProtocol::SetMySpeed (void)
 ///home/shuto/workspace/ns-3-allinone/ns3.30/sumo/tools/no_signal/original_net.xmlファイルから取得
 
 int
+RoutingProtocol::judgeIntersection (int x_point, int y_point)
+{
+  int interRange = 20; //交差点の半径
+  // junction judgement roop
+  // std::cout << "\n\n\n\n\n\n --------distinction Road the node's position is " << x_point << ", " << y_point << std::endl;
+  for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
+    {
+      double distance = getDistance(x_point, y_point, itr->second, m_junction_y[itr->first]);
+      if (distance <= interRange) //交差点の内部の座標だったら
+      {
+        return 0; // on intersection
+      }
+    }
+
+    return 1; // no intersection node
+}
+
+
+std::string
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
   int interRange = 20; //交差点の半径
@@ -1488,7 +1553,7 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
       if (distance <= interRange) //交差点の内部の座標だったら
       {
         // std::cout << "the node exists in junction" << itr->first << std::endl;
-        return 0; //一旦0
+        return itr->first; // junction(intersection) id
       }
     }
 
@@ -1522,7 +1587,7 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
   // std::cout << "the node exits in road id " << road_id << std::endl;
     
   // std::cout<<"\n\n\n\n\n\n------- finish distinction Road method ------------------- " << std::endl;
-  return 0;
+  return road_id; //roadのIDを返す
 }
 
 double
