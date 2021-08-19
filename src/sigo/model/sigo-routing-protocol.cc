@@ -312,6 +312,8 @@ RoutingProtocol::SourceAndDestination ()
 {
   std::cout << "source and                        destination function\n";
   std::cout << "NumVehicle" << numVehicle << "\n";
+
+  //source list と destination listに存在するノードを抽出
   for (int i = 0; i < numVehicle; i++) ///node数　設定する
     {
       if (m_my_posx[i] >= SourceLowX && m_my_posx[i] <= SourceHighX && m_my_posy[i] >= SourceLowY &&
@@ -327,45 +329,21 @@ RoutingProtocol::SourceAndDestination ()
           std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
         }
     }
-  // for (int i = 0; i < numVehicle; i++) ///node数　設定する
-  //   {
-  //     if (m_my_posx[i] >= 650 && m_my_posx[i] <= 950 && m_my_posy[i] >= 750 &&
-  //         m_my_posy[i] <= 850)
-  //       {
-  //         source_list.push_back (i);
-  //         std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
-  //       }
-  //     if (m_my_posx[i] >= 650 && m_my_posx[i] <= 950 && m_my_posy[i] >= 550 &&
-  //         m_my_posy[i] <= 650)
-  //       {
-  //         source_list.push_back (i);
-  //         std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
-  //       }
-  //     if (m_my_posx[i] >= 50 && m_my_posx[i] <= 250 && m_my_posy[i] >= 150 &&
-  //         m_my_posy[i] <= 250)
-  //       {
-  //         des_list.push_back (i);
-  //         std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
-  //       }
-  //     if (m_my_posx[i] >= 50 && m_my_posx[i] <= 350 && m_my_posy[i] >= -50 &&
-  //         m_my_posy[i] <= 50)
-  //       {
-  //         des_list.push_back (i);
-  //         std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
-  //       }
-  //   }
 
+  //random seedを用いて並び替え
   std::mt19937 get_rand_mt (Grobal_Seed);
 
   std::shuffle (source_list.begin (), source_list.end (), get_rand_mt);
   std::shuffle (des_list.begin (), des_list.end (), get_rand_mt);
 
+ //上から grobal_sourcenodenum値　抽出
   for (int i = 0; i < Grobal_SourceNodeNum; i++)
     {
       std::cout << "shuffle source id" << source_list[i] << "\n";
       std::cout << "shuffle destination id" << des_list[i] << "\n";
     }
 }
+
 
 void
 RoutingProtocol::Send ()
