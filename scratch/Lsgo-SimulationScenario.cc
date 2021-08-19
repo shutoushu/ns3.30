@@ -113,6 +113,7 @@
 #include "ns3/lsgo-module.h"
 #include "ns3/shutoushu-module.h"
 #include "ns3/sigo-module.h"
+#include "ns3/jbr-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/itu-r-1411-los-propagation-loss-model.h"
 #include "ns3/ocb-wifi-mac.h"
@@ -555,6 +556,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
   LsgoHelper lsgo;
   ShutoushuHelper shutoushu;
   SigoHelper sigo;
+  JbrHelper jbr;
   DsrMainHelper dsrMain;
   Ipv4ListRoutingHelper list;
   InternetStackHelper internet;
@@ -635,6 +637,13 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
                    "protocol done"
                 << "\n\n";
 
+    case 9:
+      list.Add (jbr, 100);
+      m_protocolName = "JBR";
+      std::cout << "obstacle debug ---------------------------------------------------------jbr "
+                   "protocol done"
+                << "\n\n";
+
       break;
     default:
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);
@@ -665,13 +674,11 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
 void
 RoutingHelper::AssignIpAddresses (NetDeviceContainer &d, Ipv4InterfaceContainer &adhocTxInterfaces)
 {
-  ///原因となるメソッド
+  //原因となるメソッド
   NS_LOG_INFO ("Assigning IP addresses");
   Ipv4AddressHelper addressAdhoc;
   // we may have a lot of nodes, and want them all
   // in same subnet, to support broadcast
-  std::cout << "a"
-            << "\n";
   addressAdhoc.SetBase ("10.1.0.0", "255.255.0.0");
   adhocTxInterfaces = addressAdhoc.Assign (d);
 }
@@ -1720,13 +1727,13 @@ VanetRoutingExperiment::Run ()
 
   // m_traceFile = "src/wave/examples/no_signal/no_signal_" + std::to_string(node_num) + ".tcl"; //モビリティ入力ファイル
 
-  // AnimationInterface anim ("no_signal_500_animFile");
+  AnimationInterface anim ("jbr_test");
 
-  // // anim.UpdateNodeSize (1, 20, 1);
-  // // anim.UpdateNodeSize (40, 20, 1);
+  // anim.UpdateNodeSize (1, 20, 1);
+  // anim.UpdateNodeSize (40, 20, 1);
 
-  // anim.EnablePacketMetadata ();
-  // anim.EnableIpv4L3ProtocolCounters (Seconds (0), Seconds (m_TotalSimTime));
+  anim.EnablePacketMetadata ();
+  anim.EnableIpv4L3ProtocolCounters (Seconds (0), Seconds (m_TotalSimTime));
   Simulator::Run ();
   Simulator::Destroy ();
   std::cout << "simulator destroy"
@@ -2511,6 +2518,16 @@ VanetRoutingExperiment::SetupScenario ()
       m_CSVfileName = "";
       m_CSVfileName = "";
       std::cout << "\n\n\n\n\n\n\n tcl file = " << m_traceFile << "\n\n\n\n\n\n";
+
+      // JBR test用
+      if (m_protocol == 9)
+      {
+        std::cout << " JBR test start \n";
+        m_traceFile = "src/wave/examples/no_signal/test.tcl";
+        m_nNodes = 601;
+      }
+
+
       // WAVE BSM only, no routing data
       // m_protocol = 0;////////////////////////////////////////////////////////////////////初期状態 なぜprotocolを0にするのか不明
       //m_lossModel = 3; // two-ray ground ///////////////////////////////////////////////初期状態　なぜ3にするのか不明

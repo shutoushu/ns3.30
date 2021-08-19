@@ -1077,7 +1077,10 @@ void
 RoutingProtocol::SendTo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination)
 {
   socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
-
+  if (destination != "10.1.255.255")
+  {
+    std::cout << "\n\n\\n\n\n\n\n\n\n\n\n aodv test destination address" << destination << "\n";
+  }
 }
 void
 RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst)
@@ -1428,6 +1431,7 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ());
   NS_ASSERT (socket);
   socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
+  std::cout << " \n\n\n\n\n\n toOrigin next hop" <<  toOrigin.GetNextHop () << "\n";
 }
 
 void
