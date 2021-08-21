@@ -18,12 +18,12 @@
  * Author: Alberto Gallegos <ramonet@fc.ritsumei.ac.jp>
  *         Ritsumeikan University, Shiga, Japan
  */
-#include "jbr-packet.h"
+#include "nearest-packet.h"
 #include "ns3/address-utils.h"
 #include "ns3/packet.h"
 
 namespace ns3 {
-namespace jbr {
+namespace nearest {
 
 NS_OBJECT_ENSURE_REGISTERED (TypeHeader);
 
@@ -34,9 +34,9 @@ TypeHeader::TypeHeader (MessageType t) : m_type (t), m_valid (true)
 TypeId
 TypeHeader::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::jbr::TypeHeader")
+  static TypeId tid = TypeId ("ns3::nearest::TypeHeader")
                           .SetParent<Header> ()
-                          .SetGroupName ("Jbr")
+                          .SetGroupName ("Nearest")
                           .AddConstructor<TypeHeader> ();
   return tid;
 }
@@ -67,14 +67,14 @@ TypeHeader::Deserialize (Buffer::Iterator start)
   m_valid = true;
   switch (type)
     {
-    case JBRTYPE_RREQ:
-    case JBRTYPE_RREP:
-    case JBRTYPE_RERR:
-      case JBRTYPE_RREP_ACK: {
+    case NEARESTTYPE_RREQ:
+    case NEARESTTYPE_RREP:
+    case NEARESTTYPE_RERR:
+      case NEARESTTYPE_RREP_ACK: {
         m_type = (MessageType) type;
         break;
       }
-    case JBRTYPE_HELLO:
+    case NEARESTTYPE_HELLO:
     default:
       m_valid = false;
     }
@@ -88,23 +88,23 @@ TypeHeader::Print (std::ostream &os) const
 {
   switch (m_type)
     {
-      case JBRTYPE_RREQ: {
+      case NEARESTTYPE_RREQ: {
         os << "RREQ";
         break;
       }
-      case JBRTYPE_RREP: {
+      case NEARESTTYPE_RREP: {
         os << "RREP";
         break;
       }
-      case JBRTYPE_RERR: {
+      case NEARESTTYPE_RERR: {
         os << "RERR";
         break;
       }
-      case JBRTYPE_RREP_ACK: {
+      case NEARESTTYPE_RREP_ACK: {
         os << "RREP_ACK";
         break;
       }
-      case JBRTYPE_HELLO: {
+      case NEARESTTYPE_HELLO: {
         os << "HELLO";
         break;
       }
@@ -147,9 +147,9 @@ NS_OBJECT_ENSURE_REGISTERED (RrepHeader);
 TypeId
 RrepHeader::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::jbr::RrepHeader")
+  static TypeId tid = TypeId ("ns3::nearest::RrepHeader")
                           .SetParent<Header> ()
-                          .SetGroupName ("Jbr")
+                          .SetGroupName ("Nearest")
                           .AddConstructor<RrepHeader> ();
   return tid;
 }
@@ -279,7 +279,7 @@ operator<< (std::ostream &os, RrepHeader const &h)
   return os;
 }
 
-// ***********************start Jbr_HELLO*************************************//
+// ***********************start Nearest_HELLO*************************************//
 HelloHeader::HelloHeader (int32_t nodeid, int32_t posx, int32_t posy)
     : m_nodeid (nodeid), m_posx (posx), m_posy (posy)
 {
@@ -289,9 +289,9 @@ NS_OBJECT_ENSURE_REGISTERED (HelloHeader);
 TypeId
 HelloHeader::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::jbr::HelloHeader")
+  static TypeId tid = TypeId ("ns3::nearest::HelloHeader")
                           .SetParent<Header> ()
-                          .SetGroupName ("Jbr")
+                          .SetGroupName ("Nearest")
                           .AddConstructor<HelloHeader> ();
   return tid;
 }
@@ -345,86 +345,7 @@ operator<< (std::ostream &os, HelloHeader const &h)
   return os;
 }
 
-// ***********************end Jbr_HELLO*************************************//
+// ***********************end Nearest_HELLO*************************************//
 
-
-// *********************** jbr recovery unicast*****************************//
-// JbrHeader::JbrHeader (send_id = 0, send_x = 0, send_y = 0,
-// next_id = 0, local_source_x = 0, local_source_y = 0,
-// previous_x = 0, previous_y = 0, des_id = 0, des_x = 0, des_y = 0)
-// : m_send_id (send_id), m_send_x (send_x), m_send_y (send_y), m_next_id (next_id),
-// m_Local_source_x (local_source_x), m_local_source_y (local_source_y), 
-// m_previous_x (previous_x), m_previous_y (previous_y), m_des_id (des_id),
-// m_des_x (des_x), m_des_y (des_y)
-// {
-// }
-// NS_OBJECT_ENSURE_REGISTERED (HelloHeader);
-
-// TypeId
-// HelloHeader::GetTypeId ()
-// {
-//   static TypeId tid = TypeId ("ns3::jbr::HelloHeader")
-//                           .SetParent<Header> ()
-//                           .SetGroupName ("Jbr")
-//                           .AddConstructor<HelloHeader> ();
-//   return tid;
-// }
-
-// TypeId
-// HelloHeader::GetInstanceTypeId () const
-// {
-//   return GetTypeId ();
-// }
-
-// uint32_t
-// HelloHeader::GetSerializedSize () const
-// {
-//   return 12;
-// }
-
-// void
-// HelloHeader::Serialize (Buffer::Iterator i) const //シリアル化
-// {
-//   i.WriteHtonU32 (m_nodeid);
-//   i.WriteHtonU32 (m_posx);
-//   i.WriteHtonU32 (m_posy);
-//   i.WriteHtonU32 (m_nodeid);
-//   i.WriteHtonU32 (m_posx);
-//   i.WriteHtonU32 (m_posy);
-// }
-
-// uint32_t
-// HelloHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
-// {
-//   Buffer::Iterator i = start;
-
-//   m_nodeid = i.ReadNtohU32 ();
-//   m_posx = i.ReadNtohU32 ();
-//   m_posy = i.ReadNtohU32 ();
-
-//   uint32_t dist2 = i.GetDistanceFrom (start);
-
-//   NS_ASSERT (dist2 == GetSerializedSize ());
-//   return dist2;
-// }
-
-// void
-// HelloHeader::Print (std::ostream &os) const
-// {
-//   // os << "NodeId " << m_nodeid;
-//   // os << "NodePointX " << m_posx;
-//   // os << "NodePointY" << m_posy;
-// }
-// std::ostream &
-// operator<< (std::ostream &os, HelloHeader const &h)
-// {
-//   h.Print (os);
-//   return os;
-// }
-
-// ***********************end recovery unicast*************************************//
-
-
-
-} // namespace jbr
+} // namespace nearest
 } // namespace ns3
