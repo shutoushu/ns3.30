@@ -349,78 +349,92 @@ operator<< (std::ostream &os, HelloHeader const &h)
 
 
 // *********************** jbr recovery unicast*****************************//
-// JbrHeader::JbrHeader (send_id = 0, send_x = 0, send_y = 0,
-// next_id = 0, local_source_x = 0, local_source_y = 0,
-// previous_x = 0, previous_y = 0, des_id = 0, des_x = 0, des_y = 0)
-// : m_send_id (send_id), m_send_x (send_x), m_send_y (send_y), m_next_id (next_id),
-// m_Local_source_x (local_source_x), m_local_source_y (local_source_y), 
-// m_previous_x (previous_x), m_previous_y (previous_y), m_des_id (des_id),
-// m_des_x (des_x), m_des_y (des_y)
-// {
-// }
-// NS_OBJECT_ENSURE_REGISTERED (HelloHeader);
+JbrHeader::JbrHeader (int32_t send_id, int32_t send_x, int32_t send_y,
+  int32_t next_id, int32_t local_source_x, int32_t local_source_y,
+  int32_t previous_x, int32_t previous_y, int32_t des_id,
+  int32_t des_x, int32_t des_y)
+: m_send_id (send_id), m_send_x (send_x), m_send_y (send_y), m_next_id (next_id),
+m_local_source_x (local_source_x), m_local_source_y (local_source_y), 
+m_previous_x (previous_x), m_previous_y (previous_y), m_des_id (des_id),
+m_des_x (des_x), m_des_y (des_y)
+{
+}
+NS_OBJECT_ENSURE_REGISTERED (JbrHeader);
 
-// TypeId
-// HelloHeader::GetTypeId ()
-// {
-//   static TypeId tid = TypeId ("ns3::jbr::HelloHeader")
-//                           .SetParent<Header> ()
-//                           .SetGroupName ("Jbr")
-//                           .AddConstructor<HelloHeader> ();
-//   return tid;
-// }
+TypeId
+JbrHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::jbr::JbrHeader")
+                          .SetParent<Header> ()
+                          .SetGroupName ("Jbr")
+                          .AddConstructor<JbrHeader> ();
+  return tid;
+}
 
-// TypeId
-// HelloHeader::GetInstanceTypeId () const
-// {
-//   return GetTypeId ();
-// }
+TypeId
+JbrHeader::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
 
-// uint32_t
-// HelloHeader::GetSerializedSize () const
-// {
-//   return 12;
-// }
+uint32_t
+JbrHeader::GetSerializedSize () const
+{
+  return 44;
+}
 
-// void
-// HelloHeader::Serialize (Buffer::Iterator i) const //シリアル化
-// {
-//   i.WriteHtonU32 (m_nodeid);
-//   i.WriteHtonU32 (m_posx);
-//   i.WriteHtonU32 (m_posy);
-//   i.WriteHtonU32 (m_nodeid);
-//   i.WriteHtonU32 (m_posx);
-//   i.WriteHtonU32 (m_posy);
-// }
+void
+JbrHeader::Serialize (Buffer::Iterator i) const //シリアル化
+{
+  i.WriteHtonU32 (m_send_id);
+  i.WriteHtonU32 (m_send_x);
+  i.WriteHtonU32 (m_send_y);
+  i.WriteHtonU32 (m_next_id);
+  i.WriteHtonU32 (m_local_source_x);
+  i.WriteHtonU32 (m_local_source_y);
+  i.WriteHtonU32 (m_previous_x);
+  i.WriteHtonU32 (m_previous_y);
+  i.WriteHtonU32 (m_des_id);
+  i.WriteHtonU32 (m_des_x);
+  i.WriteHtonU32 (m_des_y);
+}
 
-// uint32_t
-// HelloHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
-// {
-//   Buffer::Iterator i = start;
+uint32_t
+JbrHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
+{
+  Buffer::Iterator i = start;
 
-//   m_nodeid = i.ReadNtohU32 ();
-//   m_posx = i.ReadNtohU32 ();
-//   m_posy = i.ReadNtohU32 ();
+  m_send_id = i.ReadNtohU32 ();
+  m_send_x = i.ReadNtohU32 ();
+  m_send_y = i.ReadNtohU32 ();
+  m_next_id = i.ReadNtohU32 ();
+  m_local_source_x = i.ReadNtohU32 ();
+  m_local_source_y = i.ReadNtohU32 ();  
+  m_previous_x = i.ReadNtohU32 ();
+  m_previous_y = i.ReadNtohU32 ();
+  m_des_id = i.ReadNtohU32 ();
+  m_des_x = i.ReadNtohU32 ();
+  m_des_y = i.ReadNtohU32 ();
 
-//   uint32_t dist2 = i.GetDistanceFrom (start);
+  uint32_t dist2 = i.GetDistanceFrom (start);
 
-//   NS_ASSERT (dist2 == GetSerializedSize ());
-//   return dist2;
-// }
+  NS_ASSERT (dist2 == GetSerializedSize ());
+  return dist2;
+}
 
-// void
-// HelloHeader::Print (std::ostream &os) const
-// {
-//   // os << "NodeId " << m_nodeid;
-//   // os << "NodePointX " << m_posx;
-//   // os << "NodePointY" << m_posy;
-// }
-// std::ostream &
-// operator<< (std::ostream &os, HelloHeader const &h)
-// {
-//   h.Print (os);
-//   return os;
-// }
+void
+JbrHeader::Print (std::ostream &os) const
+{
+  // os << "NodeId " << m_nodeid;
+  // os << "NodePointX " << m_posx;
+  // os << "NodePointY" << m_posy;
+}
+std::ostream &
+operator<< (std::ostream &os, JbrHeader const &h)
+{
+  h.Print (os);
+  return os;
+}
 
 // ***********************end recovery unicast*************************************//
 

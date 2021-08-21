@@ -405,8 +405,6 @@ class JbrHeader : public Header
 {
 public:
   /*
-nodeid Hellomessageを送信する車両のID
-posx posy Hellomessageを送信する車両の位置情報
 */
   JbrHeader (int32_t send_id = 0, int32_t send_x = 0, int32_t send_y = 0,
   int32_t next_id = 0, int32_t local_source_x = 0, int32_t local_source_y = 0,
