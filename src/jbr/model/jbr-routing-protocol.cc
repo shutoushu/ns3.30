@@ -353,7 +353,7 @@ RoutingProtocol::SendXUnicast (void)
           destination = Ipv4Address ("10.1.0.5");
           std::cout << "\n\n\n\n\n\n\n test address" << destination << "\n";
         }
-      socket->SendTo (packet, 0, InetSocketAddress (Ipv4Address ("10.1.0.5"), JBR_PORT));
+      socket->SendTo (packet, 0, InetSocketAddress (destination, JBR_PORT));
       std::cout << "broadcast sent\n";
     }
 }

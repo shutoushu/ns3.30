@@ -636,6 +636,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
       std::cout << "obstacle debug ---------------------------------------------------------sigo "
                    "protocol done"
                 << "\n\n";
+      break;
 
     case 9:
       list.Add (jbr, 100);
@@ -643,7 +644,6 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
       std::cout << "obstacle debug ---------------------------------------------------------jbr "
                    "protocol done"
                 << "\n\n";
-
       break;
     default:
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);

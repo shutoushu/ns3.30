@@ -1432,6 +1432,7 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
   NS_ASSERT (socket);
   socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
   std::cout << " \n\n\n\n\n\n toOrigin next hop" <<  toOrigin.GetNextHop () << "\n";
+  std::cout << " toOrigin getInterface " << toOrigin.GetInterface () << "\n";
 }
 
 void
