@@ -51,6 +51,12 @@ public:
   static TypeId GetTypeId (void);
   static const uint32_t JBR_PORT;
 
+  //自作グローバル変数　
+  static std::map<std::string, double> m_junction_x; // key junction id value xposition
+  static std::map<std::string, double> m_junction_y; // key junction id value yposition
+  static std::map<std::string, std::string> m_road_from_to; // key road id value junction from to
+
+
   //test recv count
   static std::map<int, int> recvCount; //key recvnode id value num recv
 
@@ -87,13 +93,25 @@ protected:
 
 private:
   void SendXBroadcast (void);
-  void SendXUnicast (void);
+  void CallSendXUnicast (void);
+  void SendXUnicast (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
+  int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
+  int32_t des_id, int32_t des_x, int32_t des_y, int32_t hop);
   void RecvJbr (Ptr<Socket> socket);
 
-  int distinctionRoad (int x_point,
-                       int y_ypoint); //ｘ座標とy座標から道路番号を割り出す関数　return 道路番号
-                       
-  // void RoadCenterPoint (); //roadの中心座標を格納するだけの関数
+  //**自作メソッド**//
+  //road 判定 method
+  int ReadSumoFile (void); //sumoからnetfileを読み込む
+  double lineDistance (double line_x1, double line_y1, double line_x2, double line_y2, 
+  double dot_x, double dot_y); //線分と座標の距離を返す
+  std::string distinctionRoad (int x_point, int y_point); //x座標 y座標からroad id or junction idを返す関数
+  int judgeIntersection (int x_point, int y_point); //x座標 y座標から　1(no intersection) or 0(intersection)を返す
+
+  double getDistance (double x, double y, double x2, double y2);
+
+  void SendHelloPacket (void); //hello packet を broadcast するメソッド
+  void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,
+                  Ipv4Address destination); //Hello packet の送信
 
   void SimulationResult (void); //シミュレーション結果を出力する
 

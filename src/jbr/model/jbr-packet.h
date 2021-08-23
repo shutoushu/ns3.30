@@ -36,11 +36,8 @@ namespace jbr {
 * \brief MessageType enumeration
 */
 enum MessageType {
-  JBRTYPE_RREQ = 1, //!< JBRTYPE_RREQ
-  JBRTYPE_RREP = 2, //!< JBRTYPE_RREP
-  JBRTYPE_RERR = 3, //!< JBRTYPE_RERR
-  JBRTYPE_RREP_ACK = 4, //!< JBRTYPE_RREP_ACK
-  JBRTYPE_HELLO = 5
+  JBRTYPE_RECOVER = 1,
+  JBRTYPE_HELLO = 2
 };
 
 /**
@@ -102,191 +99,6 @@ private:
   * \return updated stream
   */
 std::ostream &operator<< (std::ostream &os, TypeHeader const &h);
-
-/**
-* \ingroup jbr
-* \brief Route Reply (RREP) Message Format
-  \verbatim
-  0                   1                   2                   3
-  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |     Type      |R|A|    Reserved     |Prefix Sz|   Hop Count   |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                     Destination IP address                    |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                  Destination Sequence Number                  |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                    Originator IP address                      |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                           Lifetime                            |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  \endverbatim
-*/
-class RrepHeader : public Header
-{
-public:
-  /**
-   * constructor
-   *
-   * \param prefixSize the prefix size (0)
-   * \param hopCount the hop count (0)
-   * \param dst the destination IP address
-   * \param dstSeqNo the destination sequence number
-   * \param origin the origin IP address
-   * \param lifetime the lifetime
-   */
-  RrepHeader (uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst = Ipv4Address (),
-              uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address (),
-              Time lifetime = MilliSeconds (0));
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId ();
-  TypeId GetInstanceTypeId () const;
-  uint32_t GetSerializedSize () const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
-  void Print (std::ostream &os) const;
-
-  // Fields
-  /**
-   * \brief Set the hop count
-   * \param count the hop count
-   */
-  void
-  SetHopCount (uint8_t count)
-  {
-    m_hopCount = count;
-  }
-  /**
-   * \brief Get the hop count
-   * \return the hop count
-   */
-  uint8_t
-  GetHopCount () const
-  {
-    return m_hopCount;
-  }
-  /**
-   * \brief Set the destination address
-   * \param a the destination address
-   */
-  void
-  SetDst (Ipv4Address a)
-  {
-    m_dst = a;
-  }
-  /**
-   * \brief Get the destination address
-   * \return the destination address
-   */
-  Ipv4Address
-  GetDst () const
-  {
-    return m_dst;
-  }
-  /**
-   * \brief Set the destination sequence number
-   * \param s the destination sequence number
-   */
-  void
-  SetDstSeqno (uint32_t s)
-  {
-    m_dstSeqNo = s;
-  }
-  /**
-   * \brief Get the destination sequence number
-   * \return the destination sequence number
-   */
-  uint32_t
-  GetDstSeqno () const
-  {
-    return m_dstSeqNo;
-  }
-  /**
-   * \brief Set the origin address
-   * \param a the origin address
-   */
-  void
-  SetOrigin (Ipv4Address a)
-  {
-    m_origin = a;
-  }
-  /**
-   * \brief Get the origin address
-   * \return the origin address
-   */
-  Ipv4Address
-  GetOrigin () const
-  {
-    return m_origin;
-  }
-  /**
-   * \brief Set the lifetime
-   * \param t the lifetime
-   */
-  void SetLifeTime (Time t);
-  /**
-   * \brief Get the lifetime
-   * \return the lifetime
-   */
-  Time GetLifeTime () const;
-
-  // Flags
-  /**
-   * \brief Set the ack required flag
-   * \param f the ack required flag
-   */
-  void SetAckRequired (bool f);
-  /**
-   * \brief get the ack required flag
-   * \return the ack required flag
-   */
-  bool GetAckRequired () const;
-  /**
-   * \brief Set the prefix size
-   * \param sz the prefix size
-   */
-  void SetPrefixSize (uint8_t sz);
-  /**
-   * \brief Set the pefix size
-   * \return the prefix size
-   */
-  uint8_t GetPrefixSize () const;
-
-  /**
-   * Configure RREP to be a Hello message
-   *
-   * \param src the source IP address
-   * \param srcSeqNo the source sequence number
-   * \param lifetime the lifetime of the message
-   */
-  void SetHello (Ipv4Address src, uint32_t srcSeqNo, Time lifetime);
-
-  /**
-   * \brief Comparison operator
-   * \param o RREP header to compare
-   * \return true if the RREP headers are equal
-   */
-  bool operator== (RrepHeader const &o) const;
-
-private:
-  uint8_t m_flags; ///< A - acknowledgment required flag
-  uint8_t m_prefixSize; ///< Prefix Size
-  uint8_t m_hopCount; ///< Hop Count
-  Ipv4Address m_dst; ///< Destination IP Address
-  uint32_t m_dstSeqNo; ///< Destination Sequence Number
-  Ipv4Address m_origin; ///< Source IP Address
-  uint32_t m_lifeTime; ///< Lifetime (in milliseconds)
-};
-
-/**
-  * \brief Stream output operator
-  * \param os output stream
-  * \return updated stream
-  */
-std::ostream &operator<< (std::ostream &os, RrepHeader const &);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //*******************************start Hello JBR***********************************************/
@@ -398,6 +210,8 @@ private:
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   |                     Destinatino Node  Yposition               |
   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     hopcount                                  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
   \endverbatim
 */
 
@@ -409,7 +223,7 @@ public:
   JbrHeader (int32_t send_id = 0, int32_t send_x = 0, int32_t send_y = 0,
   int32_t next_id = 0, int32_t local_source_x = 0, int32_t local_source_y = 0,
   int32_t previous_x = 0, int32_t previous_y = 0, int32_t des_id = 0,
-  int32_t des_x = 0, int32_t des_y = 0);
+  int32_t des_x = 0, int32_t des_y = 0, int32_t hop = 0);
 
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
@@ -535,6 +349,16 @@ public:
     return m_des_y;
   }
 
+  void
+  SetHop (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_hop = p;
+  }
+  int32_t
+  GetHop () //座標の値を返す
+  {
+    return m_hop;
+  }
 
   bool operator== (JbrHeader const &o);
 
@@ -549,7 +373,8 @@ private:
   int32_t m_previous_y; //previous node yposition
   int32_t m_des_id; //destination node id
   int32_t m_des_x;  //destination node x
-  int32_t m_des_y;  //destination node y 
+  int32_t m_des_y;  //destination node y
+  int32_t m_hop; //hopcount 
 };
 
 //*******************************end Hello Jbr***********************************************/

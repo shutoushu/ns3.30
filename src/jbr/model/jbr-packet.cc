@@ -67,14 +67,11 @@ TypeHeader::Deserialize (Buffer::Iterator start)
   m_valid = true;
   switch (type)
     {
-    case JBRTYPE_RREQ:
-    case JBRTYPE_RREP:
-    case JBRTYPE_RERR:
-      case JBRTYPE_RREP_ACK: {
+    case JBRTYPE_RECOVER: //breakまでにすべてのパケットtypeを記載
+    case JBRTYPE_HELLO:{
         m_type = (MessageType) type;
         break;
       }
-    case JBRTYPE_HELLO:
     default:
       m_valid = false;
     }
@@ -88,24 +85,28 @@ TypeHeader::Print (std::ostream &os) const
 {
   switch (m_type)
     {
-      case JBRTYPE_RREQ: {
-        os << "RREQ";
-        break;
-      }
-      case JBRTYPE_RREP: {
-        os << "RREP";
-        break;
-      }
-      case JBRTYPE_RERR: {
-        os << "RERR";
-        break;
-      }
-      case JBRTYPE_RREP_ACK: {
-        os << "RREP_ACK";
-        break;
-      }
+      // case JBRTYPE_RREQ: {
+      //   os << "RREQ";
+      //   break;
+      // }
+      // case JBRTYPE_RREP: {
+      //   os << "RREP";
+      //   break;
+      // }
+      // case JBRTYPE_RERR: {
+      //   os << "RERR";
+      //   break;
+      // }
+      // case JBRTYPE_RREP_ACK: {
+      //   os << "RREP_ACK";
+      //   break;
+      // }
       case JBRTYPE_HELLO: {
         os << "HELLO";
+        break;
+      }
+      case JBRTYPE_RECOVER: {
+        os << "RECOVER";
         break;
       }
     default:
@@ -126,158 +127,6 @@ operator<< (std::ostream &os, TypeHeader const &h)
   return os;
 }
 
-//-----------------------------------------------------------------------------
-// RREP
-//-----------------------------------------------------------------------------
-
-RrepHeader::RrepHeader (uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst, uint32_t dstSeqNo,
-                        Ipv4Address origin, Time lifeTime)
-    : m_flags (0),
-      m_prefixSize (prefixSize),
-      m_hopCount (hopCount),
-      m_dst (dst),
-      m_dstSeqNo (dstSeqNo),
-      m_origin (origin)
-{
-  m_lifeTime = uint32_t (lifeTime.GetMilliSeconds ());
-}
-
-NS_OBJECT_ENSURE_REGISTERED (RrepHeader);
-
-TypeId
-RrepHeader::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::jbr::RrepHeader")
-                          .SetParent<Header> ()
-                          .SetGroupName ("Jbr")
-                          .AddConstructor<RrepHeader> ();
-  return tid;
-}
-
-TypeId
-RrepHeader::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-RrepHeader::GetSerializedSize () const
-{
-  return 19;
-}
-
-void
-RrepHeader::Serialize (Buffer::Iterator i) const
-{
-  i.WriteU8 (m_flags);
-  i.WriteU8 (m_prefixSize);
-  i.WriteU8 (m_hopCount);
-  WriteTo (i, m_dst);
-  i.WriteHtonU32 (m_dstSeqNo);
-  WriteTo (i, m_origin);
-  i.WriteHtonU32 (m_lifeTime);
-}
-
-uint32_t
-RrepHeader::Deserialize (Buffer::Iterator start)
-{
-  Buffer::Iterator i = start;
-
-  m_flags = i.ReadU8 ();
-  m_prefixSize = i.ReadU8 ();
-  m_hopCount = i.ReadU8 ();
-  ReadFrom (i, m_dst);
-  m_dstSeqNo = i.ReadNtohU32 ();
-  ReadFrom (i, m_origin);
-  m_lifeTime = i.ReadNtohU32 ();
-
-  uint32_t dist = i.GetDistanceFrom (start);
-  NS_ASSERT (dist == GetSerializedSize ());
-  return dist;
-}
-
-void
-RrepHeader::Print (std::ostream &os) const
-{
-  os << "destination: ipv4 " << m_dst << " sequence number " << m_dstSeqNo;
-  if (m_prefixSize != 0)
-    {
-      os << " prefix size " << m_prefixSize;
-    }
-  os << " source ipv4 " << m_origin << " lifetime " << m_lifeTime
-     << " acknowledgment required flag " << (*this).GetAckRequired ();
-}
-
-void
-RrepHeader::SetLifeTime (Time t)
-{
-  m_lifeTime = t.GetMilliSeconds ();
-}
-
-Time
-RrepHeader::GetLifeTime () const
-{
-  Time t (MilliSeconds (m_lifeTime));
-  return t;
-}
-
-void
-RrepHeader::SetAckRequired (bool f)
-{
-  if (f)
-    {
-      m_flags |= (1 << 6);
-    }
-  else
-    {
-      m_flags &= ~(1 << 6);
-    }
-}
-
-bool
-RrepHeader::GetAckRequired () const
-{
-  return (m_flags & (1 << 6));
-}
-
-void
-RrepHeader::SetPrefixSize (uint8_t sz)
-{
-  m_prefixSize = sz;
-}
-
-uint8_t
-RrepHeader::GetPrefixSize () const
-{
-  return m_prefixSize;
-}
-
-bool
-RrepHeader::operator== (RrepHeader const &o) const
-{
-  return (m_flags == o.m_flags && m_prefixSize == o.m_prefixSize && m_hopCount == o.m_hopCount &&
-          m_dst == o.m_dst && m_dstSeqNo == o.m_dstSeqNo && m_origin == o.m_origin &&
-          m_lifeTime == o.m_lifeTime);
-}
-
-void
-RrepHeader::SetHello (Ipv4Address origin, uint32_t srcSeqNo, Time lifetime)
-{
-  m_flags = 0;
-  m_prefixSize = 0;
-  m_hopCount = 0;
-  m_dst = origin;
-  m_dstSeqNo = srcSeqNo;
-  m_origin = origin;
-  m_lifeTime = lifetime.GetMilliSeconds ();
-}
-
-std::ostream &
-operator<< (std::ostream &os, RrepHeader const &h)
-{
-  h.Print (os);
-  return os;
-}
 
 // ***********************start Jbr_HELLO*************************************//
 HelloHeader::HelloHeader (int32_t nodeid, int32_t posx, int32_t posy)
@@ -352,11 +201,11 @@ operator<< (std::ostream &os, HelloHeader const &h)
 JbrHeader::JbrHeader (int32_t send_id, int32_t send_x, int32_t send_y,
   int32_t next_id, int32_t local_source_x, int32_t local_source_y,
   int32_t previous_x, int32_t previous_y, int32_t des_id,
-  int32_t des_x, int32_t des_y)
+  int32_t des_x, int32_t des_y, int32_t hop)
 : m_send_id (send_id), m_send_x (send_x), m_send_y (send_y), m_next_id (next_id),
 m_local_source_x (local_source_x), m_local_source_y (local_source_y), 
 m_previous_x (previous_x), m_previous_y (previous_y), m_des_id (des_id),
-m_des_x (des_x), m_des_y (des_y)
+m_des_x (des_x), m_des_y (des_y), m_hop(hop)
 {
 }
 NS_OBJECT_ENSURE_REGISTERED (JbrHeader);
@@ -380,7 +229,7 @@ JbrHeader::GetInstanceTypeId () const
 uint32_t
 JbrHeader::GetSerializedSize () const
 {
-  return 44;
+  return 48;
 }
 
 void
@@ -397,6 +246,7 @@ JbrHeader::Serialize (Buffer::Iterator i) const //シリアル化
   i.WriteHtonU32 (m_des_id);
   i.WriteHtonU32 (m_des_x);
   i.WriteHtonU32 (m_des_y);
+  i.WriteHtonU32 (m_hop);
 }
 
 uint32_t
@@ -415,6 +265,7 @@ JbrHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
   m_des_id = i.ReadNtohU32 ();
   m_des_x = i.ReadNtohU32 ();
   m_des_y = i.ReadNtohU32 ();
+  m_hop = i.ReadNtohU32 ();
 
   uint32_t dist2 = i.GetDistanceFrom (start);
 

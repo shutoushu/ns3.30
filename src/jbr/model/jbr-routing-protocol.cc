@@ -251,68 +251,118 @@ RoutingProtocol::DoInitialize (void)
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   std::cout<<"--topology--  id " << id << "x_pos " << pos.x << "y_pos" << pos.y << "\n";
 
-  //std::cout << "broadcast will be send\n";
-  //SendXBroadcast();
-
   for (int i = 1; i < 100; i++)
     {
-      if (id == 3)
-      {
-        Simulator::Schedule (Seconds (i), &RoutingProtocol::SendXUnicast, this);
-      }
-      if (id == 0)
+      if (id == 74)
         {
+          // Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
           Simulator::Schedule (Seconds (i), &RoutingProtocol::SimulationResult,
                                this); //結果出力関数
         }
     }
+  if (id == 0)
+        {
+          ReadSumoFile ();
+        }
+  if (id == 75)
+      {
+        Simulator::Schedule (Seconds (3.0), &RoutingProtocol::CallSendXUnicast, this);
+      }
 }
 
 void
 RoutingProtocol::RecvJbr (Ptr<Socket> socket)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-  std::cout << "In recv Jbr(Node " << m_ipv4->GetObject<Node> ()->GetId () << ")\n";
-  // Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
-  // Vector recvpos = mobility->GetPosition ();
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector mypos = mobility->GetPosition ();
 
   Address sourceAddress;
   Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
   TypeHeader tHeader (JBRTYPE_HELLO);
   packet->RemoveHeader (tHeader);
 
-  HelloHeader helloheader;
-  packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
-  //int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
-  // int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
-  // int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
-  // int send_road = distinctionRoad (recv_hello_posx, recv_hello_posy);
-  // int recv_road = distinctionRoad (recvpos.x, recvpos.y);
+  if (!tHeader.IsValid ())
+    {
+      NS_LOG_DEBUG ("Senko protocol message " << packet->GetUid ()
+                                              << " with unknown type received: " << tHeader.Get ()
+                                              << ". Drop");
+      return; // drop
+    }
+  switch (tHeader.Get ())
+    {
+      case JBRTYPE_HELLO: { //hello message を受け取った場合
+        std::cout << "hello packet receive\n";
+        HelloHeader helloheader;
+        packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
+        int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
+        int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
+        int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
+        std::cout << "id " << recv_hello_id << " x " << recv_hello_posx << " y "
+         << recv_hello_posy << "\n";
+        break; //breakがないとエラー起きる
+      }
+      case JBRTYPE_RECOVER: {
+        JbrHeader jbrheader;
+        packet->RemoveHeader (jbrheader);
+        int32_t send_x = jbrheader.GetSendX ();
+        int32_t send_y = jbrheader.GetSendY ();
+        int32_t local_source_x = jbrheader.GetLocalSourceX ();
+        int32_t local_source_y = jbrheader.GetLocalSourceY ();
+        int32_t previous_x = jbrheader.GetPreviousX (); 
+        int32_t previous_y = jbrheader.GetPreviousY (); 
+        int32_t next_id = jbrheader.GetNextId ();
+        int32_t des_id = jbrheader.GetDesId (); 
+        int32_t des_x = jbrheader.GetDesX ();
+        int32_t des_y = jbrheader.GetDesY (); 
+        int32_t hop = jbrheader.GetHop ();
 
-  // double distance = std::sqrt ((recv_hello_posx - recvpos.x) * (recv_hello_posx - recvpos.x) +
-  //                              (recv_hello_posy - recvpos.y) * (recv_hello_posy - recvpos.y));
+        if (id == next_id) //receive nodeがnext hop nodeとして指定されていたら　
+        {
+          int32_t local_source_distance = getDistance (local_source_x, local_source_y, des_x, des_y);
+          int32_t current_distance = getDistance (mypos.x, mypos.y, des_x, des_y);
 
-  // if (send_road != recv_road) //受信ノードと送信ノードの道路IDが違うならば
-  //   {
-  //     // std::cout << "異なる道路\n";
-  //     recvCount[id]++;
-  //     // std::cout << "In recv Jbr(Node " << m_ipv4->GetObject<Node> ()->GetId () << ")"
-  //     //           << "x=" << recvpos.x << "y=" << recvpos.y << "distance" << distance << "\n";
-  //   }
-  // else
-  //   {
-  //   }
-  std::cout << "recv id" << id << "\n"; 
+          if (local_source_distance > current_distance) //local optimum revovery
+          {
+            std::cout << "local optimum's recovery successful!  node id " << id << "\n";
+          }
+          else { //no recovery
+            SendXUnicast(send_x, send_y, local_source_x, local_source_y, previous_x, previous_y,
+            des_id, des_x, des_y, hop); 
+            std::cout << "local optimum's recovery continu\n";         
+          }
+        }
+        break;
+      }
+    default:
+      std::cout << "unknown_type\n";
+    }
 
-  // if (distance > maxLenge)
-  //   maxLenge = distance;
+    
 
-  // if (distance > 150)
-  //   std::cout << "送信者との距離 " << distance << "\n";
 }
 
 void
-RoutingProtocol::SendXUnicast (void)
+RoutingProtocol::CallSendXUnicast (void)
+{
+  int32_t one_before_x = 500;
+  int32_t one_before_y = 250; 
+  int32_t local_source_x = 500;
+  int32_t local_source_y = 200;
+  int32_t previous_x = 500; 
+  int32_t previous_y = 250; 
+  int32_t des_id = 175; 
+  int32_t des_x = 500;
+  int32_t des_y = 600; 
+  int32_t hop = 0;
+  SendXUnicast(one_before_x, one_before_y, local_source_x, local_source_y, 
+  previous_x, previous_y, des_id, des_x, des_y, hop);
+}
+
+void
+RoutingProtocol::SendXUnicast (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
+int32_t local_source_y, int32_t previous_x, int32_t previous_y, int32_t des_id, 
+int32_t des_x, int32_t des_y, int32_t hop)
 {
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
        j != m_socketAddresses.end (); ++j)
@@ -323,71 +373,54 @@ RoutingProtocol::SendXUnicast (void)
       Vector mypos = mobility->GetPosition ();
       posx = mypos.x;
       posy = mypos.y;
-      std::cout << "id" << id << "broadcast"
-                << "x=" << posx << "y=" << posy << "time" << Simulator::Now ().GetSeconds ()
+      std::cout << "id" << id << "recovery"
+                << "x=" << posx << "y=" << posy << "recovery unicast  time" << Simulator::Now ().GetSeconds ()
                 << "\n";
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      // RrepHeader rrepHeader (0, 3, Ipv4Address ("10.1.1.15"), 5, Ipv4Address ("10.1.1.13"),
-      //                        Seconds (3));
-      // packet->AddHeader (rrepHeader);
-      HelloHeader helloHeader (id, mypos.x, mypos.y);
-      packet->AddHeader (helloHeader);
+      JbrHeader JbrHeader (id, mypos.x, mypos.y, 80, local_source_x, local_source_y,
+      previous_x, previous_y, des_id, des_x, des_y, hop);
+      packet->AddHeader (JbrHeader);
 
-      TypeHeader tHeader (JBRTYPE_HELLO);
+      TypeHeader tHeader (JBRTYPE_RECOVER);
       packet->AddHeader (tHeader);
 
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
       Ipv4Address destination;
       if (iface.GetMask () == Ipv4Mask::GetOnes ())
         {
-          // destination = Ipv4Address ("255.255.255.255");
-          destination = Ipv4Address ("10.1.255.255");
-          std::cout << "\n\n\n\n\n\n\n test address" << destination << "\n";
+          destination = Ipv4Address ("255.255.255.255");
         }
       else  //絶対こっちに入る
         {
-          // destination = iface.GetBroadcast ();
-          destination = Ipv4Address ("10.1.0.5");
-          std::cout << "\n\n\n\n\n\n\n test address" << destination << "\n";
+          destination = iface.GetBroadcast ();
         }
       socket->SendTo (packet, 0, InetSocketAddress (destination, JBR_PORT));
-      std::cout << "broadcast sent\n";
     }
 }
 
-
 void
-RoutingProtocol::SendXBroadcast (void)
+RoutingProtocol::SendHelloPacket (void)
 {
   for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
        j != m_socketAddresses.end (); ++j)
     {
       int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition ();
-      posx = mypos.x;
-      posy = mypos.y;
-      std::cout << "id" << id << "broadcast"
-                << "x=" << posx << "y=" << posy << "time" << Simulator::Now ().GetSeconds ()
-                << "\n";
+
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
-      // RrepHeader rrepHeader (0, 3, Ipv4Address ("10.1.1.15"), 5, Ipv4Address ("10.1.1.13"),
-      //                        Seconds (3));
-      // packet->AddHeader (rrepHeader);
       HelloHeader helloHeader (id, mypos.x, mypos.y);
       packet->AddHeader (helloHeader);
 
       TypeHeader tHeader (JBRTYPE_HELLO);
       packet->AddHeader (tHeader);
 
-      // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
       Ipv4Address destination;
       if (iface.GetMask () == Ipv4Mask::GetOnes ())
         {
@@ -397,65 +430,136 @@ RoutingProtocol::SendXBroadcast (void)
         {
           destination = iface.GetBroadcast ();
         }
-      socket->SendTo (packet, 0, InetSocketAddress (destination, JBR_PORT));
-      std::cout << "broadcast sent\n";
+      Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 50000)));
+      Simulator::Schedule (Jitter, &RoutingProtocol::SendToHello, this, socket, packet,
+                           destination);
     }
 }
 
-int
+void
+RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination)
+{
+  socket->SendTo (packet, 0, InetSocketAddress (destination, JBR_PORT));
+}
+
+
+
+std::string
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
-    /// 道路1〜30  31〜61
-  int gridRange = 200;
-  int x = 0;
-  int y = 0;
-  int colomnCount = 1;
-  int interRange = 10; //交差点の大きさ interRange × interRange の正方形
-
-  for (int roadId = 1; roadId <= 60; roadId++)
-    {   
-        if (roadId <= 30)
-          {
-            if (x + interRange < x_point && x_point < x + gridRange - interRange && y - interRange < y_point && y_point < y + interRange) 
-            {
-              return roadId;
-            }
-            if(colomnCount == 5)
-            {
-              colomnCount = 1;
-              x = 0;
-              y = y + gridRange;
-            }
-            else {
-              x = x+ gridRange;
-              colomnCount++;
-            }
-
-            if(roadId == 30)
-            {
-              x = 0;
-              y = 0;
-            }
-          }
-        else //31〜
-          {
-            if (x - interRange < x_point && x_point < x + interRange && y +  interRange < y_point && y_point < y + gridRange -  interRange) 
-            {
-              return roadId;
-            }
-            if(colomnCount == 6)
-            {
-              colomnCount = 1;
-              x = 0;
-              y = y + gridRange;
-            }
-            else {
-              x = x+ gridRange;
-              colomnCount++;
-            }
+  int interRange = 20; //交差点の半径
+  for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
+    {
+      double distance = getDistance(x_point, y_point, itr->second, m_junction_y[itr->first]);
+      if (distance <= interRange) //交差点の内部の座標だったら
+      {
+        return itr->first; // junction(intersection) id
       }
     }
-  return 0; // ０を返す = 交差点ノード
+    std::string separator = "_"; //区切り文字指定
+    std::string from_to;
+    double min_distance = 100.0; //数値は仮おき　最小距離の道路にノードは存在する
+    std::string road_id;
+
+    for (auto itr = m_road_from_to.begin (); itr != m_road_from_to.end (); itr++)
+    {
+      from_to = itr->second;
+      replace(from_to.begin(), from_to.end(), '_', ' ');
+      std::istringstream iss(from_to);
+
+      std::string from, to;
+      iss >> from >> to ;  //road = junction from  〜 junction to
+
+      double distance = lineDistance(m_junction_x[from], m_junction_y[from], m_junction_x[to], m_junction_y[to], 
+            x_point, y_point);//線分と座標の距離
+      
+      if(min_distance > distance)
+      {
+        min_distance = distance;
+        road_id = itr->first;
+      }
+    }
+  return road_id; //roadのIDを返す
+}
+
+double
+RoutingProtocol::getDistance (double x, double y, double x2, double y2)
+{
+  double distance = std::sqrt ((x2 - x) * (x2 - x) + (y2 - y) * (y2 - y));
+
+  return distance;
+}
+
+double
+RoutingProtocol::lineDistance(double line_x1, double line_y1, double line_x2, double line_y2, 
+  double dot_x, double dot_y)
+{
+  double a,b,c; // ax + by + c = 0
+  double root;
+  double distance; //求める距離
+
+  a = line_y1 - line_y2;
+  b = line_x2 - line_x1;
+  c = (-b * line_y1) + (-a * line_x1);
+  root = sqrt(a*a + b*b);
+
+  //std::cout << "a " << a << " b " << b << " c " << c << std::endl;
+
+  if (root == 0.0) {
+    std::cout << " root が求められません" << std::endl;
+  }
+
+  distance = ((a * dot_x) + (b * dot_y) + c) / root;
+
+  if (distance < 0.0)
+  {
+    distance  = -distance;
+  }
+
+  return distance;
+}
+
+
+
+//sumoからnet fileを読み込む
+int
+RoutingProtocol::ReadSumoFile (void)
+{
+  //std::ifstream ifs("../../../sumo/tools/no_signal/200/original_net.xml");
+  std::ifstream ifs("sumo/tools/no_signal/no_signal_netfile");
+  std::string str;
+
+  if (ifs.fail()) {
+      std::cerr << "Failed to open file." << std::endl;
+      return -1;
+  }
+  while (getline(ifs, str)) { //1行ずつstrに格納
+      std::cout<<"---------------------input road segment -----------------------------\n";
+      std::cout << "#" << str << std::endl;
+      std::istringstream iss(str);
+      std::string split;
+
+      std::vector<std::string> v_road;
+      while (iss >> split) {
+          v_road.push_back(split);
+      }
+      if(v_road[0] == "junction") //junction
+      {
+        std::cout<<"junction id" << v_road[1] <<"\n";
+        std::cout<<"junction x" << v_road[2] <<"\n";
+        std::cout<<"junction y" << v_road[3] <<"\n";
+        m_junction_x[v_road[1]] = stod(v_road[2]);
+        m_junction_y[v_road[1]] = stod(v_road[3]);
+        std::cout<<"junction x test " << m_junction_x[v_road[1]] <<"\n";
+      }
+      else{ //road segment
+        std::cout<<"road id" << v_road[1] <<"\n";
+        std::cout<<"road segment from to" << v_road[2] <<"\n";
+        m_road_from_to[v_road[1]] = v_road[2];
+        std::cout << " road from to test " <<  m_road_from_to[v_road[1]] << std::endl;
+      }
+  }
+  return 0;
 }
 
 void
@@ -475,6 +579,9 @@ RoutingProtocol::SimulationResult (void) //
 }
 
 std::map<int, int> RoutingProtocol::recvCount;
+std::map<std::string, double> RoutingProtocol::m_junction_x; // key junction id value xposition
+std::map<std::string, double> RoutingProtocol::m_junction_y; // key junction id value yposition
+std::map<std::string, std::string> RoutingProtocol::m_road_from_to; // key road id value junction from to
 
 } //namespace jbr
 } //namespace ns3
