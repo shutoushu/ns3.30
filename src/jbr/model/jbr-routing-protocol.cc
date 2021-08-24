@@ -253,6 +253,7 @@ RoutingProtocol::DoInitialize (void)
 
   for (int i = 1; i < 100; i++)
     {
+      Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
       if (id == 74)
         {
           // Simulator::Schedule (Seconds (i), &RoutingProtocol::SendHelloPacket, this);
@@ -266,7 +267,7 @@ RoutingProtocol::DoInitialize (void)
         }
   if (id == 75)
       {
-        Simulator::Schedule (Seconds (3.0), &RoutingProtocol::CallSendXUnicast, this);
+        Simulator::Schedule (Seconds (3.4), &RoutingProtocol::CallSendXUnicast, this);
       }
 }
 
@@ -292,14 +293,18 @@ RoutingProtocol::RecvJbr (Ptr<Socket> socket)
   switch (tHeader.Get ())
     {
       case JBRTYPE_HELLO: { //hello message を受け取った場合
-        std::cout << "hello packet receive\n";
+        // std::cout << "hello packet receive\n";
         HelloHeader helloheader;
         packet->RemoveHeader (helloheader); //近隣ノードからのhello packet
         int32_t recv_hello_id = helloheader.GetNodeId (); //NOde ID
         int32_t recv_hello_posx = helloheader.GetPosX (); //Node xposition
         int32_t recv_hello_posy = helloheader.GetPosY (); //Node yposition
-        std::cout << "id " << recv_hello_id << " x " << recv_hello_posx << " y "
-         << recv_hello_posy << "\n";
+        int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds ();
+        // std::cout << "id " << recv_hello_id << " x " << recv_hello_posx << " y "
+        //  << recv_hello_posy << "\n";
+         SaveXpoint (recv_hello_id, recv_hello_posx);
+         SaveYpoint (recv_hello_id, recv_hello_posy);
+         SaveRecvTime (recv_hello_id, recv_hello_time);
         break; //breakがないとエラー起きる
       }
       case JBRTYPE_RECOVER: {
@@ -328,8 +333,8 @@ RoutingProtocol::RecvJbr (Ptr<Socket> socket)
           }
           else { //no recovery
             SendXUnicast(send_x, send_y, local_source_x, local_source_y, previous_x, previous_y,
-            des_id, des_x, des_y, hop); 
-            std::cout << "local optimum's recovery continu\n";         
+            des_id, des_x, des_y, hop);
+            std::cout << "local optimum's recovery continu\n";
           }
         }
         break;
@@ -337,9 +342,6 @@ RoutingProtocol::RecvJbr (Ptr<Socket> socket)
     default:
       std::cout << "unknown_type\n";
     }
-
-    
-
 }
 
 void
@@ -380,6 +382,10 @@ int32_t des_x, int32_t des_y, int32_t hop)
       Ipv4InterfaceAddress iface = j->second;
       Ptr<Packet> packet = Create<Packet> ();
 
+      hop++;
+      DecisionNextId (one_before_x, one_before_y, local_source_x, local_source_y, 
+      previous_x, previous_y,des_x, des_y);
+
       JbrHeader JbrHeader (id, mypos.x, mypos.y, 80, local_source_x, local_source_y,
       previous_x, previous_y, des_id, des_x, des_y, hop);
       packet->AddHeader (JbrHeader);
@@ -399,6 +405,36 @@ int32_t des_x, int32_t des_y, int32_t hop)
         }
       socket->SendTo (packet, 0, InetSocketAddress (destination, JBR_PORT));
     }
+}
+
+int 
+RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
+  int32_t local_source_y, int32_t previous_x, int32_t previous_y, int32_t des_x, int32_t des_y)
+{
+  int existence_intersection = 1; //0 = intersection nodeあり 1 = なし　
+  std::cout << "**********id "<<m_ipv4->GetObject<Node> ()->GetId () <<"の近隣テーブル**********\n";
+    for (auto itr = m_xpoint.begin (); itr != m_ypoint.end (); itr++) //近隣テーブルをループ intersection nodeの有無確認
+    {
+      std::cout << "neighbor id " << itr->first <<  "\n";
+      if (judgeIntersection(itr->second, m_ypoint[itr->first]) == 0)
+      {
+        // if () //直近２秒でhello packetを受信していたら
+        // {
+          int dif_last_recv = Simulator::Now ().GetMicroSeconds () - m_last_recv_time[itr->first];
+          std::cout << "dif_last_recv " << dif_last_recv << "\n";
+          existence_intersection = 0;
+          // break;
+        // }
+      }
+    }
+
+    if(existence_intersection == 0)
+    {
+      std::cout << "交差点ノードが存在\n";
+    }else {
+      std::cout << "交差点ノードが存在しない\n";
+    }
+  return 0;
 }
 
 void
@@ -442,8 +478,6 @@ RoutingProtocol::SendToHello (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
   socket->SendTo (packet, 0, InetSocketAddress (destination, JBR_PORT));
 }
 
-
-
 std::string
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
@@ -480,6 +514,21 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
       }
     }
   return road_id; //roadのIDを返す
+}
+
+int
+RoutingProtocol::judgeIntersection (int x_point, int y_point)
+{
+  int interRange = 20; //交差点の半径
+  for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
+    {
+      double distance = getDistance(x_point, y_point, itr->second, m_junction_y[itr->first]);
+      if (distance <= interRange) //交差点の内部の座標だったら
+      {
+        return 0; // on intersection
+      }
+    }
+    return 1; // no intersection node
 }
 
 double
@@ -519,6 +568,25 @@ RoutingProtocol::lineDistance(double line_x1, double line_y1, double line_x2, do
   return distance;
 }
 
+void
+RoutingProtocol::SaveXpoint (int32_t map_id, int32_t map_xpoint)
+{
+  m_xpoint[map_id] = map_xpoint;
+}
+
+void
+RoutingProtocol::SaveYpoint (int32_t map_id, int32_t map_ypoint)
+{
+  m_ypoint[map_id] = map_ypoint;
+}
+
+void
+RoutingProtocol::SaveRecvTime (int32_t map_id, int32_t map_recvtime)
+{
+  //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  m_recvtime.insert (std::make_pair (map_id, map_recvtime));
+  m_last_recv_time[map_id] = map_recvtime;
+}
 
 
 //sumoからnet fileを読み込む
@@ -559,6 +627,7 @@ RoutingProtocol::ReadSumoFile (void)
         std::cout << " road from to test " <<  m_road_from_to[v_road[1]] << std::endl;
       }
   }
+  std::cout<<"---------------------input road segment -----------------------------\n\n\n\n\n";
   return 0;
 }
 

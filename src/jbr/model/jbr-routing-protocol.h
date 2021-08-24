@@ -96,11 +96,13 @@ private:
   void CallSendXUnicast (void);
   void SendXUnicast (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
   int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
-  int32_t des_id, int32_t des_x, int32_t des_y, int32_t hop);
+  int32_t des_id, int32_t des_x, int32_t des_y, int32_t hop);\
   void RecvJbr (Ptr<Socket> socket);
 
   //**自作メソッド**//
   //road 判定 method
+  int DecisionNextId (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
+  int32_t local_source_y, int32_t previous_x, int32_t previous_y, int32_t des_x, int32_t des_y);
   int ReadSumoFile (void); //sumoからnetfileを読み込む
   double lineDistance (double line_x1, double line_y1, double line_x2, double line_y2, 
   double dot_x, double dot_y); //線分と座標の距離を返す
@@ -112,8 +114,21 @@ private:
   void SendHelloPacket (void); //hello packet を broadcast するメソッド
   void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,
                   Ipv4Address destination); //Hello packet の送信
+  
+  void SaveXpoint (int32_t map_id, int32_t map_xpoint); //近隣ノードのHello packetの情報を
+  void SaveYpoint (int32_t map_id, int32_t map_ypoint); //mapに保存する
+  void SaveRecvTime (int32_t map_id, int32_t map_recvtime); //
 
   void SimulationResult (void); //シミュレーション結果を出力する
+
+  //map
+  std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
+  std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
+  std::map<int, int> m_p_xpoint; //近隣車両の位置情報を取得するmap key=nodeid value = past xposition
+  std::map<int, int> m_p_ypoint;
+  std::multimap<int, int>
+    m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
+  std::map<int, int> m_last_recv_time; //近隣ノードから最後にhello packet を取得した時間
 
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
