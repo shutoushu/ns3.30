@@ -2255,8 +2255,8 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
                                       DoubleValue (6.0), "ReferenceDistance",
-                                      DoubleValue (35.0), ///伝搬距離250メートル
-                                      //DoubleValue (150.0),
+                                      DoubleValue (5.0), ///伝搬距離250メートル
+                                      //DoubleValue (35.0), ///伝搬距離250メートル
                                       "ReferenceLoss", DoubleValue (46.6777));
 
       wifiChannel.AddPropagationLoss ("ns3::NakagamiPropagationLossModel");
@@ -2525,6 +2525,7 @@ VanetRoutingExperiment::SetupScenario ()
         std::cout << " JBR test start \n";
         m_traceFile = "src/wave/examples/no_signal/test.tcl";
         m_nNodes = 601;
+        m_TotalSimTime = 6;
       }
 
 

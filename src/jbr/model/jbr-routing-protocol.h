@@ -103,6 +103,8 @@ private:
   //road 判定 method
   int DecisionNextId (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
   int32_t local_source_y, int32_t previous_x, int32_t previous_y, int32_t des_x, int32_t des_y);
+  int LinkRoad (std::string current_road_id, std::string neighbor_road_id); //
+  // current nodeが存在する　roadとリンクが存在するなら 1 しないなら 0
   int ReadSumoFile (void); //sumoからnetfileを読み込む
   double lineDistance (double line_x1, double line_y1, double line_x2, double line_y2, 
   double dot_x, double dot_y); //線分と座標の距離を返す
@@ -110,6 +112,9 @@ private:
   int judgeIntersection (int x_point, int y_point); //x座標 y座標から　1(no intersection) or 0(intersection)を返す
 
   double getDistance (double x, double y, double x2, double y2);
+  double getTwoPointAngle (double x, double y, double x2, double y2);
+  double getAngle (double a_x, double a_y, double b_x, double b_y, double c_x,
+                   double c_y); //3点の角度
 
   void SendHelloPacket (void); //hello packet を broadcast するメソッド
   void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,

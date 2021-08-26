@@ -1398,9 +1398,6 @@ RoutingProtocol::getAngle (double a_x, double a_y, double b_x, double b_y, doubl
   double BA_2 = (BA_x * BA_x) + (BA_y * BA_y);
   double BC_2 = (BC_x * BC_x) + (BC_y * BC_y);
 
-  //double radian = acos (cos);
-  //double angle = radian * 180 / 3.14159265;
-
   double radian = acos (BABC / (std::sqrt (BA_2 * BC_2)));
   double angle = radian * 180 / 3.14159265; //ラジアンから角度に変換
   return angle;

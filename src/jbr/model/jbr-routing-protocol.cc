@@ -375,7 +375,7 @@ int32_t des_x, int32_t des_y, int32_t hop)
       Vector mypos = mobility->GetPosition ();
       posx = mypos.x;
       posy = mypos.y;
-      std::cout << "id" << id << "recovery"
+      std::cout << "\n\nid" << id << "recovery"
                 << "x=" << posx << "y=" << posy << "recovery unicast  time" << Simulator::Now ().GetSeconds ()
                 << "\n";
       Ptr<Socket> socket = j->first;
@@ -383,10 +383,12 @@ int32_t des_x, int32_t des_y, int32_t hop)
       Ptr<Packet> packet = Create<Packet> ();
 
       hop++;
-      DecisionNextId (one_before_x, one_before_y, local_source_x, local_source_y, 
+      int32_t next_id = DecisionNextId (one_before_x, one_before_y, local_source_x, local_source_y, 
       previous_x, previous_y,des_x, des_y);
+      std::cout << "next id " << next_id << "\n";
 
-      JbrHeader JbrHeader (id, mypos.x, mypos.y, 80, local_source_x, local_source_y,
+
+      JbrHeader JbrHeader (id, mypos.x, mypos.y, next_id, local_source_x, local_source_y,
       previous_x, previous_y, des_id, des_x, des_y, hop);
       packet->AddHeader (JbrHeader);
 
@@ -403,7 +405,13 @@ int32_t des_x, int32_t des_y, int32_t hop)
         {
           destination = iface.GetBroadcast ();
         }
-      socket->SendTo (packet, 0, InetSocketAddress (destination, JBR_PORT));
+      if (next_id != 10000)
+      {
+        socket->SendTo (packet, 0, InetSocketAddress (destination, JBR_PORT));
+      }else{
+        std::cout << "\n\n\n\n\n\nrecovery strategy no next hop node\n";
+      }
+      
     }
 }
 
@@ -413,28 +421,160 @@ RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int
 {
   int existence_intersection = 1; //0 = intersection nodeあり 1 = なし　
   std::cout << "**********id "<<m_ipv4->GetObject<Node> ()->GetId () <<"の近隣テーブル**********\n";
-    for (auto itr = m_xpoint.begin (); itr != m_ypoint.end (); itr++) //近隣テーブルをループ intersection nodeの有無確認
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector current_pos = mobility->GetPosition ();
+  int closest_inter_id = 10000; //junctino node の中で最も宛先に近いノード
+  int farthest_simple_id = 10000;  // simple nodeの中で最もcurrent nodeから離れたノード
+  int minangle_id = 10000;
+  double closest_inter_to_des = 500; // 最小のintersection nodeとdestinatino nodeの距離を格納
+  double farthest_current_des = 0; // current node から最も離れているsimple nodeの距離を格納
+  double minimum_angle = 360; //minimum angle method 最小の角度を格納
+  std::string current_road_id = distinctionRoad (current_pos.x, current_pos.y);
+
+  for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++) 
+  {
+    if (judgeIntersection(itr->second, m_ypoint[itr->first]) == 0) //近隣ノードがintersection node
     {
-      std::cout << "neighbor id " << itr->first <<  "\n";
-      if (judgeIntersection(itr->second, m_ypoint[itr->first]) == 0)
+      
+      int dif_last_recv = Simulator::Now ().GetMicroSeconds () - m_last_recv_time[itr->first];
+      if (dif_last_recv < 2200000) //直近２秒でhello packetを受信していたら
       {
-        // if () //直近２秒でhello packetを受信していたら
-        // {
-          int dif_last_recv = Simulator::Now ().GetMicroSeconds () - m_last_recv_time[itr->first];
-          std::cout << "dif_last_recv " << dif_last_recv << "\n";
-          existence_intersection = 0;
-          // break;
-        // }
+        std::cout << "junction neighbor id " << itr->first <<  "\n";
+        // std::cout << "current time " << Simulator::Now ().GetMicroSeconds () << "\n";
+        // std::cout << "最後に hello packetを取得した時間は " << m_last_recv_time[itr->first] << "\n";
+        // std::cout << "dif_last_recv " << dif_last_recv << "\n";
+        if (getDistance (m_xpoint[itr->first], m_ypoint[itr->first], des_x, des_y) < closest_inter_to_des)
+        {
+          //intersection の中で宛先に近いものを更新していく
+          closest_inter_to_des = getDistance (m_xpoint[itr->first], m_ypoint[itr->first], des_x, des_y);
+          closest_inter_id = itr->first;
+        }
+        existence_intersection = 0;
+      }
+    }else{ //近隣ノードがsimple nodeのみ
+      std::cout << "simple neighbor id " << itr->first <<  "\n";
+      if(judgeIntersection(current_pos.x, current_pos.y) == 0) //current nodeがcoordinator
+      {
+        //minimum angle method
+        double sdangle = getAngle (des_x, des_y, current_pos.x, current_pos.y,
+        one_before_x, one_before_y);
+        double snangle = getAngle (m_xpoint[itr->first], m_ypoint[itr->first], current_pos.x, 
+        current_pos.y, des_x, des_y);
+        double minangle = sdangle - snangle;
+        if (minangle < 0)
+        {
+          minangle = - minangle;
+        }
+
+        if(minangle < minimum_angle)
+        {
+          minimum_angle = minangle;
+          minangle_id = itr->first;
+        }
+
+      }else{
+        //current nodeから最も離れたノード
+        std::string neighbor_road_id = distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first]);
+        int link_judge = LinkRoad (current_road_id ,neighbor_road_id); //linkもってたら1
+        if (link_judge == 1) // neighbor が linkを持つことのができるroadだったら
+        {
+          //jbr 条件 1
+          double mndis = getDistance (current_pos.x, current_pos.y, 
+          m_xpoint[itr->first], m_ypoint[itr->first]); //current to potential 
+          double cldis = getDistance (one_before_x, one_before_y, 
+          current_pos.x, current_pos.y); // current to one_before
+          double nldis = getDistance (m_xpoint[itr->first], m_ypoint[itr->first], 
+          one_before_x, one_before_y); // onebefore to potential
+          if(nldis > cldis && nldis > mndis) //jbr  potential nodeの条件
+          {
+            if(farthest_current_des < mndis)
+            {
+              farthest_current_des = mndis;
+              farthest_simple_id = itr->first;
+            }
+          }
+        }
       }
     }
-
-    if(existence_intersection == 0)
+  }
+  if(existence_intersection == 0)
+  {
+    std::cout << "交差点ノードが存在\n";
+    std::cout << "closest intersection node id is " << closest_inter_id << "\n";
+    return closest_inter_id;
+  }else {
+    std::cout << "交差点ノードが存在しない\n";
+    if(judgeIntersection(current_pos.x, current_pos.y) == 0) //current node = coordinator
     {
-      std::cout << "交差点ノードが存在\n";
-    }else {
-      std::cout << "交差点ノードが存在しない\n";
+      return minangle_id;
+    }else{
+      return farthest_simple_id;
     }
+  }
   return 0;
+}
+
+int
+RoutingProtocol::LinkRoad (std::string current_road_id, std::string neighbor_road_id)
+{
+  //current road agnle
+  std::string current_from_to = m_road_from_to[current_road_id];
+  replace(current_from_to.begin(), current_from_to.end(), '_', ' ');
+  std::istringstream iss(current_from_to);
+  std::string current_from, current_to;
+  iss >> current_from >> current_to ;  //road = junction from  〜 junction to
+  double current_angle = getTwoPointAngle(m_junction_x[current_from], m_junction_y[current_from],
+  m_junction_x[current_to], m_junction_y[current_to]);
+
+  //neighbor road angle
+  std::string neighbor_from_to = m_road_from_to[neighbor_road_id];
+  replace(neighbor_from_to.begin(), neighbor_from_to.end(), '_', ' ');
+  std::istringstream iss2(neighbor_from_to);
+  std::string neighbor_from, neighbor_to;
+  iss2 >> neighbor_from >> neighbor_to ;  //road = junction from  〜 junction to
+  double neighbor_angle = getTwoPointAngle(m_junction_x[neighbor_from], m_junction_y[neighbor_from],
+  m_junction_x[neighbor_to], m_junction_y[neighbor_to]);
+
+  double dif_angle = current_angle - neighbor_angle;
+  if (dif_angle < 0)
+  {
+    dif_angle = -dif_angle;
+  }
+
+  if (dif_angle < 10) //road同士のangle の差がほぼなければリンクを持つことができる
+  {
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+double
+RoutingProtocol::getAngle (double a_x, double a_y, double b_x, double b_y, double c_x, double c_y)
+{
+  double BA_x = a_x - b_x; //ベクトルAのｘ座標
+  double BA_y = a_y - b_y; //ベクトルAのy座標
+  double BC_x = c_x - b_x; //ベクトルCのｘ座標
+  double BC_y = c_y - b_y; //ベクトルCのy座標
+
+  double BABC = BA_x * BC_x + BA_y * BC_y;
+  double BA_2 = (BA_x * BA_x) + (BA_y * BA_y);
+  double BC_2 = (BC_x * BC_x) + (BC_y * BC_y);
+
+  //double radian = acos (cos);
+  //double angle = radian * 180 / 3.14159265;
+
+  double radian = acos (BABC / (std::sqrt (BA_2 * BC_2)));
+  double angle = radian * 180 / 3.14159265; //ラジアンから角度に変換
+  return angle;
+}
+
+double 
+RoutingProtocol::getTwoPointAngle (double x, double y, double x2, double y2)
+{
+  double radian = atan2(y2 - y,x2 - x);
+  double angle = radian * 180 / 3.14159265; //ラジアンから角度に変換
+  return angle;
 }
 
 void
