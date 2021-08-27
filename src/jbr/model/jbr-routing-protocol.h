@@ -33,6 +33,7 @@
 // #define SimTime 10
 #define StartTime 0 //broadcast 開始時刻　秒
 #define lossValue 4 //loss値にかける値
+#define maxHop 20
 
 namespace ns3 {
 namespace jbr {
@@ -115,6 +116,8 @@ private:
   double getTwoPointAngle (double x, double y, double x2, double y2);
   double getAngle (double a_x, double a_y, double b_x, double b_y, double c_x,
                    double c_y); //3点の角度
+  int RotationDirection (double a_x, double a_y, double b_x, double b_y, double c_x,
+                   double c_y);
 
   void SendHelloPacket (void); //hello packet を broadcast するメソッド
   void SendToHello (Ptr<Socket> socket, Ptr<Packet> packet,
