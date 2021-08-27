@@ -1076,16 +1076,6 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         int32_t recv_hello_acce = helloheader.GetAcce ();
         int32_t recv_hello_time = Simulator::Now ().GetMicroSeconds (); //
 
-        // // ////*********recv hello packet log*****************////////////////
-        // if(recv_hello_id == 1)
-        // {
-        //   std::cout << "-----------------Node ID " << id << "が受信したHello packetは"
-        //   << "id:" << recv_hello_id << "xposition" << recv_hello_posx << "yposition"
-        //   << recv_hello_posy << "past xposition" << recv_hello_p_posx << "past yposition"
-        //   << recv_hello_p_posy << "acce" << recv_hello_acce << "\n";
-        //   std::cout << " shuto protocol  hello receive  id " << id << "  time  " << Simulator::Now ().GetMicroSeconds () << "\n";
-        // }
-        // // ////*********************************************////////////////
         SaveXpoint (recv_hello_id, recv_hello_posx, recv_hello_p_posx);
         SaveYpoint (recv_hello_id, recv_hello_posy, recv_hello_p_posy);
         setVector (recv_hello_id, recv_hello_posx, recv_hello_posy, recv_hello_p_posx,
@@ -1145,27 +1135,6 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
               }
             break;
           }
-
-        // int32_t pri1_id = sendheader.GetId1 ();
-        // int32_t pri2_id = sendheader.GetId2 ();
-        // int32_t pri3_id = sendheader.GetId3 ();
-        // int32_t pri4_id = sendheader.GetId4 ();
-        // int32_t pri5_id = sendheader.GetId5 ();
-
-        ////*********recv hello packet log*****************////////////////
-        // std::cout << " id " << id << "が受信したsigo packetは\n";
-        // for (int i = 0; i < 5; i++)
-        //   {
-        //     if (pri_id[i] != 1000000)
-        //       std::cout << "pri_id[" << i << "] =" << pri_id[i] << "すなわち優先度は" << i + 1
-        //                 << "\n";
-        //   }
-        // std::cout << "from id" << hopcount << "\n";
-        //           << "id:" << des_id << "xposition" << des_x << "yposition" << des_y
-        //           << "priority 1 node id" << pri1_id << "priority 2 node id" << pri2_id
-        //           << "priority 3 node id" << pri3_id << "priority 4 node id" << pri4_id
-        //           << "priority 5 node id" << pri5_id << "\n";
-        ////*********************************************////////////////
 
         if (m_wait[des_id] != 0) //待ち状態ならば
           {
@@ -1271,15 +1240,8 @@ RoutingProtocol::SaveYpoint (int32_t map_id, int32_t map_ypoint, int32_t map_p_y
 void
 RoutingProtocol::setVector (int hello_id, double x, double y, double xp, double yp, int acce)
 {
-  // double radian = std::atan2(yp - y,xp - x);
-
   m_acce[hello_id] = acce; //加速度を保存　
-  // double degree = radian * 180.0 / M_PI; //cos sinではradianを用いる　
-  // std::cout<<"\n radian" << radian << "degree" << degree << "\n";
   double distance = getDistance (x, y, xp, yp); //1secondの位置の移動なのでこれがm/sの秒速になる
-  // double x_vec = distance * std::cos(radian); //x成分
-  // double y_vec = distance * std::sin(radian); //y成分
-  // std::cout<<"distance" << distance << "x_vec" << x_vec << "y_vec" << y_vec << "\n";
   m_speed[hello_id] = distance; // 速度を保存
 
   x = x - xp;
@@ -1292,7 +1254,6 @@ RoutingProtocol::setVector (int hello_id, double x, double y, double xp, double 
 void
 RoutingProtocol::PredictionPosition (void) //近隣ノードの予測位置を保存する
 {
-  // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   for (auto itr = m_speed.begin (); itr != m_speed.end (); itr++) //近隣テーブルをループ
     {
 
@@ -1304,16 +1265,6 @@ RoutingProtocol::PredictionPosition (void) //近隣ノードの予測位置を�
 
       m_pre_xpoint[itr->first] = m_xpoint[itr->first] + pre_cos;
       m_pre_ypoint[itr->first] = m_ypoint[itr->first] + pre_sin;
-
-      // if(id == 215)
-      // {
-      //   std::cout<< "\n\n\n\n\n\n\n----------id" << itr->first <<"m xpoint" << m_xpoint[itr->first]
-      //   << " pre xpoint" << m_pre_xpoint[itr->first] <<"m ypoint" << m_ypoint[itr->first]
-      //   << "pre ypoint" << m_pre_ypoint[itr->first] << "diftime" << diftime << "\n";
-      //   std::cout<< "radian " << m_radian[itr->first] <<"degree " << m_radian[itr->first] * 180.0 / M_PI
-      //   << "cos" << std::cos(m_radian[itr->first]) <<"sin" << std::sin(m_radian[itr->first])
-      //   << "speed"<< itr->second << "acce" << m_acce[itr->first] << "\n";
-      // }
     }
 }
 
@@ -1431,74 +1382,11 @@ RoutingProtocol::SetMySpeed (void)
   m_my_speed[id] = speed;
 }
 
-// int
-// RoutingProtocol::distinctionRoad (int x_point, int y_point)
-// {
-//   /// 道路1〜30  31〜61
-//   int gridRange = 200;
-//   int x = 0;
-//   int y = 0;
-//   int colomnCount = 1;
-//   int interRange = 20; //交差点の大きさ interRange × interRange の正方形
-
-//   for (int roadId = 1; roadId <= 60; roadId++)
-//     {
-//       if (roadId <= 30)
-//         {
-//           if (x + interRange < x_point && x_point < x + gridRange - interRange &&
-//               y - interRange < y_point && y_point < y + interRange)
-//             {
-//               return roadId;
-//             }
-//           if (colomnCount == 5)
-//             {
-//               colomnCount = 1;
-//               x = 0;
-//               y = y + gridRange;
-//             }
-//           else
-//             {
-//               x = x + gridRange;
-//               colomnCount++;
-//             }
-
-//           if (roadId == 30)
-//             {
-//               x = 0;
-//               y = 0;
-//             }
-//         }
-//       else //31〜
-//         {
-//           if (x - interRange < x_point && x_point < x + interRange && y + interRange < y_point &&
-//               y_point < y + gridRange - interRange)
-//             {
-//               return roadId;
-//             }
-//           if (colomnCount == 6)
-//             {
-//               colomnCount = 1;
-//               x = 0;
-//               y = y + gridRange;
-//             }
-//           else
-//             {
-//               x = x + gridRange;
-//               colomnCount++;
-//             }
-//         }
-//     }
-//   return 0; // ０を返す = 交差点ノード
-// }
-
-///home/shuto/workspace/ns-3-allinone/ns3.30/sumo/tools/no_signal/original_net.xmlファイルから取得
 
 int
 RoutingProtocol::judgeIntersection (int x_point, int y_point)
 {
   int interRange = 20; //交差点の半径
-  // junction judgement roop
-  // std::cout << "\n\n\n\n\n\n --------distinction Road the node's position is " << x_point << ", " << y_point << std::endl;
   for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
     {
       double distance = getDistance(x_point, y_point, itr->second, m_junction_y[itr->first]);
@@ -1507,7 +1395,6 @@ RoutingProtocol::judgeIntersection (int x_point, int y_point)
         return 0; // on intersection
       }
     }
-
     return 1; // no intersection node
 }
 
@@ -1516,26 +1403,14 @@ std::string
 RoutingProtocol::distinctionRoad (int x_point, int y_point)
 {
   int interRange = 20; //交差点の半径
-  // junction judgement roop
-  // std::cout << "\n\n\n\n\n\n --------distinction Road the node's position is " << x_point << ", " << y_point << std::endl;
   for (auto itr = m_junction_x.begin (); itr != m_junction_x.end (); itr++)
     {
-      // std::cout << "junction id = " << itr->first // キーを表示
-      //           << "junction x = " << itr->second << "junction y = " << m_junction_y[itr->first] << "\n"; // 値を表示
       double distance = getDistance(x_point, y_point, itr->second, m_junction_y[itr->first]);
-      // std::cout<<"get distance" << distance << std::endl;
-
       if (distance <= interRange) //交差点の内部の座標だったら
       {
-        // std::cout << "the node exists in junction" << itr->first << std::endl;
         return itr->first; // junction(intersection) id
       }
     }
-
-    //std::cout << " -----------the node does not exist in junction x=" << x_point << "y=" << y_point <<   "----------\n\n\n\n\n\n\n\n" << std::endl;
-
-    //road judgement
-    //std::cout << "\n\n\n-----------------------road judgement roop start \n";
     std::string separator = "_"; //区切り文字指定
     std::string from_to;
     double min_distance = 100.0; //数値は仮おき　最小距離の道路にノードは存在する
@@ -1559,9 +1434,6 @@ RoutingProtocol::distinctionRoad (int x_point, int y_point)
         road_id = itr->first;
       }
     }
-  // std::cout << "the node exits in road id " << road_id << std::endl;
-    
-  // std::cout<<"\n\n\n\n\n\n------- finish distinction Road method ------------------- " << std::endl;
   return road_id; //roadのIDを返す
 }
 
@@ -1577,8 +1449,6 @@ RoutingProtocol::lineDistance(double line_x1, double line_y1, double line_x2, do
   b = line_x2 - line_x1;
   c = (-b * line_y1) + (-a * line_x1);
   root = sqrt(a*a + b*b);
-
-  //std::cout << "a " << a << " b " << b << " c " << c << std::endl;
 
   if (root == 0.0) {
     std::cout << " root が求められません" << std::endl;
@@ -1639,79 +1509,6 @@ RoutingProtocol::ReadSumoFile (void)
   return 0;
 }
 
-
-// void
-// RoutingProtocol::RoadCenterPoint (void)
-// {
-//   int count = 1;
-//   int gridRange = 200;
-
-//   for (int roadId = 1; roadId <= 60; roadId++)
-//     {
-//       if (roadId <= 30)
-//         {
-//           if (count == 5) //7のときcount変数を初期化
-//             {
-//               count = 1;
-//               roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
-//               roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
-//             }
-//           else // 5以外は足していく
-//             {
-//               if (roadId == 1)
-//                 {
-//                   roadCenterPointX[roadId] = 100;
-//                   roadCenterPointY[roadId] = 0;
-//                 }
-//               else if (count == 1)
-//                 {
-//                   roadCenterPointX[roadId] = 100;
-//                   roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + 200;
-//                 }
-//               else
-//                 {
-//                   roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
-//                   roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
-//                 }
-//               count++;
-//             }
-
-//           if (roadId == 30)
-//             {
-//               count = 1;
-//             }
-//         }
-//       else //31〜
-//         {
-//           if (count == 6) //6のときcount変数を初期化
-//             {
-//               count = 1;
-//               roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
-//               roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
-//             }
-//           else // 6以外は足していく
-//             {
-//               if (roadId == 31)
-//                 {
-//                   roadCenterPointX[roadId] = 0;
-//                   roadCenterPointY[roadId] = 100;
-//                 }
-//               else if (count == 1)
-//                 {
-//                   roadCenterPointX[roadId] = 0;
-//                   roadCenterPointY[roadId] = roadCenterPointY[roadId - 1] + gridRange;
-//                 }
-//               else
-//                 {
-//                   roadCenterPointX[roadId] = roadCenterPointX[roadId - 1] + gridRange;
-//                   roadCenterPointY[roadId] = roadCenterPointY[roadId - 1];
-//                 }
-//               count++;
-//             }
-//         }
-//     }
-// }
-
 //road の中心座標をmapにセットする関数
 void
 RoutingProtocol::RoadCenterPoint (void)
@@ -1729,8 +1526,6 @@ RoutingProtocol::RoadCenterPoint (void)
       m_road_center_x[itr->first] = (m_junction_x[from] + m_junction_x[to]) / 2;
       m_road_center_y[itr->first] = (m_junction_y[from] + m_junction_y[to]) / 2;
 
-      // std::cout << "road center  point check  --> center x = " << m_road_center_x[itr->first]  << 
-      // "center y = " << m_road_center_y[itr->first] << "road id = " << itr->first << std::endl;
     }
 }
 
