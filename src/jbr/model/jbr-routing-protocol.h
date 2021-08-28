@@ -97,7 +97,7 @@ private:
   void CallSendXUnicast (void);
   void SendXUnicast (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
   int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
-  int32_t des_id, int32_t des_x, int32_t des_y, int32_t hop);\
+  int32_t des_id, int32_t des_x, int32_t des_y, int32_t hop);
   void RecvJbr (Ptr<Socket> socket);
 
   //**自作メソッド**//

@@ -1037,11 +1037,17 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       else
         {
           if (pri_id[1] != 10000000) //中継候補ノードをⅠ個も持っていないノードはbrさせない
+          {
             Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToSigo, this,
                                  socket, packet, destination, hopcount, des_id);
+          }else{// local optimum problem or neighbor node 0
+                // recovery protocolの場合分け
+            std::cout << "local optimum problem 発生 id " <<  send_node_id << std::endl;
+          }
         }
     }
 } // namespace sigo
+
 
 void
 RoutingProtocol::RecvSigo (Ptr<Socket> socket)

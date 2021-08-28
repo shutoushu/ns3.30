@@ -74,6 +74,7 @@ extern int Grobal_SourceNodeNum; //grobal data packet 送信ノード数
 extern int Grobal_m_beta; //grobal shadowing parameter 
 extern int Grobal_m_gamma;
 extern double Grobal_InterPoint; //grobal 交差点ノードのポイント重み付け
+extern int Grobal_recovery_protocol; // 1 = sigo 2 = jbr 3 = gpcr  0 = recovery なし　
 
 
 namespace ns3 {

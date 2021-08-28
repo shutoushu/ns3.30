@@ -486,7 +486,8 @@ private:
 
   double m_TotalSimTime; ///< seconds
   uint32_t
-      m_protocol; ///< routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR, 5=SAMPLE 6=LSGO 7=SHUTOUSHU 8=SIGO
+      m_protocol; ///< routing protocol; 0=NONE, 1=OLSR, 2=AODV, 3=DSDV, 4=DSR, 
+      //5=SAMPLE 6=LSGO 7=SHUTOUSHU 8=SIGO 9=sigo recovery 9 =- jbr recovery 10 = gpcr recovery
   uint32_t m_port; ///< port
   uint32_t m_nSinks; ///< number of sink nodes (< all nodes)
   int m_routingTables; ///< dump routing table (at t=5 sec).  0=No, 1=Yes
@@ -632,6 +633,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
 
     case 8:
       list.Add (sigo, 100);
+      Grobal_recovery_protocol = 0;
       m_protocolName = "SIGO";
       std::cout << "obstacle debug ---------------------------------------------------------sigo "
                    "protocol done"
@@ -639,12 +641,23 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
       break;
 
     case 9:
-      list.Add (jbr, 100);
-      m_protocolName = "JBR";
+      list.Add (sigo, 100);
+      Grobal_recovery_protocol  = 1;
+      m_protocolName = "SIGO recovery ";
       std::cout << "obstacle debug ---------------------------------------------------------jbr "
                    "protocol done"
                 << "\n\n";
       break;
+
+    case 10:
+      list.Add (sigo, 100);
+      m_protocolName = "JBR recovery";
+      Grobal_recovery_protocol  = 2;
+      std::cout << "obstacle debug ---------------------------------------------------------jbr "
+                   "protocol done"
+                << "\n\n";
+      break;
+
     default:
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);
     }
@@ -2255,11 +2268,11 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
                                       DoubleValue (6.0), "ReferenceDistance",
-                                      DoubleValue (15.0), ///伝搬距離250メートル
-                                      //DoubleValue (35.0), ///伝搬距離250メートル
+                                      //DoubleValue (15.0), ///test メートル
+                                      DoubleValue (35.0), ///伝搬距離250メートル
                                       "ReferenceLoss", DoubleValue (46.6777));
 
-      // wifiChannel.AddPropagationLoss ("ns3::NakagamiPropagationLossModel");
+      wifiChannel.AddPropagationLoss ("ns3::NakagamiPropagationLossModel");
 
       std::cout << "obstacle debug  -------------------------------------------------------set "
                    "propagation loss model logdistance propagation model"
