@@ -72,6 +72,7 @@ TypeHeader::Deserialize (Buffer::Iterator start)
     // case SIGOTYPE_RERR:
     // case SIGOTYPE_RREP_ACK:
     case SIGOTYPE_SEND:
+    case SIGOTYPE_JBR_RECOVER:
       case SIGOTYPE_HELLO: {
         m_type = (MessageType) type;
         break;
@@ -111,6 +112,10 @@ TypeHeader::Print (std::ostream &os) const
       }
       case SIGOTYPE_HELLO: {
         os << "HELLO";
+        break;
+      }
+      case SIGOTYPE_JBR_RECOVER: {
+        os << "JBR";
         break;
       }
     default:
@@ -303,6 +308,99 @@ operator<< (std::ostream &os, SendHeader const &h)
 }
 
 //**********************end SIGO Send***************************************//
+
+
+// *********************** jbr recovery unicast*****************************//
+JbrHeader::JbrHeader (int32_t send_id, int32_t send_x, int32_t send_y,
+  int32_t next_id, int32_t local_source_x, int32_t local_source_y,
+  int32_t previous_x, int32_t previous_y, int32_t des_id,
+  int32_t des_x, int32_t des_y, int32_t hop)
+: m_send_id (send_id), m_send_x (send_x), m_send_y (send_y), m_next_id (next_id),
+m_local_source_x (local_source_x), m_local_source_y (local_source_y), 
+m_previous_x (previous_x), m_previous_y (previous_y), m_des_id (des_id),
+m_des_x (des_x), m_des_y (des_y), m_hop(hop)
+{
+}
+NS_OBJECT_ENSURE_REGISTERED (JbrHeader);
+
+TypeId
+JbrHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::sigo::JbrHeader")
+                          .SetParent<Header> ()
+                          .SetGroupName ("Sigo")
+                          .AddConstructor<JbrHeader> ();
+  return tid;
+}
+
+TypeId
+JbrHeader::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+JbrHeader::GetSerializedSize () const
+{
+  return 48;
+}
+
+void
+JbrHeader::Serialize (Buffer::Iterator i) const //シリアル化
+{
+  i.WriteHtonU32 (m_send_id);
+  i.WriteHtonU32 (m_send_x);
+  i.WriteHtonU32 (m_send_y);
+  i.WriteHtonU32 (m_next_id);
+  i.WriteHtonU32 (m_local_source_x);
+  i.WriteHtonU32 (m_local_source_y);
+  i.WriteHtonU32 (m_previous_x);
+  i.WriteHtonU32 (m_previous_y);
+  i.WriteHtonU32 (m_des_id);
+  i.WriteHtonU32 (m_des_x);
+  i.WriteHtonU32 (m_des_y);
+  i.WriteHtonU32 (m_hop);
+}
+
+uint32_t
+JbrHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
+{
+  Buffer::Iterator i = start;
+
+  m_send_id = i.ReadNtohU32 ();
+  m_send_x = i.ReadNtohU32 ();
+  m_send_y = i.ReadNtohU32 ();
+  m_next_id = i.ReadNtohU32 ();
+  m_local_source_x = i.ReadNtohU32 ();
+  m_local_source_y = i.ReadNtohU32 ();  
+  m_previous_x = i.ReadNtohU32 ();
+  m_previous_y = i.ReadNtohU32 ();
+  m_des_id = i.ReadNtohU32 ();
+  m_des_x = i.ReadNtohU32 ();
+  m_des_y = i.ReadNtohU32 ();
+  m_hop = i.ReadNtohU32 ();
+
+  uint32_t dist2 = i.GetDistanceFrom (start);
+
+  NS_ASSERT (dist2 == GetSerializedSize ());
+  return dist2;
+}
+
+void
+JbrHeader::Print (std::ostream &os) const
+{
+  // os << "NodeId " << m_nodeid;
+  // os << "NodePointX " << m_posx;
+  // os << "NodePointY" << m_posy;
+}
+std::ostream &
+operator<< (std::ostream &os, JbrHeader const &h)
+{
+  h.Print (os);
+  return os;
+}
+
+// *********************** end jbr recovery unicast*****************************//
 
 } // namespace sigo
 } // namespace ns3

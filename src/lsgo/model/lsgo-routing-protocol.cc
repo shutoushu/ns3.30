@@ -1065,7 +1065,7 @@ RoutingProtocol::SimulationResult (void) //
       if(Buildings == 1)
       {
         ////書き出し path
-       std::string shadow_dir = "data/get_data/test/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+       std::string shadow_dir = "data/get_data/recover_test/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";

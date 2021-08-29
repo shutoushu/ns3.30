@@ -367,7 +367,7 @@ RoutingProtocol::Send ()
           double shift_time = 0.3; //送信時間を0.1秒ずらす
 
           //SendSigoBroadcast (0, des_list[index_time], m_my_posx[des_list[index_time]], m_my_posy[des_list[index_time]], 1);
-          Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::SendSigoBroadcast, this, 0,
+          Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::FirstSendSigoBroadcast, this, 0,
                                des_list[index_time], m_my_posx[des_list[index_time]],
                                m_my_posy[des_list[index_time]], 1);
           std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
@@ -777,6 +777,300 @@ RoutingProtocol::SendToSigo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address
 
 void
 RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
+          int32_t hopcount, int32_t one_before_x, int32_t one_before_y)
+{
+
+  for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
+       j != m_socketAddresses.end (); ++j)
+    {
+      if (hopcount > maxHop) // hop数が最大値を超えたらブレイク
+        break;
+      int send_node_id = m_ipv4->GetObject<Node> ()->GetId (); //broadcastするノードID
+      Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+      Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
+      SetCountTimeMap (); //window sizeないの最初のhelloを受け取った時間と回数をマップに格納する関数
+
+      SetEtxMap (); //m_rt と EtX mapをセットする
+      PredictionPosition (); //予測位置を格納する
+      SetPriValueMap (des_x, des_y); //優先度を決める値をセットする関数
+
+      int32_t pri_id[6];
+      pri_id[1] = 10000000; ///ダミーID
+      pri_id[2] = 10000000;
+      pri_id[3] = 10000000;
+      pri_id[4] = 10000000;
+      pri_id[5] = 10000000;
+
+      for (int i = 1; i < 6; i++) //5回回して、大きいものから取り出して削除する
+        {
+          int count = 1;
+          int max_id = 10000000;
+          double max_value = 0;
+          for (auto itr = m_pri_value.begin (); itr != m_pri_value.end (); itr++)
+            {
+
+              if (count == 1)
+                {
+                  max_value = m_pri_value[itr->first];
+                }
+              else
+                {
+                  if (max_value < m_pri_value[itr->first])
+                    {
+                      max_value = m_pri_value[itr->first];
+                    }
+                }
+              count++;
+            }
+
+          for (auto itr = m_pri_value.begin (); itr != m_pri_value.end (); itr++)
+            {
+
+              if (m_pri_value[itr->first] == max_value)
+                {
+                  max_id = itr->first;
+                }
+            }
+
+          m_pri_value.erase (max_id);
+
+          switch (i)
+            {
+            case 1:
+              pri_id[1] = max_id;
+              break;
+            case 2:
+              pri_id[2] = max_id;
+              break;
+            case 3:
+              pri_id[3] = max_id;
+              break;
+            case 4:
+              pri_id[4] = max_id;
+              break;
+            case 5:
+              pri_id[5] = max_id;
+              break;
+            }
+        }
+
+      // 候補ノード選択アルゴリズム
+      int candidataNum = 5; // 候補ノード数　初期値は最大
+
+      for (int n = 1; n < 6; n++) //5回回して、 条件を満たすまでまわる nは候補ノード数
+        {
+          double infiniteProduct = 1; // 総乗
+          for (int p = 1; p <= n; p++) //pは優先度  優先度は1から回す
+            {
+              double rtMiss = 1 - m_rt[pri_id[p]]; // 伝送に失敗する予想確率
+              infiniteProduct = infiniteProduct * rtMiss;
+            }
+          if (TransProbability <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
+            {
+              std::cout << "infineteProduct" << infiniteProduct << "n" << n << "\n";
+              candidataNum = n; //候補ノード数を変更
+              break;
+            }
+        }
+
+      //std::cout << "候補ノード数は" << candidataNum << "\n";
+      switch (candidataNum) //候補ノード数によってダミーノードIDを加える
+        {
+        case 1:
+          pri_id[2] = 10000000;
+          pri_id[3] = 10000000;
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 2:
+          pri_id[3] = 10000000;
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 3:
+          pri_id[4] = 10000000;
+          pri_id[5] = 10000000;
+          break;
+        case 4:
+          pri_id[5] = 10000000;
+          break;
+        }
+
+      for (int i = 1; i < 6; i++)
+        {
+          if (pri_id[i] != 10000000)
+            {
+              std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
+                        << m_rt[pri_id[i]] << "\n";
+            }
+        }
+      if (pri_value != 0) //source node じゃなかったら
+        {
+          hopcount++;
+        }
+
+      s_source_id.push_back (send_node_id);
+      std::cout << "s_source_id push back  send_node_id = " << send_node_id << "\n";
+      s_source_x.push_back (mypos.x);
+      s_source_y.push_back (mypos.y);
+      s_time.push_back (Simulator::Now ().GetMicroSeconds ());
+      s_hop.push_back (hopcount);
+      s_pri_1_id.push_back (pri_id[1]);
+      s_pri_2_id.push_back (pri_id[2]);
+      s_pri_3_id.push_back (pri_id[3]);
+      s_pri_4_id.push_back (pri_id[4]);
+      s_pri_5_id.push_back (pri_id[5]);
+      s_pri_1_r.push_back (m_rt[pri_id[1]]);
+      s_pri_2_r.push_back (m_rt[pri_id[2]]);
+      s_pri_3_r.push_back (m_rt[pri_id[3]]);
+      s_pri_4_r.push_back (m_rt[pri_id[4]]);
+      s_pri_5_r.push_back (m_rt[pri_id[5]]);
+      s_des_id.push_back (des_id);
+      s_send_log.push_back (0); //一旦0にする send関数で本当にsendしたら1 に変える
+      m_send_check[des_id] = sendpacketCount;
+
+      sendpacketCount++;
+      ////////////////////////交差点判定
+      if (judgeIntersection (m_xpoint[pri_id[1]], m_ypoint[pri_id[1]]) == 0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_1_id.push_back (1);
+        }
+      else
+        {
+          s_inter_1_id.push_back (0);
+        }
+
+      if (judgeIntersection (m_xpoint[pri_id[2]], m_ypoint[pri_id[2]]) == 0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_2_id.push_back (1);
+        }
+      else
+        {
+          s_inter_2_id.push_back (0);
+        }
+
+      if (judgeIntersection (m_xpoint[pri_id[3]], m_ypoint[pri_id[3]]) == 0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_3_id.push_back (1);
+        }
+      else
+        {
+          s_inter_3_id.push_back (0);
+        }
+
+      if (judgeIntersection (m_xpoint[pri_id[4]], m_ypoint[pri_id[4]]) == 0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_4_id.push_back (1);
+        }
+      else
+        {
+          s_inter_4_id.push_back (0);
+        }
+
+      if (judgeIntersection (m_xpoint[pri_id[5]], m_ypoint[pri_id[5]]) == 0) //優先度 iのノードが交差点ノードならば
+        {
+          s_inter_5_id.push_back (1);
+        }
+      else
+        {
+          s_inter_5_id.push_back (0);
+        }
+
+      m_recvcount.clear ();
+      m_first_recv_time.clear ();
+      m_etx.clear ();
+      m_pri_value.clear ();
+      m_rt.clear (); //保持している予想伝送確率をクリア
+
+      Ptr<Socket> socket = j->first;
+      Ipv4InterfaceAddress iface = j->second;
+      Ptr<Packet> packet = Create<Packet> ();
+
+      if (pri_id[1] != 10000000) //中継候補ノードが1つ以上存在するならば
+      {
+        SendHeader sendHeader (des_id, des_x, des_y, send_node_id, mypos.x, mypos.y, hopcount,
+                             pri_id[1], pri_id[2], pri_id[3], pri_id[4], pri_id[5]);
+
+        packet->AddHeader (sendHeader);
+
+        TypeHeader tHeader (SIGOTYPE_SEND);
+        packet->AddHeader (tHeader);
+      }else{// local optimum problem
+        if(Grobal_recovery_protocol == 0)
+        {
+          // no recovery
+          SendHeader sendHeader (des_id, des_x, des_y, send_node_id, mypos.x, mypos.y, hopcount,
+                             pri_id[1], pri_id[2], pri_id[3], pri_id[4], pri_id[5]);
+          packet->AddHeader (sendHeader);
+          TypeHeader tHeader (SIGOTYPE_SEND);
+          packet->AddHeader (tHeader);
+        }else if(Grobal_recovery_protocol == 1)
+        {
+          //sigo recovery 
+        }else if(Grobal_recovery_protocol == 2)
+        {
+          // //jbr recovery
+          int32_t next_id = DecisionNextId(one_before_x, one_before_y, mypos.x, mypos.y,
+          one_before_x, one_before_y, des_x, des_y);
+          JbrHeader jbrHeader (send_node_id, mypos.x, mypos.y, next_id, mypos.x, mypos.y,
+          one_before_x, one_before_y, des_id, des_x, des_y, hopcount);
+          packet->AddHeader (jbrHeader);
+
+          TypeHeader tHeader (SIGOTYPE_JBR_RECOVER);
+          packet->AddHeader (tHeader);
+        }else{
+          //gpcr recovery
+        }
+      }
+
+      
+
+      int32_t wait_time = (pri_value * WaitT) - WaitT; //待ち時間
+      std::mt19937 rand_src (Grobal_Seed); //シード値
+      std::uniform_int_distribution<int> wait_Jitter (100, 500);
+
+      wait_time = wait_time + wait_Jitter(rand_src);
+      m_wait[des_id] = hopcount; //今から待機するホップカウント
+
+      // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+      Ipv4Address destination;
+      if (iface.GetMask () == Ipv4Mask::GetOnes ())
+        {
+          destination = Ipv4Address ("255.255.255.255");
+        }
+      else
+        {
+          destination = iface.GetBroadcast ();
+        }
+
+      if (pri_value == 0) //初期のソースノードなら無条件にbroadcast
+        {
+          socket->SendTo (packet, 0, InetSocketAddress (destination, SIGO_PORT));
+          std::cout << "id " << send_node_id
+                    << " source node broadcast----------------------------------------------------"
+                    << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
+        }
+      else
+        {
+          if (pri_id[1] != 10000000) //中継候補ノードをⅠ個も持っていないノードはbrさせない
+          {
+            Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToSigo, this,
+                                 socket, packet, destination, hopcount, des_id);
+          }else{// local optimum problem or neighbor node 0
+                // recovery protocolの場合分け
+            std::cout << "local optimum problem 発生 id " <<  send_node_id << std::endl;
+            if (Grobal_recovery_protocol != 0)
+            {
+              Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToSigo, this,
+                                 socket, packet, destination, hopcount, des_id);
+            }
+          }
+        }
+    }
+} 
+
+void
+RoutingProtocol::FirstSendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
                                     int32_t hopcount)
 {
 
@@ -789,22 +1083,6 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
       SetCountTimeMap (); //window sizeないの最初のhelloを受け取った時間と回数をマップに格納する関数
-      for (auto itr = m_first_recv_time.begin (); itr != m_first_recv_time.end (); itr++)
-        {
-          //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-          // std::cout << "id" << id;
-          // std::cout << "が持つ近隣ノードID  = " << itr->first // キーを表示
-          //           << "からの最初のHellomessage取得時間は  = " << itr->second << "\n"; // 値を表示
-        }
-      for (auto itr = m_recvcount.begin (); itr != m_recvcount.end (); itr++)
-        {
-          //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
-          // std::cout << "id" << id;
-          // std::cout << "が持つ近隣ノードID  = " << itr->first // キーを表示
-          //           << "からの最初のHellomessageの取得回数は  = " << itr->second
-          //           << "\n"; // 値を表示
-        }
-
       SetEtxMap (); //m_rt と EtX mapをセットする
       PredictionPosition (); //予測位置を格納する
       SetPriValueMap (des_x, des_y); //優先度を決める値をセットする関数
@@ -1040,13 +1318,11 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
           {
             Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToSigo, this,
                                  socket, packet, destination, hopcount, des_id);
-          }else{// local optimum problem or neighbor node 0
-                // recovery protocolの場合分け
-            std::cout << "local optimum problem 発生 id " <<  send_node_id << std::endl;
           }
         }
     }
-} // namespace sigo
+} 
+
 
 
 void
@@ -1177,7 +1453,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
                         p_pri_5.push_back (pri_id[4]);
                         packetCount++;
                       }
-                    SendSigoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
+                    SendSigoBroadcast (i + 1, des_id, des_x, des_y, hopcount, send_x, send_y);
                   }
                 else //含まれていないか
                   {
@@ -1216,7 +1492,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
                         p_pri_5.push_back (pri_id[4]);
                         packetCount++;
                       }
-                    SendSigoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
+                    SendSigoBroadcast (i + 1, des_id, des_x, des_y, hopcount, send_x, send_y);
                   }
                 else //含まれていないか
                   {
@@ -1224,6 +1500,45 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
               }
           }
 
+        break;
+      }case SIGOTYPE_JBR_RECOVER:
+      {
+        JbrHeader jbrheader;
+        packet->RemoveHeader (jbrheader);
+        int32_t send_x = jbrheader.GetSendX ();
+        int32_t send_y = jbrheader.GetSendY ();
+        int32_t local_source_x = jbrheader.GetLocalSourceX ();
+        int32_t local_source_y = jbrheader.GetLocalSourceY ();
+        int32_t previous_x = jbrheader.GetPreviousX (); 
+        int32_t previous_y = jbrheader.GetPreviousY (); 
+        int32_t next_id = jbrheader.GetNextId ();
+        int32_t des_id = jbrheader.GetDesId (); 
+        int32_t des_x = jbrheader.GetDesX ();
+        int32_t des_y = jbrheader.GetDesY (); 
+        int32_t hop = jbrheader.GetHop ();
+        if (next_id == id)
+        {
+          int32_t local_source_distance = getDistance (local_source_x, local_source_y, des_x, des_y);
+          int32_t current_distance = getDistance (mypos.x, mypos.y, des_x, des_y);
+
+          if (local_source_distance > current_distance) //local optimum revovery
+          {
+            std::cout << "\nlocal optimum's recovery successful!  node id " << id << "\n";
+            std::cout << "local source node x y " << local_source_x << " , "<< local_source_y << 
+            "current distance to destination" << current_distance << "\n";
+            SendSigoBroadcast(0, des_id, des_x, des_y, hop, send_x, send_y);
+          }
+          else { //no recovery
+            if (maxHop < hop)
+            {
+              std::cout << "\n*************reach max hop************* \n";
+              break;
+            }
+            SendJbrUnicast(send_x, send_y, local_source_x, local_source_y, previous_x, previous_y,
+            des_id, des_x, des_y, hop);
+            std::cout << "local optimum's recovery continu\n";
+          }
+        }
         break;
       }
     }
@@ -1470,6 +1785,205 @@ RoutingProtocol::lineDistance(double line_x1, double line_y1, double line_x2, do
   return distance;
 }
 
+void
+RoutingProtocol::SendJbrUnicast (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
+  int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
+  int32_t des_id, int32_t des_x, int32_t des_y, int32_t hop)
+{
+  for (std::map<Ptr<Socket>, Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin ();
+       j != m_socketAddresses.end (); ++j)
+    {
+      int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+
+      Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+      Vector mypos = mobility->GetPosition ();
+      
+      Ptr<Socket> socket = j->first;
+      Ipv4InterfaceAddress iface = j->second;
+      Ptr<Packet> packet = Create<Packet> ();
+
+      hop++;
+      int32_t next_id = DecisionNextId (one_before_x, one_before_y, local_source_x, local_source_y, 
+      previous_x, previous_y,des_x, des_y);
+
+
+      JbrHeader JbrHeader (id, mypos.x, mypos.y, next_id, local_source_x, local_source_y,
+      previous_x, previous_y, des_id, des_x, des_y, hop);
+      packet->AddHeader (JbrHeader);
+
+      TypeHeader tHeader (SIGOTYPE_JBR_RECOVER);
+      packet->AddHeader (tHeader);
+
+      // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+      Ipv4Address destination;
+      if (iface.GetMask () == Ipv4Mask::GetOnes ())
+        {
+          destination = Ipv4Address ("255.255.255.255");
+        }
+      else  //絶対こっちに入る
+        {
+          destination = iface.GetBroadcast ();
+        }
+      if (next_id != 10000)
+      {
+        std::cout << "\n\nid" << id << "recovery"
+                << "x=" << mypos.x << "y=" << mypos.y << "recovery unicast  time" << Simulator::Now ().GetSeconds ()
+                << "\n";
+        std::cout << "next id " << next_id << "\n";
+        socket->SendTo (packet, 0, InetSocketAddress (destination, SIGO_PORT));
+      }else{
+        std::cout << "\n\n\n\n\n\nrecovery strategy no next hop node | current id" << id <<std::endl;
+      }
+      
+    }
+}
+
+
+
+int 
+RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
+  int32_t local_source_y, int32_t previous_x, int32_t previous_y, int32_t des_x, int32_t des_y)
+{
+  int existence_intersection = 1; //0 = intersection nodeあり 1 = なし　
+  std::cout << "**********id "<<m_ipv4->GetObject<Node> ()->GetId () <<"の近隣テーブル**********\n";
+  Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
+  Vector current_pos = mobility->GetPosition ();
+  int closest_inter_id = 10000; //junctino node の中で最も宛先に近いノード
+  int farthest_simple_id = 10000;  // simple nodeの中で最もcurrent nodeから離れたノード
+  int minangle_id = 10000;
+  double closest_inter_to_des = 10000; // 最小のintersection nodeとdestinatino nodeの距離を格納
+  double farthest_current_des = 0; // current node から最も離れているsimple nodeの距離を格納
+  double minimum_angle = 360; //minimum angle method 最小の角度を格納
+  std::string current_road_id = distinctionRoad (current_pos.x, current_pos.y);
+
+  for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++) 
+  {
+    if (judgeIntersection(itr->second, m_ypoint[itr->first]) == 0) //近隣ノードがintersection node
+    {
+      int dif_last_recv = Simulator::Now ().GetMicroSeconds () - m_last_recv_time[itr->first];
+      if (dif_last_recv < 2200000) //直近２秒でhello packetを受信していたら
+      {
+        std::cout << "junction neighbor id " << itr->first <<  "\n";
+        //jbr 条件 1
+        double mndis = getDistance (current_pos.x, current_pos.y, 
+        m_xpoint[itr->first], m_ypoint[itr->first]); //current to potential 
+        double cldis = getDistance (one_before_x, one_before_y, 
+        current_pos.x, current_pos.y); // current to one_before
+        double nldis = getDistance (m_xpoint[itr->first], m_ypoint[itr->first], 
+        one_before_x, one_before_y); // onebefore to potential
+        std::cout << "\n nldis " << nldis << "cldis" << cldis << "mndis" << mndis << "\n";
+        if(nldis > cldis && nldis > mndis) //jbr  potential nodeの条件
+        {
+          if(judgeIntersection(current_pos.x, current_pos.y) == 0) //current nodeがcoordinator
+          {
+            if(distinctionRoad(current_pos.x, current_pos.y) != 
+            distinctionRoad(m_xpoint[itr->first], m_ypoint[itr->first])) //同じintersection　じゃなかったら
+            {
+              if (getDistance (m_xpoint[itr->first], m_ypoint[itr->first], des_x, des_y) < closest_inter_to_des)
+              {
+                //intersection の中で宛先に近いものを更新していく
+                closest_inter_to_des = getDistance (m_xpoint[itr->first], m_ypoint[itr->first], des_x, des_y);
+                closest_inter_id = itr->first;
+              }
+              existence_intersection = 0;
+            }else{
+              std::cout << "neighbor id" << itr->first << "は 同じ intersection にいる\n"; 
+            }
+          }else{ //current node no coordinator
+            std::cout << " current node is no coordinator \n";
+            if (getDistance (m_xpoint[itr->first], m_ypoint[itr->first], des_x, des_y) < closest_inter_to_des)
+            {
+              //intersection の中で宛先に近いものを更新していく
+              closest_inter_to_des = getDistance (m_xpoint[itr->first], m_ypoint[itr->first], des_x, des_y);
+              closest_inter_id = itr->first;
+              std::cout << "今の所 id " << itr->first << "が一番近い\n";
+            }
+            existence_intersection = 0;
+          }
+        }
+      }
+    }else{ //近隣ノードがsimple nodeのみ
+      std::cout << "simple neighbor id " << itr->first <<  "\n";
+      if(judgeIntersection(current_pos.x, current_pos.y) == 0) //current nodeがcoordinator
+      {
+        //minimum angle method
+        double sdangle = getAngle (des_x, des_y, local_source_x, local_source_y,
+        previous_x, previous_y);
+        double snangle = getAngle (m_xpoint[itr->first], m_ypoint[itr->first], local_source_x, 
+        local_source_y, previous_x, previous_y);
+        int sdangle_direction = RotationDirection (des_x, des_y, local_source_x, 
+        local_source_y, previous_x, previous_y);
+        int snangle_direction = RotationDirection (m_xpoint[itr->first], m_ypoint[itr->first], 
+        local_source_x, local_source_y, previous_x, previous_y);
+
+        std::cout << "snangle direction" << snangle_direction << "sdangle direction " << sdangle_direction << "\n";
+
+        //符号判定 同じ符号でなければ　角度の回転方向が違えば
+        if (signbit(sdangle_direction) != signbit(snangle_direction))
+        {
+          std::cout << "\n\n id" << itr->first << "角度修正 snagle before" << snangle;
+          snangle = 360 - snangle;
+          std::cout << "after" << snangle << std::endl;
+        }
+
+        double minangle = sdangle - snangle;
+
+        //minangle は絶対値の差
+        if (minangle < 0)
+        {
+          minangle = - minangle;
+        }
+
+        std::cout << "neighbor id " << itr->first << "のminangle" << minangle << "\n";
+        std::cout << "snangle" << snangle << "sdangle" << sdangle << "\n";
+        if(minangle < minimum_angle)
+        {
+          minimum_angle = minangle;
+          minangle_id = itr->first;
+        }
+      }else{
+        //current nodeから最も離れたノード
+        std::string neighbor_road_id = distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first]);
+        int link_judge = LinkRoad (current_road_id ,neighbor_road_id); //linkもってたら1
+        if (link_judge == 1) // neighbor が linkを持つことのができるroadだったら
+        {
+          //jbr 条件 1
+          double mndis = getDistance (current_pos.x, current_pos.y, 
+          m_xpoint[itr->first], m_ypoint[itr->first]); //current to potential 
+          double cldis = getDistance (one_before_x, one_before_y, 
+          current_pos.x, current_pos.y); // current to one_before
+          double nldis = getDistance (m_xpoint[itr->first], m_ypoint[itr->first], 
+          one_before_x, one_before_y); // onebefore to potential
+          if(nldis > cldis && nldis > mndis) //jbr  potential nodeの条件
+          {
+            if(farthest_current_des < mndis)
+            {
+              farthest_current_des = mndis;
+              farthest_simple_id = itr->first;
+            }
+          }
+        }
+      }
+    }
+  }
+  if(existence_intersection == 0)
+  {
+    std::cout << "交差点ノードが存在\n";
+    std::cout << "closest intersection node id is " << closest_inter_id << "\n";
+    return closest_inter_id;
+  }else {
+    std::cout << "交差点ノードが存在しない\n";
+    if(judgeIntersection(current_pos.x, current_pos.y) == 0) //current node = coordinator
+    {
+      std::cout << "minimum angle  node id is " << minangle_id << "\n";
+      return minangle_id;
+    }else{
+      std::cout << "farthest simple node id is " << farthest_simple_id << "\n";
+      return farthest_simple_id;
+    }
+  }
+  return 0;
+}
 
 
 
@@ -1514,6 +2028,65 @@ RoutingProtocol::ReadSumoFile (void)
   }
   return 0;
 }
+
+int
+RoutingProtocol::LinkRoad (std::string current_road_id, std::string neighbor_road_id)
+{
+  //current road agnle
+  std::string current_from_to = m_road_from_to[current_road_id];
+  replace(current_from_to.begin(), current_from_to.end(), '_', ' ');
+  std::istringstream iss(current_from_to);
+  std::string current_from, current_to;
+  iss >> current_from >> current_to ;  //road = junction from  〜 junction to
+  double current_angle = getTwoPointAngle(m_junction_x[current_from], m_junction_y[current_from],
+  m_junction_x[current_to], m_junction_y[current_to]);
+
+  //neighbor road angle
+  std::string neighbor_from_to = m_road_from_to[neighbor_road_id];
+  replace(neighbor_from_to.begin(), neighbor_from_to.end(), '_', ' ');
+  std::istringstream iss2(neighbor_from_to);
+  std::string neighbor_from, neighbor_to;
+  iss2 >> neighbor_from >> neighbor_to ;  //road = junction from  〜 junction to
+  double neighbor_angle = getTwoPointAngle(m_junction_x[neighbor_from], m_junction_y[neighbor_from],
+  m_junction_x[neighbor_to], m_junction_y[neighbor_to]);
+
+  double dif_angle = current_angle - neighbor_angle;
+  if (dif_angle < 0)
+  {
+    dif_angle = -dif_angle;
+  }
+
+  if (dif_angle < 10) //road同士のangle の差がほぼなければリンクを持つことができる
+  {
+    return 1;
+  }else{
+    return 0;
+  }
+}
+
+int
+RoutingProtocol::RotationDirection (double a_x, double a_y, double b_x, double b_y, double c_x,
+                   double c_y)
+{
+  // ※ A = potential node or destiantino node   B = local source node C= previous node
+  double BA_x = a_x - b_x; //ベクトルAのｘ座標
+  double BA_y = a_y - b_y; //ベクトルAのy座標
+  double BC_x = c_x - b_x; //ベクトルCのｘ座標
+  double BC_y = c_y - b_y; //ベクトルCのy座標
+
+  int direction = BC_x * BA_y - BA_x * BC_y; 
+  std::cout << "rotation direction check direction = "  << direction <<std::endl;
+  return direction;
+}
+
+double 
+RoutingProtocol::getTwoPointAngle (double x, double y, double x2, double y2)
+{
+  double radian = atan2(y2 - y,x2 - x);
+  double angle = radian * 180 / 3.14159265; //ラジアンから角度に変換
+  return angle;
+}
+
 
 //road の中心座標をmapにセットする関数
 void
@@ -1631,7 +2204,7 @@ RoutingProtocol::SimulationResult (void) //
         // std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
         // + "/" + std::to_string (Grobal_InterPoint);
         //　書き出し pass
-        std::string shadow_dir = "data/get_data/test/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+        std::string shadow_dir = "data/get_data/recover_test/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";

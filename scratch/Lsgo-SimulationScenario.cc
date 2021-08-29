@@ -644,7 +644,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
       list.Add (sigo, 100);
       Grobal_recovery_protocol  = 1;
       m_protocolName = "SIGO recovery ";
-      std::cout << "obstacle debug ---------------------------------------------------------jbr "
+      std::cout << "obstacle debug ---------------------------------------------------------sigo sigo recovery "
                    "protocol done"
                 << "\n\n";
       break;
@@ -653,7 +653,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
       list.Add (sigo, 100);
       m_protocolName = "JBR recovery";
       Grobal_recovery_protocol  = 2;
-      std::cout << "obstacle debug ---------------------------------------------------------jbr "
+      std::cout << "obstacle debug ---------------------------------------------------------sigo jbr recovery "
                    "protocol done"
                 << "\n\n";
       break;
@@ -2268,7 +2268,7 @@ VanetRoutingExperiment::SetupAdhocDevices ()
     {
       wifiChannel.AddPropagationLoss ("ns3::LogDistancePropagationLossModel", "Exponent",
                                       DoubleValue (6.0), "ReferenceDistance",
-                                      //DoubleValue (15.0), ///test メートル
+                                      // DoubleValue (15.0), ///test メートル
                                       DoubleValue (35.0), ///伝搬距離250メートル
                                       "ReferenceLoss", DoubleValue (46.6777));
 
@@ -2532,14 +2532,14 @@ VanetRoutingExperiment::SetupScenario ()
       m_CSVfileName = "";
       std::cout << "\n\n\n\n\n\n\n tcl file = " << m_traceFile << "\n\n\n\n\n\n";
 
-      // JBR test用
-      if (m_protocol == 9)
-      {
-        std::cout << " JBR test start \n";
-        m_traceFile = "src/wave/examples/no_signal/test2.tcl";
-        m_nNodes = 601;
-        m_TotalSimTime = 6;
-      }
+      // // JBR test用
+      // if (m_protocol == 10)
+      // {
+      //   std::cout << " JBR test start \n";
+      //   m_traceFile = "src/wave/examples/no_signal/test2.tcl";
+      //   m_nNodes = 601;
+      //   m_TotalSimTime = 6;
+      // }
 
 
       // WAVE BSM only, no routing data

@@ -37,8 +37,8 @@ namespace sigo {
 */
 enum MessageType {
   SIGOTYPE_SEND = 1, //SIGO SEND
-  SIGOTYPE_HELLO = 2 //SIGO HELLO
-
+  SIGOTYPE_HELLO = 2, //SIGO HELLO
+  SIGOTYPE_JBR_RECOVER = 3, // jber recovery
 };
 
 /**
@@ -430,6 +430,207 @@ private:
 std::ostream &operator<< (std::ostream &os, SendHeader const &);
 
 /********************************finish send SIGO*******************************************/
+
+
+//********************************start jbr recovery header *****************************/
+
+/**
+* \ingroup jbr
+* \brief jbrheader
+  \verbatim
+  0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     send Node ID                              |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Send Node Xpostion                        |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Send Node Yposition                       |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Next Node ID                              |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Local source Node Xpostion                |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Local source Node Ypostion                |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Previous Node  Xposition                  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Previous Node  Yposition                  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Destination Node  ID                      |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Destination Node  Xposition               |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     Destinatino Node  Yposition               |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                     hopcount                                  |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  \endverbatim
+*/
+
+class JbrHeader : public Header
+{
+public:
+  /*
+*/
+  JbrHeader (int32_t send_id = 0, int32_t send_x = 0, int32_t send_y = 0,
+  int32_t next_id = 0, int32_t local_source_x = 0, int32_t local_source_y = 0,
+  int32_t previous_x = 0, int32_t previous_y = 0, int32_t des_id = 0,
+  int32_t des_x = 0, int32_t des_y = 0, int32_t hop = 0);
+
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
+  uint32_t GetSerializedSize () const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+  void Print (std::ostream &os) const;
+
+  void
+  SetSendId (uint32_t id) //IDをセットする
+  {
+    m_send_id = id;
+  }
+
+  int32_t
+  GetSendId () const //IDを返す
+  {
+    return m_send_id;
+  }
+  void
+  SetSendX (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_send_x = p;
+  }
+  int32_t
+  GetSendX () //座標の値を返す
+  {
+    return m_send_x;
+  }
+  void
+  SetSendY (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_send_y = p;
+  }
+  int32_t
+  GetSendY () //座標の値を返す
+  {
+    return m_send_y;
+  }
+  void
+  SetNextId (uint32_t id) //IDをセットする
+  {
+    m_next_id = id;
+  }
+  int32_t
+  GetNextId () const //IDを返す
+  {
+    return m_next_id;
+  } 
+
+  void
+  SetLocalSourceX (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_local_source_x = p;
+  }
+  int32_t
+  GetLocalSourceX () //座標の値を返す
+  {
+    return m_local_source_x;
+  }
+  void
+  SetLocalSourceY (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_local_source_y = p;
+  }
+  int32_t
+  GetLocalSourceY () //座標の値を返す
+  {
+    return m_local_source_y;
+  }
+
+  void
+  SetPreviousX (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_previous_x = p;
+  }
+  int32_t
+  GetPreviousX () //座標の値を返す
+  {
+    return m_previous_x;
+    
+  }
+  void
+  SetPreviousY (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_previous_y = p;
+  }
+  int32_t
+  GetPreviousY () //座標の値を返す
+  {
+    return m_previous_y;
+  }
+
+  void
+  SetDesId (uint32_t id) //IDをセットする
+  {
+    m_des_id = id;
+  }
+
+  int32_t
+  GetDesId () const //IDを返す
+  {
+    return m_des_id;
+  }
+  void
+  SetDesX (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_des_x = p;
+  }
+  int32_t
+  GetDesX () //座標の値を返す
+  {
+    return m_des_x;
+  }
+  void
+  SetDesY (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_des_y = p;
+  }
+  int32_t
+  GetDesY () //座標の値を返す
+  {
+    return m_des_y;
+  }
+
+  void
+  SetHop (int32_t p) //座標をセットする
+  { //座標をセットする
+    m_hop = p;
+  }
+  int32_t
+  GetHop () //座標の値を返す
+  {
+    return m_hop;
+  }
+
+  bool operator== (JbrHeader const &o);
+
+private:
+  int32_t m_send_id; // 送信ノードID
+  int32_t m_send_x; // 送信ノードx座標
+  int32_t m_send_y; // 送信ノードy座標
+  int32_t m_next_id; // ネクストホップID
+  int32_t m_local_source_x; //local source node xposition
+  int32_t m_local_source_y; //local source node yposition
+  int32_t m_previous_x; //previous node xposition
+  int32_t m_previous_y; //previous node yposition
+  int32_t m_des_id; //destination node id
+  int32_t m_des_x;  //destination node x
+  int32_t m_des_y;  //destination node y
+  int32_t m_hop; //hopcount 
+};
+
+
 
 } // namespace sigo
 } // namespace ns3

@@ -23,7 +23,7 @@ do
   fi
     if [ $protocol -eq 1 ]; then
       ./waf build
-      ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=8 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
+      ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=10 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
     else
       ./waf build
       ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=6 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"

@@ -201,7 +201,10 @@ private:
   void SaveRelation (int32_t map_id, int32_t map_xpoint,
                      int32_t map_ypoint); //近隣ノードの道路IDを保存
   void SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
-                          int32_t hopcount); //候補ノードの優先順位を計算してpacketを送信する関数
+          int32_t hopcount, int32_t one_before_x, int32_t one_before_y); //候補ノードの優先順位を計算してpacketを送信する関数
+  void FirstSendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
+                          int32_t hopcount); //1回目のsigo broadcast (source nodeが送信する)
+
   void SetCountTimeMap (void); //window size より古いmapを削除していく関数
   void SetEtxMap (void); //etx map をセットする関数
   void SetPriValueMap (int32_t des_x, int32_t des_y); //優先度を決める値を格納する　関数
@@ -226,6 +229,18 @@ private:
   int ReadSumoFile (void); //sumoからnetfileを読み込む
   double lineDistance (double line_x1, double line_y1, double line_x2, double line_y2, 
   double dot_x, double dot_y); //線分と座標の距離を返す
+
+  void SendJbrUnicast (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
+  int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
+  int32_t des_id, int32_t des_x, int32_t des_y, int32_t hop);
+  
+  int DecisionNextId (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
+  int32_t local_source_y, int32_t previous_x, int32_t previous_y, int32_t des_x, int32_t des_y);
+  int LinkRoad (std::string current_road_id, std::string neighbor_road_id); //
+  // current nodeが存在する　roadとリンクが存在するなら 1 しないなら 0
+  int RotationDirection (double a_x, double a_y, double b_x, double b_y, double c_x,
+                   double c_y);
+  double getTwoPointAngle (double x, double y, double x2, double y2);
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
