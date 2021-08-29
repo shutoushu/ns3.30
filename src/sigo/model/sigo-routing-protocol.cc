@@ -1503,6 +1503,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         break;
       }case SIGOTYPE_JBR_RECOVER:
       {
+
         JbrHeader jbrheader;
         packet->RemoveHeader (jbrheader);
         int32_t send_x = jbrheader.GetSendX ();
@@ -1516,6 +1517,15 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         int32_t des_x = jbrheader.GetDesX ();
         int32_t des_y = jbrheader.GetDesY (); 
         int32_t hop = jbrheader.GetHop ();
+
+        if (m_wait[des_id] != 0) //待ち状態ならば
+        {
+          if (m_wait[des_id] >= hop)
+            { //待機中のホップカウントより大きいホップカウントを受け取ったなら
+              m_wait.erase (des_id);
+            }
+        }        
+
         if (next_id == id)
         {
           int32_t local_source_distance = getDistance (local_source_x, local_source_y, des_x, des_y);
@@ -2204,7 +2214,7 @@ RoutingProtocol::SimulationResult (void) //
         // std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
         // + "/" + std::to_string (Grobal_InterPoint);
         //　書き出し pass
-        std::string shadow_dir = "data/get_data/recover_test/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+        std::string shadow_dir = "data/get_data/recover_test1/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
