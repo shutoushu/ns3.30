@@ -120,6 +120,7 @@ public:
   static std::vector<int> p_pri_3;
   static std::vector<int> p_pri_4;
   static std::vector<int> p_pri_5;
+  static std::vector<int> p_recovery; //recovery packet = 1    no recovery packet = 0
 
   //logfile send
   static std::vector<int> s_source_id;

@@ -370,9 +370,12 @@ RoutingProtocol::Send ()
           Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::FirstSendSigoBroadcast, this, 0,
                                des_list[index_time], m_my_posx[des_list[index_time]],
                                m_my_posy[des_list[index_time]], 1);
+          
+          std::cout << "\n\n\n\n  " << "source node" << id << 
+          "destination node " << des_list[index_time] << "\n\n";
           std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
                     << "des node point x=" << m_my_posx[des_list[index_time]]
-                    << "y=" << m_my_posy[des_list[index_time]] << "\n";
+                    << "y=" << m_my_posy[des_list[index_time]] << "\n\n\n\n\n";
 
           // Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToSigo, this,
           //                          socket, packet, destination, hopcount, des_id);
@@ -480,16 +483,16 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
   double Rp;
   // int nearRoadId;
   std::string nearRoadId;
-  int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   //int myRoadId = distinctionRoad (mypos.x, mypos.y);
 
   nearRoadId = NearRoadId (des_x, des_y);
-  std::cout << "id" << id << "が持つ(" << mypos.x << "," << mypos.y << ")"
-            << "\n";
-  std::cout << "最も近い道路IDは" << nearRoadId << "\n";
+  // std::cout << "id" << id << "が持つ(" << mypos.x << "," << mypos.y << ")"
+  //           << "\n";
+  // std::cout << "最も近い道路IDは" << nearRoadId << "\n";
   //最も目的地に近い道路に存在するノードのどれか一つに届く確率Rpを返す関数
   Rp = CalculateRp (nearRoadId);
-  std::cout << "Rp" << Rp << "\n";
+  // std::cout << "Rp" << Rp << "\n";
 
   double Dsd; //ソースノードと目的地までの距離(sendSIGObroadcastするノード)
   double Did; //候補ノードと目的地までの距離
@@ -526,10 +529,10 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
       // **************use judgeIntersection ver********************
       if (judgeIntersection (m_pre_xpoint[itr->first], m_pre_ypoint[itr->first]) == 0)
       {
-        std::cout << "候補ノードid" << itr->first << "は交差点にいます(" << m_xpoint[itr->first]
-                  << "," << m_ypoint[itr->first] << ")"
-                  << "予測位置は(" << m_pre_xpoint[itr->first] << "," << m_pre_ypoint[itr->first]
-                  << "\n";
+        // std::cout << "候補ノードid" << itr->first << "は交差点にいます(" << m_xpoint[itr->first]
+        //           << "," << m_ypoint[itr->first] << ")"
+        //           << "予測位置は(" << m_pre_xpoint[itr->first] << "," << m_pre_ypoint[itr->first]
+        //           << "\n";
         inter = 1;
       }
 
@@ -539,10 +542,10 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
           double angle = getAngle (
               des_x, des_y, mypos.x, mypos.y, m_xpoint[itr->first],
               m_ypoint[itr->first]); //角度Bを求める 中心となる座標b_x b_y = source node  = id = id
-          std::cout << "source id" << id << "候補ノードid" << itr->first
-                    << "とのdestinationまでの角度は" << angle << "destination position(" << des_x
-                    << "," << des_y << ")"
-                    << "\n";
+          // std::cout << "source id" << id << "候補ノードid" << itr->first
+          //           << "とのdestinationまでの角度は" << angle << "destination position(" << des_x
+          //           << "," << des_y << ")"
+          //           << "\n";
           double gammaAngle = angle / 90;
           gammaAngle = pow (gammaAngle, 1 / AngleGamma);
           gammaAngle = 90 * gammaAngle;
@@ -552,13 +555,13 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
           if (Rp != 0 && angle > 45 && Rp != 1)
             {
               m_pri_value[itr->first] = m_pri_value[itr->first] + Grobal_InterPoint * gammaAngle / gammaRp;
-              std::cout << "total 交差点 point" << Grobal_InterPoint * gammaAngle / gammaRp;
+              // std::cout << "total 交差点 point" << Grobal_InterPoint * gammaAngle / gammaRp;
             }
 
           if (neighbor_d > MaxRange)
             {
-              std::cout << "send id" << id << "neighbor id" << itr->first
-                        << "送信範囲外に出ただろう　\n";
+              // std::cout << "send id" << id << "neighbor id" << itr->first
+              //           << "送信範囲外に出ただろう　\n";
               m_pri_value[itr->first] = 1;
             }
         }
@@ -567,18 +570,18 @@ RoutingProtocol::SetPriValueMap (int32_t des_x, int32_t des_y)
           m_pri_value[itr->first] = (Dsd - Did) / (m_etx[itr->first] * m_etx[itr->first]);
           if (neighbor_d > MaxRange)
             {
-              std::cout << "\n\n send id" << id << "neighbor id" << itr->first
-                        << "送信範囲外に出ただろう　\n";
-              std::cout << "neighbor の予測位置は x" << m_pre_xpoint[itr->first] << "y"
-                        << m_pre_ypoint[itr->first] << "\n";
-              std::cout << "大体の正確な位置は x" << m_my_posx[itr->first] << "y"
-                        << m_my_posy[itr->first] << "\n";
+              // std::cout << "\n\n send id" << id << "neighbor id" << itr->first
+              //           << "送信範囲外に出ただろう　\n";
+              // std::cout << "neighbor の予測位置は x" << m_pre_xpoint[itr->first] << "y"
+              //           << m_pre_ypoint[itr->first] << "\n";
+              // std::cout << "大体の正確な位置は x" << m_my_posx[itr->first] << "y"
+              //           << m_my_posy[itr->first] << "\n";
               m_pri_value[itr->first] = 1;
             }
         }
-      std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "position("
-                << m_xpoint[itr->first] << "," << m_ypoint[itr->first] << ")"
-                << "\n";
+      // std::cout << "id=" << itr->first << "のm_pri_value " << m_pri_value[itr->first] << "position("
+      //           << m_xpoint[itr->first] << "," << m_ypoint[itr->first] << ")"
+      //           << "\n";
     }
 }
 
@@ -676,13 +679,13 @@ RoutingProtocol::CalculateRp (std::string nearRoadId)
           if (count == 0)
             {
               missProbability = 1 - m_rt[itr->first];
-              std::cout << "link を持っている node id" << itr->first << "とのrtは"
-                        << m_rt[itr->first] << "\n";
+              // std::cout << "link を持っている node id" << itr->first << "とのrtは"
+              //           << m_rt[itr->first] << "\n";
             }
           else
             {
-              std::cout << "link を持っている node id" << itr->first << "とのrtは"
-                        << m_rt[itr->first] << "\n";
+              // std::cout << "link を持っている node id" << itr->first << "とのrtは"
+              //           << m_rt[itr->first] << "\n";
               missProbability = missProbability * (1 - m_rt[itr->first]);
             }
           count++;
@@ -867,7 +870,7 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
             }
           if (TransProbability <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
             {
-              std::cout << "infineteProduct" << infiniteProduct << "n" << n << "\n";
+              // std::cout << "infineteProduct" << infiniteProduct << "n" << n << "\n";
               candidataNum = n; //候補ノード数を変更
               break;
             }
@@ -900,8 +903,8 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         {
           if (pri_id[i] != 10000000)
             {
-              std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
-                        << m_rt[pri_id[i]] << "\n";
+              // std::cout << "優先度" << i << "の node id = " << pri_id[i] << "予想伝送確率"
+                        // << m_rt[pri_id[i]] << "\n";
             }
         }
       if (pri_value != 0) //source node じゃなかったら
@@ -910,7 +913,7 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         }
 
       s_source_id.push_back (send_node_id);
-      std::cout << "s_source_id push back  send_node_id = " << send_node_id << "\n";
+      // std::cout << "s_source_id push back  send_node_id = " << send_node_id << "\n";
       s_source_x.push_back (mypos.x);
       s_source_y.push_back (mypos.y);
       s_time.push_back (Simulator::Now ().GetMicroSeconds ());
@@ -996,6 +999,12 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         TypeHeader tHeader (SIGOTYPE_SEND);
         packet->AddHeader (tHeader);
       }else{// local optimum problem
+        std::cout << "\n\n  ***************** local optimum problem 発生*****************\n";
+        std::cout << "current node id " << send_node_id << "pos " << mypos << "\n";
+        std::cout << "previous x" << one_before_x << "previous y" << one_before_y << "\n";
+        std::cout << "des id " << des_id << "des x" << des_x << "des y" << des_y << "local recovery start\n\n";
+
+
         if(Grobal_recovery_protocol == 0)
         {
           // no recovery
@@ -1058,7 +1067,6 @@ RoutingProtocol::SendSigoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
                                  socket, packet, destination, hopcount, des_id);
           }else{// local optimum problem or neighbor node 0
                 // recovery protocolの場合分け
-            std::cout << "local optimum problem 発生 id " <<  send_node_id << std::endl;
             if (Grobal_recovery_protocol != 0)
             {
               Simulator::Schedule (MicroSeconds (wait_time), &RoutingProtocol::SendToSigo, this,
@@ -1413,6 +1421,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
                 p_pri_3.push_back (pri_id[2]);
                 p_pri_4.push_back (pri_id[3]);
                 p_pri_5.push_back (pri_id[4]);
+                p_recovery.push_back (0);
                 packetCount++;
               }
             break;
@@ -1451,6 +1460,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
                         p_pri_3.push_back (pri_id[2]);
                         p_pri_4.push_back (pri_id[3]);
                         p_pri_5.push_back (pri_id[4]);
+                        p_recovery.push_back (0);
                         packetCount++;
                       }
                     SendSigoBroadcast (i + 1, des_id, des_x, des_y, hopcount, send_x, send_y);
@@ -1470,7 +1480,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
                     //std::cout << "\n--------------------------------------------------------\n";
                     std::cout << "関係あるrecv id" << id << "time------------------------------"
                               << Simulator::Now ().GetMicroSeconds () << "\n";
-                    if (m_finish_time[des_id] == 0)
+                    if (m_finish_time[des_id] == 0) //destinatino がまだパケットを受信していなかったら
                       {
 
                         p_source_x.push_back (send_x);
@@ -1490,6 +1500,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
                         p_pri_3.push_back (pri_id[2]);
                         p_pri_4.push_back (pri_id[3]);
                         p_pri_5.push_back (pri_id[4]);
+                        p_recovery.push_back (0);
                         packetCount++;
                       }
                     SendSigoBroadcast (i + 1, des_id, des_x, des_y, hopcount, send_x, send_y);
@@ -1506,6 +1517,7 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
 
         JbrHeader jbrheader;
         packet->RemoveHeader (jbrheader);
+        int32_t send_id = jbrheader.GetDesId ();
         int32_t send_x = jbrheader.GetSendX ();
         int32_t send_y = jbrheader.GetSendY ();
         int32_t local_source_x = jbrheader.GetLocalSourceX ();
@@ -1522,12 +1534,37 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
         {
           if (m_wait[des_id] >= hop)
             { //待機中のホップカウントより大きいホップカウントを受け取ったなら
+              std::cout << "------recovery packet recv id " << id << "sigo broadacast cancel\n";
               m_wait.erase (des_id);
             }
         }        
 
         if (next_id == id)
         {
+          if (m_finish_time[des_id] == 0) //destinatino がまだパケットを受信していなかったら
+          {
+            p_source_x.push_back (send_x);
+            p_source_y.push_back (send_y);
+            p_recv_x.push_back (mypos.x);
+            p_recv_y.push_back (mypos.y);
+            p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+            p_recv_priority.push_back (1);
+            p_hopcount.push_back (hop);
+            p_recv_id.push_back (id);
+            p_source_id.push_back (send_id);
+            p_destination_id.push_back (des_id);
+            p_destination_x.push_back (des_x);
+            p_destination_y.push_back (des_y);
+            p_pri_1.push_back (next_id);
+            p_pri_2.push_back (next_id);
+            p_pri_3.push_back (next_id);
+            p_pri_4.push_back (next_id);
+            p_pri_5.push_back (next_id);
+            p_recovery.push_back (1);
+          }
+          std::cout << "recovery packet receive------------- time " 
+          << Simulator::Now ().GetMicroSeconds () << "id " << id << "\n";
+
           int32_t local_source_distance = getDistance (local_source_x, local_source_y, des_x, des_y);
           int32_t current_distance = getDistance (mypos.x, mypos.y, des_x, des_y);
 
@@ -1544,9 +1581,9 @@ RoutingProtocol::RecvSigo (Ptr<Socket> socket)
               std::cout << "\n*************reach max hop************* \n";
               break;
             }
+            std::cout << "local optimum's recovery continu receive id " << id << "\n";
             SendJbrUnicast(send_x, send_y, local_source_x, local_source_y, previous_x, previous_y,
             des_id, des_x, des_y, hop);
-            std::cout << "local optimum's recovery continu\n";
           }
         }
         break;
@@ -1836,10 +1873,10 @@ RoutingProtocol::SendJbrUnicast (int32_t one_before_x, int32_t one_before_y, int
         }
       if (next_id != 10000)
       {
-        std::cout << "\n\nid" << id << "recovery"
+        std::cout << "\n\n *********** id" << id << "recovery"
                 << "x=" << mypos.x << "y=" << mypos.y << "recovery unicast  time" << Simulator::Now ().GetSeconds ()
                 << "\n";
-        std::cout << "next id " << next_id << "\n";
+        std::cout << "next id " << next_id << "\n \n\n\n\n";
         socket->SendTo (packet, 0, InetSocketAddress (destination, SIGO_PORT));
       }else{
         std::cout << "\n\n\n\n\n\nrecovery strategy no next hop node | current id" << id <<std::endl;
@@ -1856,8 +1893,10 @@ RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int
 {
   int existence_intersection = 1; //0 = intersection nodeあり 1 = なし　
   std::cout << "**********id "<<m_ipv4->GetObject<Node> ()->GetId () <<"の近隣テーブル**********\n";
+  
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector current_pos = mobility->GetPosition ();
+  std::cout << "このノードのポジションは " << current_pos << std::endl;
   int closest_inter_id = 10000; //junctino node の中で最も宛先に近いノード
   int farthest_simple_id = 10000;  // simple nodeの中で最もcurrent nodeから離れたノード
   int minangle_id = 10000;
@@ -1868,12 +1907,14 @@ RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int
 
   for (auto itr = m_xpoint.begin (); itr != m_xpoint.end (); itr++) 
   {
+    std::cout << "--------------------------\n";
     if (judgeIntersection(itr->second, m_ypoint[itr->first]) == 0) //近隣ノードがintersection node
     {
       int dif_last_recv = Simulator::Now ().GetMicroSeconds () - m_last_recv_time[itr->first];
       if (dif_last_recv < 2200000) //直近２秒でhello packetを受信していたら
       {
-        std::cout << "junction neighbor id " << itr->first <<  "\n";
+        std::cout << "junction neighbor id " << itr->first << "posx " <<
+        m_xpoint[itr->first] << "posy " <<  m_ypoint[itr->first]<<  "\n";
         //jbr 条件 1
         double mndis = getDistance (current_pos.x, current_pos.y, 
         m_xpoint[itr->first], m_ypoint[itr->first]); //current to potential 
@@ -1898,6 +1939,7 @@ RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int
               existence_intersection = 0;
             }else{
               std::cout << "neighbor id" << itr->first << "は 同じ intersection にいる\n"; 
+              std::cout <<  "posx " << m_xpoint[itr->first] << "posy " <<  m_ypoint[itr->first]<<  "\n";
             }
           }else{ //current node no coordinator
             std::cout << " current node is no coordinator \n";
@@ -1914,6 +1956,7 @@ RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int
       }
     }else{ //近隣ノードがsimple nodeのみ
       std::cout << "simple neighbor id " << itr->first <<  "\n";
+      std::cout <<  "posx " << m_xpoint[itr->first] << "posy " <<  m_ypoint[itr->first]<<  "\n";
       if(judgeIntersection(current_pos.x, current_pos.y) == 0) //current nodeがcoordinator
       {
         //minimum angle method
@@ -1946,15 +1989,20 @@ RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int
 
         std::cout << "neighbor id " << itr->first << "のminangle" << minangle << "\n";
         std::cout << "snangle" << snangle << "sdangle" << sdangle << "\n";
-        if(minangle < minimum_angle)
+        int dif_last_recv = Simulator::Now ().GetMicroSeconds () - m_last_recv_time[itr->first];
+        if (dif_last_recv < 2200000) //直近２秒でhello packetを受信していたら
         {
-          minimum_angle = minangle;
-          minangle_id = itr->first;
+          if(minangle < minimum_angle)
+          {
+            minimum_angle = minangle;
+            minangle_id = itr->first;
+          }
         }
       }else{
         //current nodeから最も離れたノード
         std::string neighbor_road_id = distinctionRoad (m_xpoint[itr->first], m_ypoint[itr->first]);
         int link_judge = LinkRoad (current_road_id ,neighbor_road_id); //linkもってたら1
+        int dif_last_recv = Simulator::Now ().GetMicroSeconds () - m_last_recv_time[itr->first];
         if (link_judge == 1) // neighbor が linkを持つことのができるroadだったら
         {
           //jbr 条件 1
@@ -1966,11 +2014,15 @@ RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int
           one_before_x, one_before_y); // onebefore to potential
           if(nldis > cldis && nldis > mndis) //jbr  potential nodeの条件
           {
-            if(farthest_current_des < mndis)
+            if (dif_last_recv < 2200000) //直近２秒でhello packetを受信していたら
             {
-              farthest_current_des = mndis;
-              farthest_simple_id = itr->first;
+              if(farthest_current_des < mndis)
+              {
+                farthest_current_des = mndis;
+                farthest_simple_id = itr->first;
+              }
             }
+            
           }
         }
       }
@@ -1980,15 +2032,18 @@ RoutingProtocol::DecisionNextId (int32_t one_before_x, int32_t one_before_y, int
   {
     std::cout << "交差点ノードが存在\n";
     std::cout << "closest intersection node id is " << closest_inter_id << "\n";
+    std::cout << "hello packet を取得したのは" << m_last_recv_time[closest_inter_id] << std::endl;
     return closest_inter_id;
   }else {
     std::cout << "交差点ノードが存在しない\n";
     if(judgeIntersection(current_pos.x, current_pos.y) == 0) //current node = coordinator
     {
       std::cout << "minimum angle  node id is " << minangle_id << "\n";
+      std::cout << "hello packet を取得したのは" << m_last_recv_time[minangle_id] << std::endl;
       return minangle_id;
     }else{
       std::cout << "farthest simple node id is " << farthest_simple_id << "\n";
+      std::cout << "hello packet を取得したのは" << m_last_recv_time[farthest_simple_id] << std::endl;
       return farthest_simple_id;
     }
   }
@@ -2187,6 +2242,7 @@ RoutingProtocol::SimulationResult (void) //
               recvCount++;
             }
         }
+
       std::cout << "sum_br" << sum_br << "\n";
       std::cout << "recvCount" << recvCount << "\n";
       std::cout << "sum_end_time" << sum_end_time << "\n";
@@ -2214,12 +2270,33 @@ RoutingProtocol::SimulationResult (void) //
         // std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
         // + "/" + std::to_string (Grobal_InterPoint);
         //　書き出し pass
-        std::string shadow_dir = "data/get_data/no_recover_test/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+        std::string shadow_dir = "data/get_data/no_recover_test2/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
+
+
         filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
         send_filename = shadow_dir + "/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                   std::to_string (numVehicle) + ".csv";
+
+        if(Grobal_recovery_protocol == 0)
+        {
+          //ファイル名そのまま
+        }else if(Grobal_recovery_protocol == 1)
+        {
+          filename = shadow_dir + "/sigo_recover/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                              std::to_string (numVehicle) + ".csv";
+          send_filename = shadow_dir + "/send_sigo_recover/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                                    std::to_string (numVehicle) + ".csv";
+        }else if(Grobal_recovery_protocol == 2)
+        {
+          filename = shadow_dir + "/jbr/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                              std::to_string (numVehicle) + ".csv";
+          send_filename = shadow_dir + "/jbr/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                                    std::to_string (numVehicle) + ".csv";
+        }else {
+          //gpcr
+        }
         
         const char *dir = shadow_dir.c_str();
         struct stat statBuf;
@@ -2280,7 +2357,10 @@ RoutingProtocol::SimulationResult (void) //
                        << ","
                        << "pri_4"
                        << ","
-                       << "pri_5" << std::endl;
+                       << "pri_5"
+                       << ","
+                       << "pri_recover" << std::endl;
+
       std::ofstream send_packetTrajectory (send_filename);
       send_packetTrajectory << "source_id"
                             << ","
@@ -2335,7 +2415,7 @@ RoutingProtocol::SimulationResult (void) //
                            << p_source_id[i] << ", " << p_destination_id[i] << ", "
                            << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
                            << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
-                           << p_pri_5[i] << std::endl;
+                           << p_pri_5[i] << ", " << p_recovery[i] << std::endl;
         }
       for (int i = 0; i < sendpacketCount; i++)
         {
@@ -2388,6 +2468,8 @@ std::vector<int> RoutingProtocol::p_pri_2;
 std::vector<int> RoutingProtocol::p_pri_3;
 std::vector<int> RoutingProtocol::p_pri_4;
 std::vector<int> RoutingProtocol::p_pri_5;
+std::vector<int> RoutingProtocol::p_recovery;
+
 //送信側ログ用変数
 std::vector<int> RoutingProtocol::s_source_id;
 std::vector<int> RoutingProtocol::s_source_x;
