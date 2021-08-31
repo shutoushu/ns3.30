@@ -2270,29 +2270,30 @@ RoutingProtocol::SimulationResult (void) //
         // std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
         // + "/" + std::to_string (Grobal_InterPoint);
         //　書き出し pass
-        std::string shadow_dir = "data/get_data/no_recover_test2/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+        std::string shadow_dir = "data/get_data/recover_test2/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
-
-
-        filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
-                             std::to_string (numVehicle) + ".csv";
-        send_filename = shadow_dir + "/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
-                                  std::to_string (numVehicle) + ".csv";
 
         if(Grobal_recovery_protocol == 0)
         {
           //ファイル名そのまま
+          std::cout << "\n\n\n  sigo no recovery output\n";
+          filename = shadow_dir + "/sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                              std::to_string (numVehicle) + ".csv";
+          send_filename = shadow_dir + "/send_sigo/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                                    std::to_string (numVehicle) + ".csv";          
         }else if(Grobal_recovery_protocol == 1)
         {
+          std::cout << "\n\n\n  sigo sigo recovery output\n";
           filename = shadow_dir + "/sigo_recover/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                               std::to_string (numVehicle) + ".csv";
           send_filename = shadow_dir + "/send_sigo_recover/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                     std::to_string (numVehicle) + ".csv";
         }else if(Grobal_recovery_protocol == 2)
         {
+          std::cout << "\n\n\n  sigo jbr recovery output\n";
           filename = shadow_dir + "/jbr/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                               std::to_string (numVehicle) + ".csv";
-          send_filename = shadow_dir + "/jbr/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+          send_filename = shadow_dir + "/send_jbr/sigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                     std::to_string (numVehicle) + ".csv";
         }else {
           //gpcr
@@ -2306,8 +2307,30 @@ RoutingProtocol::SimulationResult (void) //
           std::cout<<"ディレクトリが存在しないので作成します\n";
           mkdir(dir, S_IRWXU);
         }
-        std::string s_sigo_dir = shadow_dir + "/sigo";
-        std::string  s_send_sigo_dir = shadow_dir + "/send_sigo";
+
+        std::string s_sigo_dir;
+        std::string  s_send_sigo_dir;
+        
+
+        if(Grobal_recovery_protocol == 0)
+        {
+          //ファイル名そのまま
+          s_sigo_dir = shadow_dir + "/sigo";
+          s_send_sigo_dir = shadow_dir + "/send_sigo";
+
+        }else if(Grobal_recovery_protocol == 1)
+        {
+          s_sigo_dir = shadow_dir + "/sigo_recover";
+          s_send_sigo_dir = shadow_dir + "/send_sigo_recover";
+
+        }else if(Grobal_recovery_protocol == 2)
+        {
+          s_sigo_dir = shadow_dir + "/jbr";
+          s_send_sigo_dir = shadow_dir + "/send_jbr";
+        }else {
+          //gpcr
+        }
+
         const char * c_sigo_dir = s_sigo_dir.c_str();
         const char * c_send_sigo_dir = s_send_sigo_dir.c_str();
         if(stat(c_sigo_dir, &statBuf) != 0)
