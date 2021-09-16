@@ -1,6 +1,6 @@
 #!/bin/bash
 #simulation start seed
-echo -n INPUT_PROTOCOL_1=SIGO_0=LSGO
+echo -n INPUT_PROTOCOL_ LSGO = 0 SIGO = 1 SIGO_RECOVER = 2 JBR = 3
 read protocol
 echo $protocol
 echo -n NODE_NUM
@@ -21,10 +21,16 @@ do
   if [ $Seed -eq $Finish_Seed ]; then
     exit 0
   fi
-    if [ $protocol -eq 1 ]; then
+    if [ $protocol -eq 1 ]; then #1 = sigo
+      ./waf build
+      ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=8 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
+    elif [ $protocol -eq 2 ]; then #2 = sigo recovery
+      ./waf build
+      ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=9 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
+    elif [ $protocol -eq 3 ]; then #3 = jbr
       ./waf build
       ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=10 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
-    else
+    else #0 = lsgo
       ./waf build
       ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=6 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
     fi
