@@ -64,6 +64,8 @@
 #define DesLowY 550
 #define DesHighY 850
 
+#define NumCandidateNodes 5
+
 
 namespace ns3 {
 namespace sigo {
@@ -165,6 +167,7 @@ public:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
 
+
   /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model.  Return the number of streams (possibly zero) that
@@ -217,8 +220,8 @@ private:
   void Trans (int node_id); //通信許可を与える関数
   void NoTrans (int node_id); //通信不許可を与える関数
   void Send (void); //シミュレーションソースIDとDestinationIDを指定する関数
-  // int distinctionRoad (int x_point,
-  //                      int y_ypoint); //ｘ座標とy座標から道路番号を割り出す関数　return 道路番号
+  void TestSend (void);
+
   std::string distinctionRoad (int x_point, int y_point); //x座標 y座標からroad id or junction idを返す関数
   int judgeIntersection (int x_point, int y_point); //x座標 y座標から　1(no intersection) or 0(intersection)を返す　
   void RoadCenterPoint (); //roadの中心座標を格納するだけの関数
@@ -231,6 +234,8 @@ private:
   double lineDistance (double line_x1, double line_y1, double line_x2, double line_y2, 
   double dot_x, double dot_y); //線分と座標の距離を返す
 
+
+  // *** jbr recovery method ***//
   void SendJbrUnicast (int32_t one_before_x, int32_t one_before_y, int32_t local_source_x, 
   int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
   int32_t des_id, int32_t des_x, int32_t des_y, int32_t hop);
@@ -242,6 +247,21 @@ private:
   int RotationDirection (double a_x, double a_y, double b_x, double b_y, double c_x,
                    double c_y);
   double getTwoPointAngle (double x, double y, double x2, double y2);
+
+
+  // *** sigo recovery method ***//
+  void SendSigoRecoveryBroadcast (int32_t pri_value, int32_t des_id, int32_t des_x, int32_t des_y,
+    int32_t local_source_x, int32_t local_source_y,int32_t hopcount, 
+    int32_t one_before_x, int32_t one_before_y, int32_t previous_x, int32_t previous_y);
+  // sigo recovery broadcast method
+  void DecisionSigoRecoveryCandidate (int32_t one_before_x, int32_t one_before_y, 
+  int32_t local_source_x, int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
+  int32_t des_x, int32_t des_y, int32_t candidate_node_id[NumCandidateNodes + 1]); 
+  // sigo recovery candidate nodesを配列に格納する
+
+  void SetRecoverPriValue (int32_t one_before_x, int32_t one_before_y, 
+  int32_t local_source_x, int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
+  int32_t des_x, int32_t des_y);
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
@@ -270,6 +290,9 @@ private:
   std::map<int, double> m_rt; //近隣ノードの keyがIDでvalueが予想伝送確率
   std::map<int, double> m_pri_value; //ノードの優先度を図る値　大きいほど優先度が高い
   std::map<int, int> m_wait; //key destination_id value ホップカウント
+
+  std::map<int, double> m_recovery_pri_value; 
+  // ノードの優先度を図る値　大きいほど優先度が高い (recovery)
 
   //destination に対してこのホップカウントで送信待機している状態を表す
   //**自作メソッド finish**/

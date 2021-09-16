@@ -2511,8 +2511,8 @@ VanetRoutingExperiment::SetupScenario ()
       //シミュレーションパラメータ 要変更 or check------------------------------
       //***********************
       int node_num = Grobal_Node_Num;
-      Grobal_StartTime = 10;
-      Grobal_SourceNodeNum = 10;
+      Grobal_StartTime = 5;
+      Grobal_SourceNodeNum = 5;
 
 
 
@@ -2532,13 +2532,13 @@ VanetRoutingExperiment::SetupScenario ()
       m_CSVfileName = "";
       std::cout << "\n\n\n\n\n\n\n tcl file = " << m_traceFile << "\n\n\n\n\n\n";
 
-      // // JBR test用
-      // if (m_protocol == 10)
+      // Sigo recovery test用
+      // if (m_protocol == 9)
       // {
-      //   std::cout << " JBR test start \n";
+      //   std::cout << " \n\n\n sigo recovery test start \n";
       //   m_traceFile = "src/wave/examples/no_signal/test2.tcl";
       //   m_nNodes = 601;
-      //   m_TotalSimTime = 6;
+      //   m_TotalSimTime = 4;
       // }
 
 

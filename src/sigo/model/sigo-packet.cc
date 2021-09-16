@@ -67,12 +67,9 @@ TypeHeader::Deserialize (Buffer::Iterator start)
   m_valid = true;
   switch (type)
     {
-    // case SIGOTYPE_RREQ:
-    // case SIGOTYPE_RREP:
-    // case SIGOTYPE_RERR:
-    // case SIGOTYPE_RREP_ACK:
     case SIGOTYPE_SEND:
     case SIGOTYPE_JBR_RECOVER:
+    case SIGOTYPE_RECOVER:
       case SIGOTYPE_HELLO: {
         m_type = (MessageType) type;
         break;
@@ -90,22 +87,6 @@ TypeHeader::Print (std::ostream &os) const
 {
   switch (m_type)
     {
-      // case SIGOTYPE_RREQ: {
-      //   os << "RREQ";
-      //   break;
-      // }
-      // case SIGOTYPE_RREP: {
-      //   os << "RREP";
-      //   break;
-      // }
-      // case SIGOTYPE_RERR: {
-      //   os << "RERR";
-      //   break;
-      // }
-      // case SIGOTYPE_RREP_ACK: {
-      //   os << "RREP_ACK";
-      //   break;
-      // }
       case SIGOTYPE_SEND: {
         os << "SEND";
         break;
@@ -118,7 +99,10 @@ TypeHeader::Print (std::ostream &os) const
         os << "JBR";
         break;
       }
-    default:
+      case SIGOTYPE_RECOVER: {
+        os << "SIGO RECOVER";
+        break;
+      }    default:
       os << "UNKNOWN_TYPE";
     }
 }
@@ -197,9 +181,6 @@ HelloHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
 void
 HelloHeader::Print (std::ostream &os) const
 {
-  // os << "NodeId " << m_nodeid;
-  // os << "NodePointX " << m_posx;
-  // os << "NodePointY" << m_posy;
 }
 std::ostream &
 operator<< (std::ostream &os, HelloHeader const &h)
@@ -401,6 +382,119 @@ operator<< (std::ostream &os, JbrHeader const &h)
 }
 
 // *********************** end jbr recovery unicast*****************************//
+
+
+//***********************start SIGO recover*************************************//
+
+RecoverHeader::RecoverHeader (int32_t des_id, int32_t posx, int32_t posy, int32_t send_id,
+                        int32_t send_posx, int32_t send_posy, int32_t hopcount, int32_t pri1_id,
+                        int32_t pri2_id, int32_t pri3_id, int32_t pri4_id,
+                        int32_t pri5_id, int32_t local_source_x, int32_t local_source_y,
+  int32_t previous_x, int32_t previous_y)
+    : m_des_id (des_id), //目的ノードID
+      m_posx (posx), //目的地座標
+      m_posy (posy),
+      m_send_id (send_id),
+      m_send_posx (send_posx),
+      m_send_posy (send_posy),
+      m_hopcount (hopcount),
+      m_pri1_id (pri1_id), //優先度１
+      m_pri2_id (pri2_id), //優先度２
+      m_pri3_id (pri3_id), //優先度３
+      m_pri4_id (pri4_id), //優先度４
+      m_pri5_id (pri5_id), //優先度５
+      m_local_source_x (local_source_x), 
+      m_local_source_y (local_source_y), 
+      m_previous_x (previous_x), 
+      m_previous_y (previous_y)
+{
+}
+NS_OBJECT_ENSURE_REGISTERED (RecoverHeader);
+
+TypeId
+RecoverHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::sigo::RecoverHeader")
+                          .SetParent<Header> ()
+                          .SetGroupName ("Sigo")
+                          .AddConstructor<RecoverHeader> ();
+  return tid;
+}
+
+TypeId
+RecoverHeader::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
+
+uint32_t
+RecoverHeader::GetSerializedSize () const
+{
+  return 64;
+}
+
+void
+RecoverHeader::Serialize (Buffer::Iterator i) const //シリアル化
+{
+  i.WriteHtonU32 (m_des_id);
+  i.WriteHtonU32 (m_posx);
+  i.WriteHtonU32 (m_posy);
+  i.WriteHtonU32 (m_send_id);
+  i.WriteHtonU32 (m_send_posx);
+  i.WriteHtonU32 (m_send_posy);
+  i.WriteHtonU32 (m_hopcount);
+  i.WriteHtonU32 (m_pri1_id);
+  i.WriteHtonU32 (m_pri2_id);
+  i.WriteHtonU32 (m_pri3_id);
+  i.WriteHtonU32 (m_pri4_id);
+  i.WriteHtonU32 (m_pri5_id);
+  i.WriteHtonU32 (m_local_source_x);
+  i.WriteHtonU32 (m_local_source_y);
+  i.WriteHtonU32 (m_previous_x);
+  i.WriteHtonU32 (m_previous_y);
+}
+
+uint32_t
+RecoverHeader::Deserialize (Buffer::Iterator start) //逆シリアル化
+{
+  Buffer::Iterator i = start;
+
+  m_des_id = i.ReadNtohU32 ();
+  m_posx = i.ReadNtohU32 ();
+  m_posy = i.ReadNtohU32 ();
+  m_send_id = i.ReadNtohU32 ();
+  m_send_posx = i.ReadNtohU32 ();
+  m_send_posy = i.ReadNtohU32 ();
+  m_hopcount = i.ReadNtohU32 ();
+  m_pri1_id = i.ReadNtohU32 ();
+  m_pri2_id = i.ReadNtohU32 ();
+  m_pri3_id = i.ReadNtohU32 ();
+  m_pri4_id = i.ReadNtohU32 ();
+  m_pri5_id = i.ReadNtohU32 ();
+  m_local_source_x = i.ReadNtohU32 ();
+  m_local_source_y = i.ReadNtohU32 ();  
+  m_previous_x = i.ReadNtohU32 ();
+  m_previous_y = i.ReadNtohU32 ();
+
+  uint32_t dist = i.GetDistanceFrom (start);
+
+  NS_ASSERT (dist == GetSerializedSize ());
+  return dist;
+}
+
+void
+RecoverHeader::Print (std::ostream &os) const
+{
+}
+
+std::ostream &
+operator<< (std::ostream &os, RecoverHeader const &h)
+{
+  h.Print (os);
+  return os;
+}
+
+//**********************end SIGO recover***************************************//
 
 } // namespace sigo
 } // namespace ns3
