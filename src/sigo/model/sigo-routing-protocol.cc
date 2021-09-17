@@ -1405,6 +1405,32 @@ RoutingProtocol::SendSigoRecoveryBroadcast(int32_t pri_value, int32_t des_id, in
     wait_time = wait_time + wait_Jitter(rand_src);
     m_wait[des_id] = hopcount; //今から待機するホップカウント
 
+    s_source_id.push_back (send_node_id);
+    s_source_x.push_back (mypos.x);
+    s_source_y.push_back (mypos.y);
+    s_time.push_back (Simulator::Now ().GetMicroSeconds ());
+    s_hop.push_back (hopcount);
+    s_pri_1_id.push_back (candidate_node_id[1]);
+    s_pri_2_id.push_back (candidate_node_id[2]);
+    s_pri_3_id.push_back (candidate_node_id[3]);
+    s_pri_4_id.push_back (candidate_node_id[4]);
+    s_pri_5_id.push_back (candidate_node_id[5]);
+    s_pri_1_r.push_back (m_rt[candidate_node_id[1]]);
+    s_pri_2_r.push_back (m_rt[candidate_node_id[2]]);
+    s_pri_3_r.push_back (m_rt[candidate_node_id[3]]);
+    s_pri_4_r.push_back (m_rt[candidate_node_id[4]]);
+    s_pri_5_r.push_back (m_rt[candidate_node_id[5]]);
+    s_des_id.push_back (des_id);
+    s_send_log.push_back (0); //一旦0にする send関数で本当にsendしたら1 に変える
+    m_send_check[des_id] = sendpacketCount;
+    s_inter_1_id.push_back (0);
+    s_inter_2_id.push_back (0);
+    s_inter_3_id.push_back (0);
+    s_inter_4_id.push_back (0);
+    s_inter_5_id.push_back (0);
+
+    sendpacketCount++;
+
     // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
     Ipv4Address destination;
     if (iface.GetMask () == Ipv4Mask::GetOnes ())
@@ -2276,6 +2302,32 @@ RoutingProtocol::SendJbrUnicast (int32_t one_before_x, int32_t one_before_y, int
 
       TypeHeader tHeader (SIGOTYPE_JBR_RECOVER);
       packet->AddHeader (tHeader);
+
+      s_source_id.push_back (id);
+      s_source_x.push_back (mypos.x);
+      s_source_y.push_back (mypos.y);
+      s_time.push_back (Simulator::Now ().GetMicroSeconds ());
+      s_hop.push_back (hop);
+      s_pri_1_id.push_back (next_id);
+      s_pri_2_id.push_back (10000);
+      s_pri_3_id.push_back (10000);
+      s_pri_4_id.push_back (10000);
+      s_pri_5_id.push_back (10000);
+      s_pri_1_r.push_back (1); //とりあえず１
+      s_pri_2_r.push_back (1);
+      s_pri_3_r.push_back (1);
+      s_pri_4_r.push_back (1);
+      s_pri_5_r.push_back (1);
+      s_des_id.push_back (des_id);
+      s_send_log.push_back (0); //一旦0にする send関数で本当にsendしたら1 に変える
+      m_send_check[des_id] = sendpacketCount;
+      s_inter_1_id.push_back (0);
+      s_inter_2_id.push_back (0);
+      s_inter_3_id.push_back (0);
+      s_inter_4_id.push_back (0);
+      s_inter_5_id.push_back (0);
+
+      sendpacketCount++;
 
       // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
       Ipv4Address destination;
