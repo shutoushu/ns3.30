@@ -2737,7 +2737,7 @@ RoutingProtocol::SimulationResult (void) //
         // std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
         // + "/" + std::to_string (Grobal_InterPoint);
         //　書き出し pass
-        std::string shadow_dir = "data/get_data/recover_test2/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+        std::string shadow_dir = "data/get_data/recover/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
 
         if(Grobal_recovery_protocol == 0)
