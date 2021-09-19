@@ -12,7 +12,7 @@ echo -n $node_num
 Seed=10000
 #simulation finish seed
 # Seed=$input_s_seed
-Finish_Seed=10200
+Finish_Seed=10100
 while true
 do
   echo 'simulation run seed'
