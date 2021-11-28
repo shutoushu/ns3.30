@@ -1,0 +1,32 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('glsgo', ['internet', 'wifi'])
+    module.includes = '.'
+    module.source = [
+        'model/glsgo-packet.cc',
+        'model/glsgo-routing-protocol.cc',
+        'helper/glsgo-helper.cc',
+        ]
+
+    #glsgo_test = bld.create_ns3_module_test_library('glsgo')
+   # glsgo_test.source = [
+      #  'test/glsgo-id-cache-test-suite.cc',
+       # 'test/glsgo-test-suite.cc',
+       # 'test/glsgo-regression.cc',
+       # 'test/bug-772.cc',
+       # 'test/loopback.cc',
+       # ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'glsgo'
+    headers.source = [
+        'model/glsgo-packet.h',
+        'model/glsgo-routing-protocol.h',
+        'helper/glsgo-helper.h',
+        ]
+
+    #if bld.env['ENABLE_EXAMPLES']:
+     #   bld.recurse('examples')
+
+   # bld.ns3_python_bindings()
