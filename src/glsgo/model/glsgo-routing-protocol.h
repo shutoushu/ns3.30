@@ -41,6 +41,7 @@
 #define SourceLowY -50
 #define SourceHighY 300
 
+// geocast region
 #define DesLowX 550
 #define DesHighX 850
 #define DesLowY 550
@@ -72,6 +73,8 @@ public:
   static std::map<int, double> m_my_posy; // key node id value position y
   static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
   static std::vector<int> des_list;
+  static std::multimap<int, int> m_multicast_region_id; 
+  // key:source node id   value: source nodeがbroadcastした時muilticas regionにいたノードID
 
   //パケット軌跡出力用の変数 recv
   static std::vector<int> p_source_x;
@@ -170,6 +173,7 @@ private:
   void NoTrans (int node_id); //通信不許可を与える関数
   void Send (void); //シミュレーションソースIDとDestinationIDを指定する関数
   void SourceAndDestination (void); //source,destinationの指定エリアに存在する
+  void MulticastRegionRegister (int32_t source_id); //multicast regionにいるノードを登録する関数　
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition

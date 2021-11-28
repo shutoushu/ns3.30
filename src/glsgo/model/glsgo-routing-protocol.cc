@@ -299,6 +299,8 @@ RoutingProtocol::SourceAndDestination ()
           source_list.push_back (i);
           // std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
         }
+      
+      //geocast の場合 destination  node は指定しない
       if (m_my_posx[i] >= DesLowX && m_my_posx[i] <= DesHighX && m_my_posy[i] >= DesLowY &&
           m_my_posy[i] <= DesHighY)
         {
@@ -306,35 +308,6 @@ RoutingProtocol::SourceAndDestination ()
           // std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
         }
     }
-  //縦軸用
-    // for (int i = 0; i < numVehicle; i++) ///node数　設定する
-    // {
-    //   if (m_my_posx[i] >= 650 && m_my_posx[i] <= 950 && m_my_posy[i] >= 750 &&
-    //       m_my_posy[i] <= 850)
-    //     {
-    //       source_list.push_back (i);
-    //       std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
-    //     }
-    //   if (m_my_posx[i] >= 650 && m_my_posx[i] <= 950 && m_my_posy[i] >= 550 &&
-    //       m_my_posy[i] <= 650)
-    //     {
-    //       source_list.push_back (i);
-    //       std::cout<<"source list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
-    //     }
-    //   if (m_my_posx[i] >= 50 && m_my_posx[i] <= 250 && m_my_posy[i] >= 150 &&
-    //       m_my_posy[i] <= 250)
-    //     {
-    //       des_list.push_back (i);
-    //       std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
-    //     }
-    //   if (m_my_posx[i] >= 50 && m_my_posx[i] <= 350 && m_my_posy[i] >= -50 &&
-    //       m_my_posy[i] <= 50)
-    //     {
-    //       des_list.push_back (i);
-    //       std::cout<<"destination list id" << i << "position x"<<m_my_posx[i]<<"y"<<m_my_posy[i]<<"\n";
-    //     }
-    // }
-
 
   std::mt19937 get_rand_mt (Grobal_Seed);
 
@@ -344,7 +317,7 @@ RoutingProtocol::SourceAndDestination ()
   for (int i = 0; i < Grobal_SourceNodeNum; i++)
     {
       std::cout << "shuffle source id" << source_list[i] << "\n";
-      std::cout << "shuffle destination id" << des_list[i] << "\n";
+      // std::cout << "shuffle destination id" << des_list[i] << "\n";
     }
 }
 
@@ -373,12 +346,29 @@ RoutingProtocol::Send ()
           Simulator::Schedule (Seconds (shift_time), &RoutingProtocol::SendGlsgoBroadcast, this, 0,
                                des_list[index_time], m_my_posx[des_list[index_time]],
                                m_my_posy[des_list[index_time]], 1);
-          std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y
-                    << "des node point x=" << m_my_posx[des_list[index_time]]
-                    << "y=" << m_my_posy[des_list[index_time]] << "\n";
+          std::cout << "\n\n\n\n\nsource node point x=" << mypos.x << "y=" << mypos.y << std::endl;
+          MulticastRegionRegister (id); 
+          //source nodeのidを引数として渡す source node idに紐づくmulticast region node idを登録
         }
     }
 }
+
+//送信タイミングにmulticast regionにいるノードIDをmultimapに保存
+void
+RoutingProtocol::MulticastRegionRegister (int32_t source_id)
+{
+  for (auto itr = m_my_posx.begin (); itr != m_my_posx.end (); itr++)
+  {
+    if (m_my_posx[itr->first] >= DesLowX && m_my_posx[itr->first] <= DesHighX && 
+    m_my_posy[itr->first] >= DesLowY && m_my_posy[itr->first] <= DesHighY)
+        {
+          m_multicast_region_id.insert (std::make_pair (source_id, itr->first));
+        }
+  }
+}
+
+
+
 //**window size 以下のhello message の取得回数と　初めて取得した時間を保存する関数**//
 void
 RoutingProtocol::SetCountTimeMap (void)
@@ -766,6 +756,17 @@ RoutingProtocol::SendGlsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t 
 
       if (pri_value == 0) //初期のソースノードなら無条件にbroadcast
         {
+          std::cout << "geocast start  node id " << send_node_id <<std::endl;
+          std::cout << "geocast region node ---------------------------" <<std::endl;
+          for (auto itr = m_multicast_region_id.begin (); itr != m_multicast_region_id.end (); itr++)
+          {
+            if(itr->first == send_node_id)
+            {
+              std::cout << "geocast region node id " << itr->second << std::endl;
+              std::cout << "x" << m_my_posx[itr->second] << "y" << m_my_posy[itr->second] << std::endl;
+            }
+          }
+
           socket->SendTo (packet, 0, InetSocketAddress (destination, GLSGO_PORT));
           std::cout << "id " << send_node_id
                     << " source node broadcast----------------------------------------------------"
@@ -1196,6 +1197,7 @@ std::map<int, double> RoutingProtocol::m_my_posx; // key node id value position 
 std::map<int, double> RoutingProtocol::m_my_posy; // key node id value position y
 std::vector<int> RoutingProtocol::source_list;
 std::vector<int> RoutingProtocol::des_list;
+std::multimap<int, int> RoutingProtocol::m_multicast_region_id;
 
 //パケット軌跡出力用の変数
 //パケット軌跡出力用の変数

@@ -1,6 +1,6 @@
 #!/bin/bash
 #simulation start seed
-echo -n INPUT_PROTOCOL_ LSGO = 0 SIGO = 1 SIGO_RECOVER = 2 JBR = 3
+echo -n INPUT_PROTOCOL_ LSGO = 0 SIGO = 1 SIGO_RECOVER = 2 JBR = 3 G_LSGO = 4 G_SIGO = 5 G_R_SIGO = 6
 read protocol
 echo $protocol
 echo -n NODE_NUM
@@ -30,8 +30,19 @@ do
     elif [ $protocol -eq 3 ]; then #3 = jbr
       ./waf build
       ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=10 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
-    else #0 = lsgo
+    elif [ $protocol -eq 0 ]; then #0 = lsgo
       ./waf build
       ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=6 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
+    elif [ $protocol -eq 4 ]; then #5 = geocast lsgo
+          ./waf build
+          ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=11 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
+    elif [ $protocol -eq 5 ]; then #6 = geocast sigo
+          ./waf build
+          ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=12 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"
+    elif [ $protocol -eq 6 ]; then #7 = geocast sigo sigorecovery
+          ./waf build
+          ./waf --run "Lsgo-SimulationScenario --buildings=1  --protocol=13 --lossModel=4 --scenario=3 --nodes=$node_num --seed=$Seed"   
+    else
+      ./waf build
     fi
 done

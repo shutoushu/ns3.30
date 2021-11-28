@@ -59,6 +59,7 @@
 #define SourceLowY -50
 #define SourceHighY 300
 
+// geocast region
 #define DesLowX 550
 #define DesHighX 850
 #define DesLowY 550
@@ -103,6 +104,8 @@ public:
   static std::map<std::string, double> m_road_center_y;  // key road id value road center position y
   static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
   static std::vector<int> des_list;
+  std::multimap<int, int> m_multicast_region_id; 
+  // key:source node id   value: source nodeがbroadcastした時muilticas regionにいたノードID
 
   //パケット軌跡出力用の変数 recv
   static std::vector<int> p_source_x;

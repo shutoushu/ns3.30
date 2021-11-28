@@ -113,6 +113,8 @@
 #include "ns3/lsgo-module.h"
 #include "ns3/shutoushu-module.h"
 #include "ns3/sigo-module.h"
+#include "ns3/gsigo-module.h"
+#include "ns3/glsgo-module.h"
 #include "ns3/jbr-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/itu-r-1411-los-propagation-loss-model.h"
@@ -557,6 +559,8 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
   LsgoHelper lsgo;
   ShutoushuHelper shutoushu;
   SigoHelper sigo;
+  GlsgoHelper glsgo;
+  GsigoHelper gsigo;
   JbrHelper jbr;
   DsrMainHelper dsrMain;
   Ipv4ListRoutingHelper list;
@@ -657,8 +661,35 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
                    "protocol done"
                 << "\n\n";
       break;
+    
+    case 11:
+      list.Add (glsgo, 100);
+      m_protocolName = "Geocast lsgo";
+      Grobal_recovery_protocol  = 0;
+      std::cout << "obstacle debug ------------------------------------------ geocast lsgo"
+                   "protocol done"
+                << "\n\n";
+      break;
+    
+    case 12:
+      list.Add (gsigo, 100);
+      m_protocolName = "JBR recovery";
+      Grobal_recovery_protocol  = 0;
+      std::cout << "obstacle debug ------------------------------------------ geocast sigo"
+                   "protocol done"
+                << "\n\n";
+      break;
 
-    default:
+    case 13:
+      list.Add (gsigo, 100);
+      m_protocolName = "JBR recovery";
+      Grobal_recovery_protocol  = 1;
+      std::cout << "obstacle debug ------------------------------------------ geocast sigo sigo recovery"
+                   "protocol done"
+                << "\n\n";
+
+
+      break;    default:
       NS_FATAL_ERROR ("No such protocol:" << m_protocol);
     }
 
