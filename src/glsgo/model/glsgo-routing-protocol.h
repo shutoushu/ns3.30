@@ -186,6 +186,9 @@ private:
   void MulticastFirstSend (void); //source nodeのみこの関数を呼び出す
   void DecisionRelayCandidateNode (int32_t candidate_node_id[NumCandidateNodes + 1]);
   void SendGeocast (int32_t pri_value, int32_t source_id, int32_t hopcount);
+  void Flooding (int32_t source_id, int32_t hopcount); //geocast region内のrebroadcast
+  void SendToFlooding (Ptr<Socket> socket, Ptr<Packet> packet,
+                    Ipv4Address destination); //Hello packet の送信
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
