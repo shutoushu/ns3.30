@@ -47,6 +47,13 @@
 #define DesLowY 550
 #define DesHighY 850
 
+// geocast 中心座標
+#define GeocastCenterX 700
+#define GeocastCenterY 750
+
+#define NumCandidateNodes 5     
+
+
 namespace ns3 {
 namespace glsgo {
 /**
@@ -173,7 +180,12 @@ private:
   void NoTrans (int node_id); //通信不許可を与える関数
   void Send (void); //シミュレーションソースIDとDestinationIDを指定する関数
   void SourceAndDestination (void); //source,destinationの指定エリアに存在する
-  void MulticastRegionRegister (int32_t source_id); //multicast regionにいるノードを登録する関数　
+
+  // geocast 追加関数
+  void MulticastRegionRegister (int32_t source_id); //multicast regionにいるノードを登録する関数
+  void MulticastFirstSend (void); //source nodeのみこの関数を呼び出す
+  void DecisionRelayCandidateNode (int32_t candidate_node_id[NumCandidateNodes + 1]);
+  void SendGeocast (int32_t pri_value, int32_t source_id, int32_t hopcount);
 
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
@@ -181,6 +193,7 @@ private:
   std::multimap<int, int>
       m_recvtime; //hello messageを取得した時間を保存するマップ　key = NodeId value=recvtime
   std::map<int, int> m_send_check; //key = destination_id value = send_logファイルのindex
+  std::map<int, int> m_recv_packet_id; //key packet id   value 1 or 0   1 = 受信済み
 
   ///以下のマップは使ったら消去する
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数

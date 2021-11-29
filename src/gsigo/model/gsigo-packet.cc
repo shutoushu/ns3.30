@@ -192,7 +192,7 @@ operator<< (std::ostream &os, HelloHeader const &h)
 // ***********************end GSIGO_HELLO*************************************//
 
 //***********************start GSIGO Send*************************************//
-
+//des_id を geocastの場合 source node idに変更
 SendHeader::SendHeader (int32_t des_id, int32_t posx, int32_t posy, int32_t send_id,
                         int32_t send_posx, int32_t send_posy, int32_t hopcount, int32_t pri1_id,
                         int32_t pri2_id, int32_t pri3_id, int32_t pri4_id,
