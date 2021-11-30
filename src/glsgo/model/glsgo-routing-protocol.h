@@ -86,16 +86,16 @@ public:
   //key: source node id value : multicast regionで受信したノードID
 
   //パケット軌跡出力用の変数 recv
-  static std::vector<int> p_source_x;
-  static std::vector<int> p_source_y;
+  static std::vector<int> p_source_id;
+  static std::vector<int> p_send_x;
+  static std::vector<int> p_send_y;
   static std::vector<int> p_recv_x;
   static std::vector<int> p_recv_y;
   static std::vector<int> p_recv_time;
   static std::vector<int> p_recv_priority;
   static std::vector<int> p_hopcount;
   static std::vector<int> p_recv_id;
-  static std::vector<int> p_source_id;
-  static std::vector<int> p_destination_id;
+  static std::vector<int> p_send_id;
   static std::vector<int> p_destination_x;
   static std::vector<int> p_destination_y;
   static std::vector<int> p_pri_1;

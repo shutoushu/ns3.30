@@ -906,7 +906,8 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
         SaveRecvTime (recv_hello_id, recv_hello_time);
         break; //breakがないとエラー起きる
       }
-      case GLSGOTYPE_SEND: {
+      case GLSGOTYPE_SEND: 
+      {
 
         std::cout << "sendheader packet receive\n";
 
@@ -946,6 +947,25 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
             std::cout << "単純Floodingをします\n";
             m_multicast_region_recv_id.insert(std::make_pair(source_id, id));
             Flooding(source_id, hopcount);
+            
+            p_source_id.push_back (source_id);
+            p_send_x.push_back (send_x);
+            p_send_y.push_back (send_y);
+            p_recv_x.push_back (mypos.x);
+            p_recv_y.push_back (mypos.y);
+            p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+            p_recv_priority.push_back (10000000);
+            p_hopcount.push_back (hopcount);
+            p_recv_id.push_back (id);
+            p_send_id.push_back (send_id);
+            p_destination_x.push_back (GeocastCenterX);
+            p_destination_y.push_back (GeocastCenterY);
+            p_pri_1.push_back (10000000);
+            p_pri_2.push_back (10000000);
+            p_pri_3.push_back (10000000);
+            p_pri_4.push_back (10000000);
+            p_pri_5.push_back (10000000);
+            packetCount++;
           }
         }else
         { // multicast region外のノード
@@ -955,21 +975,21 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
             { //待機中のホップカウントより大きいホップカウントを受け取ったなら
               m_wait.erase (source_id);
             }
-
-            for (int i = 0; i < 5; i++)
+          }
+          for (int i = 0; i < 5; i++) //relay candidate nodeに自分のIDが含まれているかチェック
             {
               if (id == pri_id[i]) //packetに自分のIDが含まれているか
                 {
-                  p_source_x.push_back (send_x);
-                  p_source_y.push_back (send_y);
+                  p_source_id.push_back (source_id);
+                  p_send_x.push_back (send_x);
+                  p_send_y.push_back (send_y);
                   p_recv_x.push_back (mypos.x);
                   p_recv_y.push_back (mypos.y);
                   p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
                   p_recv_priority.push_back (i + 1);
                   p_hopcount.push_back (hopcount);
                   p_recv_id.push_back (id);
-                  p_source_id.push_back (send_id);
-                  p_destination_id.push_back (10000000);
+                  p_send_id.push_back (send_id);
                   p_destination_x.push_back (GeocastCenterX);
                   p_destination_y.push_back (GeocastCenterY);
                   p_pri_1.push_back (pri_id[0]);
@@ -978,71 +998,44 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
                   p_pri_4.push_back (pri_id[3]);
                   p_pri_5.push_back (pri_id[4]);
                   packetCount++;
-                  // SendGlsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
                   SendGeocast(i + 1, source_id, hopcount);
-                }
-              else //含まれていないか (待状態　かつ　relay candidate nodeではない)
-                {
-                  //send nodeがmulticast regionに存在するかどうか
-                  if (send_x >= DesLowX && send_x <= DesHighX && send_y >= DesLowY &&
-                    send_y) // send nodeがmulticast regionに存在するならば　
-                    {
-                      if(m_recv_packet_id[source_id] == 1) //以前に同様のパケットを受信したことがある
-                      {
-                        break; //パケットを破棄
-                      }else{
-                        //rebroadcast 単純
-                        Flooding(source_id, hopcount);
-                      }
-                    }
+                  m_recv_packet_id[source_id] = 1; //受信したpacketを記録
+                  break;
                 }
             }
-          }
-        else //待ち状態じゃないならば
-          {
-            for (int i = 0; i < 5; i++)
+            //含まれていない (待状態　かつ　relay candidate nodeではない)
+            // //send nodeがmulticast regionに存在するかどうか
+            if (send_x >= DesLowX && send_x <= DesHighX && send_y >= DesLowY &&
+              send_y) // send nodeがmulticast regionに存在するならば　
               {
-                if (id == pri_id[i]) //packetに自分のIDが含まれているか
-                  {
-                    p_source_x.push_back (send_x);
-                    p_source_y.push_back (send_y);
-                    p_recv_x.push_back (mypos.x);
-                    p_recv_y.push_back (mypos.y);
-                    p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
-                    p_recv_priority.push_back (i + 1);
-                    p_hopcount.push_back (hopcount);
-                    p_recv_id.push_back (id);
-                    p_source_id.push_back (send_id);
-                    p_destination_id.push_back (10000000);
-                    p_destination_x.push_back (GeocastCenterX);
-                    p_destination_y.push_back (GeocastCenterY);
-                    p_pri_1.push_back (pri_id[0]);
-                    p_pri_2.push_back (pri_id[1]);
-                    p_pri_3.push_back (pri_id[2]);
-                    p_pri_4.push_back (pri_id[3]);
-                    p_pri_5.push_back (pri_id[4]);
-                    packetCount++;
-                    // SendGlsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
-                    SendGeocast(i + 1, source_id, hopcount);
-                  }
-                else //含まれていないか
-                  {
-                    //send nodeがmulticast regionに存在するかどうか
-                    if (send_x >= DesLowX && send_x <= DesHighX && send_y >= DesLowY && send_y) 
-                    // send nodeがmulticast regionに存在するならば　
-                    {
-                      if(m_recv_packet_id[source_id] == 1) //以前に同様のパケットを受信したことがある
-                      {
-                        break; //パケットを破棄
-                      }else{
-                        //rebroadcast 単純
-                        std::cout << "multicast region からのfloodingを受信 rebroadcast します\n";
-                        Flooding(source_id, hopcount);
-                      }
-                    }
-                  }
+                if(m_recv_packet_id[source_id] == 1) //以前に同様のパケットを受信したことがある
+                {
+                  break; //パケットを破棄
+                }else{
+                  //rebroadcast 単純
+                  Flooding(source_id, hopcount);
+                  p_source_id.push_back (source_id);
+                  p_send_x.push_back (send_x);
+                  p_send_y.push_back (send_y);
+                  p_recv_x.push_back (mypos.x);
+                  p_recv_y.push_back (mypos.y);
+                  p_recv_time.push_back (Simulator::Now ().GetMicroSeconds ());
+                  p_recv_priority.push_back (10000000);
+                  p_hopcount.push_back (hopcount);
+                  p_recv_id.push_back (id);
+                  p_send_id.push_back (send_id);
+                  p_destination_x.push_back (GeocastCenterX);
+                  p_destination_y.push_back (GeocastCenterY);
+                  p_pri_1.push_back (pri_id[0]);
+                  p_pri_2.push_back (pri_id[1]);
+                  p_pri_3.push_back (pri_id[2]);
+                  p_pri_4.push_back (pri_id[3]);
+                  p_pri_5.push_back (pri_id[4]);
+                  packetCount++;
+                  m_recv_packet_id[source_id] = 1; //受信したpacketを記録
+                  break;
+                }
               }
-          }
         }
         m_recv_packet_id[source_id] = 1; //受信したpacketを記録
         break;
@@ -1156,9 +1149,11 @@ RoutingProtocol::SimulationResult (void) //
       }
 
       std::ofstream packetTrajectory (filename);
-      packetTrajectory << "source_x"
+      packetTrajectory << "source_id"
                        << ","
-                       << "source_y"
+                       << "send_x"
+                       << ","
+                       << "send_y"
                        << ","
                        << "recv_x"
                        << ","
@@ -1172,9 +1167,7 @@ RoutingProtocol::SimulationResult (void) //
                        << ","
                        << "recv_id"
                        << ","
-                       << "source_id"
-                       << ","
-                       << "destination_id"
+                       << "send_id"
                        << ","
                        << "destination_x"
                        << ","
@@ -1225,11 +1218,10 @@ RoutingProtocol::SimulationResult (void) //
                             << "send_log" << std::endl;
       for (int i = 0; i < packetCount; i++)
         {
-          packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
+          packetTrajectory << p_source_id[i] << ", " << p_send_x[i] << ", " << p_send_y[i] << ", " << p_recv_x[i] << ", "
                            << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
                            << ", " << p_hopcount[i] << ", " << p_recv_id[i] << ", "
-                           << p_source_id[i] << ", " << p_destination_id[i] << ", "
-                           << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
+                           << p_send_id[i] << ", " << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
                            << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
                            << p_pri_5[i] << std::endl;
         }
@@ -1258,16 +1250,16 @@ std::multimap<int, int>RoutingProtocol::m_multicast_region_recv_id;
 
 //パケット軌跡出力用の変数
 //パケット軌跡出力用の変数
-std::vector<int> RoutingProtocol::p_source_x;
-std::vector<int> RoutingProtocol::p_source_y;
+std::vector<int> RoutingProtocol::p_source_id;
+std::vector<int> RoutingProtocol::p_send_x;
+std::vector<int> RoutingProtocol::p_send_y;
 std::vector<int> RoutingProtocol::p_recv_x;
 std::vector<int> RoutingProtocol::p_recv_y;
 std::vector<int> RoutingProtocol::p_recv_time;
 std::vector<int> RoutingProtocol::p_recv_priority;
 std::vector<int> RoutingProtocol::p_hopcount;
 std::vector<int> RoutingProtocol::p_recv_id;
-std::vector<int> RoutingProtocol::p_source_id;
-std::vector<int> RoutingProtocol::p_destination_id;
+std::vector<int> RoutingProtocol::p_send_id;
 std::vector<int> RoutingProtocol::p_destination_x;
 std::vector<int> RoutingProtocol::p_destination_y;
 std::vector<int> RoutingProtocol::p_pri_1;

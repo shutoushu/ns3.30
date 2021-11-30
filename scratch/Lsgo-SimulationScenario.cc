@@ -99,6 +99,9 @@
  *
  */
 
+//  実行コマンド例 ./waf --run "Lsgo-SimulationScenario --buildings=1  
+// --protocol=11 --lossModel=4 --scenario=3 --nodes=200 --seed=10000"
+
 #include <fstream>
 #include <iostream>
 #include "ns3/core-module.h"
