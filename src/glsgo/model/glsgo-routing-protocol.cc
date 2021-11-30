@@ -908,9 +908,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
       }
       case GLSGOTYPE_SEND: 
       {
-
         std::cout << "sendheader packet receive\n";
-
         SendHeader sendheader;
         packet->RemoveHeader (sendheader);
 
@@ -922,6 +920,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
         int32_t pri_id[] = {sendheader.GetId1 (), sendheader.GetId2 (), sendheader.GetId3 (),
                             sendheader.GetId4 (), sendheader.GetId5 ()};
         int32_t judge_multicast_region = 0;  // 1 = multicast regionに位置する
+        
         // multicast region に位置するノードかどうかの判別
         for (auto itr = m_multicast_region_id.begin (); itr != m_multicast_region_id.end (); itr++)
         {
@@ -965,6 +964,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
             p_pri_3.push_back (10000000);
             p_pri_4.push_back (10000000);
             p_pri_5.push_back (10000000);
+            m_recv_packet_id[source_id] = 1; //受信したpacketを記録
             packetCount++;
           }
         }else
@@ -1006,7 +1006,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
             //含まれていない (待状態　かつ　relay candidate nodeではない)
             // //send nodeがmulticast regionに存在するかどうか
             if (send_x >= DesLowX && send_x <= DesHighX && send_y >= DesLowY &&
-              send_y) // send nodeがmulticast regionに存在するならば　
+              send_y <= DesHighY) // send nodeがmulticast regionに存在するならば　
               {
                 if(m_recv_packet_id[source_id] == 1) //以前に同様のパケットを受信したことがある
                 {
@@ -1037,7 +1037,6 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
                 }
               }
         }
-        m_recv_packet_id[source_id] = 1; //受信したpacketを記録
         break;
       }
     }
