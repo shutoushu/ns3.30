@@ -526,7 +526,7 @@ RoutingProtocol::SendToGlsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
 
   if (m_wait[source_id] == hopcount) //送信するhopcount がまだ待機中だったら
     {
-      std::cout << "id " << id << " broadcast----------------------------------------------------"
+      std::cout << "id " << id << " geocast----------------------------------------------------"
                 << "time" << Simulator::Now ().GetMicroSeconds () << "m_wait" << m_wait[source_id]
                 << "position(" << mypos.x << "," << mypos.y << ")"
                 << "\n";
@@ -541,6 +541,7 @@ RoutingProtocol::SendToGlsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
   else
     {
       //rebroadcast cancel
+      std::cout << "geocast rebroadcast cancel \n";
       m_send_check.clear (); //broadcast canselされたのでsend checkしたindexをクリア
     }
 }
@@ -555,6 +556,7 @@ RoutingProtocol::MulticastFirstSend (void)
       Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
       Vector mypos = mobility->GetPosition (); //source nodeの位置情報
       int candidate_node_id[NumCandidateNodes + 1];
+      std::cout << "source node id " << source_node_id << "decision candidate node\n";
       DecisionRelayCandidateNode(candidate_node_id);
 
       s_source_id.push_back (source_node_id);
@@ -620,107 +622,107 @@ RoutingProtocol::DecisionRelayCandidateNode (int32_t candidate_node_id[NumCandid
   for(int i = 1; i < NumCandidateNodes + 1; i++)
   {
     candidate_node_id[i] = 10000000; ///ダミーID で初期化
-    SetCountTimeMap (); //window sizeないの最初のhelloを受け取った時間と回数をマップに格納する関数
-    SetEtxMap (); //m_rt と　EtX mapをセットする
-    SetPriValueMap (GeocastCenterX, GeocastCenterX); //優先度を決める値をセットする関数
-    for (int i = 1; i < 6; i++) //5回回して、大きいものから取り出して削除する
+  }
+  SetCountTimeMap (); //window sizeないの最初のhelloを受け取った時間と回数をマップに格納する関数
+  SetEtxMap (); //m_rt と　EtX mapをセットする
+  SetPriValueMap (GeocastCenterX, GeocastCenterX); //優先度を決める値をセットする関数
+  for (int i = 1; i < 6; i++) //5回回して、大きいものから取り出して削除する
+  {
+    int count = 1;
+    int max_id = 10000000;
+    double max_value = 0;
+    for (auto itr = m_pri_value.begin (); itr != m_pri_value.end (); itr++)
+      {
+        if (count == 1)
+          {
+            max_value = m_pri_value[itr->first];
+          }
+        else
+          {
+            if (max_value < m_pri_value[itr->first])
+              {
+                max_value = m_pri_value[itr->first];
+              }
+          }
+        count++;
+      }
+    for (auto itr = m_pri_value.begin (); itr != m_pri_value.end (); itr++)
+      {
+
+        if (m_pri_value[itr->first] == max_value)
+          {
+            max_id = itr->first;
+          }
+      }
+
+    m_pri_value.erase (max_id);
+
+    switch (i)
+      {
+      case 1:
+        candidate_node_id[1] = max_id;
+        break;
+      case 2:
+        candidate_node_id[2] = max_id;
+        break;
+      case 3:
+        candidate_node_id[3] = max_id;
+        break;
+      case 4:
+        candidate_node_id[4] = max_id;
+        break;
+      case 5:
+        candidate_node_id[5] = max_id;
+        break;
+      }
+  }
+  // 候補ノード選択アルゴリズム
+    int candidataNum = 5; // 候補ノード数　初期値は最大
+
+    for (int n = 1; n < 6; n++) //5回回して、 条件を満たすまでまわる nは候補ノード数
     {
-      int count = 1;
-      int max_id = 10000000;
-      double max_value = 0;
-      for (auto itr = m_pri_value.begin (); itr != m_pri_value.end (); itr++)
+      double infiniteProduct = 1; // 総乗
+      for (int p = 1; p <= n; p++) //pは優先度  優先度は1から回す
         {
-          if (count == 1)
-            {
-              max_value = m_pri_value[itr->first];
-            }
-          else
-            {
-              if (max_value < m_pri_value[itr->first])
-                {
-                  max_value = m_pri_value[itr->first];
-                }
-            }
-          count++;
+          double rtMiss = 1 - m_rt[candidate_node_id[p]]; // 伝送に失敗する予想確率
+          infiniteProduct = infiniteProduct * rtMiss;
         }
-      for (auto itr = m_pri_value.begin (); itr != m_pri_value.end (); itr++)
+      if (TransProbability <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
         {
-
-          if (m_pri_value[itr->first] == max_value)
-            {
-              max_id = itr->first;
-            }
-        }
-
-      m_pri_value.erase (max_id);
-
-      switch (i)
-        {
-        case 1:
-          candidate_node_id[1] = max_id;
-          break;
-        case 2:
-          candidate_node_id[2] = max_id;
-          break;
-        case 3:
-          candidate_node_id[3] = max_id;
-          break;
-        case 4:
-          candidate_node_id[4] = max_id;
-          break;
-        case 5:
-          candidate_node_id[5] = max_id;
+          candidataNum = n; //候補ノード数を変更
           break;
         }
     }
-    // 候補ノード選択アルゴリズム
-      int candidataNum = 5; // 候補ノード数　初期値は最大
-
-      for (int n = 1; n < 6; n++) //5回回して、 条件を満たすまでまわる nは候補ノード数
+    switch (candidataNum) //候補ノード数によってダミーノードIDを加える
       {
-        double infiniteProduct = 1; // 総乗
-        for (int p = 1; p <= n; p++) //pは優先度  優先度は1から回す
+      case 1:
+        candidate_node_id[2] = 10000000;
+        candidate_node_id[3] = 10000000;
+        candidate_node_id[4] = 10000000;
+        candidate_node_id[5] = 10000000;
+        break;
+      case 2:
+        candidate_node_id[3] = 10000000;
+        candidate_node_id[4] = 10000000;
+        candidate_node_id[5] = 10000000;
+        break;
+      case 3:
+        candidate_node_id[4] = 10000000;
+        candidate_node_id[5] = 10000000;
+        break;
+      case 4:
+        candidate_node_id[5] = 10000000;
+        break;
+      }
+
+    for (int i = 1; i < 6; i++)
+      {
+        if (candidate_node_id[i] != 10000000)
           {
-            double rtMiss = 1 - m_rt[candidate_node_id[p]]; // 伝送に失敗する予想確率
-            infiniteProduct = infiniteProduct * rtMiss;
-          }
-        if (TransProbability <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
-          {
-            candidataNum = n; //候補ノード数を変更
-            break;
+            std::cout << "優先度" << i << "の node id = " << candidate_node_id[i] << "予想伝送確率"
+                      << m_rt[candidate_node_id[i]] << "hello受信回数 " << m_recvcount[candidate_node_id[i]] << "\n";
           }
       }
-      switch (candidataNum) //候補ノード数によってダミーノードIDを加える
-        {
-        case 1:
-          candidate_node_id[2] = 10000000;
-          candidate_node_id[3] = 10000000;
-          candidate_node_id[4] = 10000000;
-          candidate_node_id[5] = 10000000;
-          break;
-        case 2:
-          candidate_node_id[3] = 10000000;
-          candidate_node_id[4] = 10000000;
-          candidate_node_id[5] = 10000000;
-          break;
-        case 3:
-          candidate_node_id[4] = 10000000;
-          candidate_node_id[5] = 10000000;
-          break;
-        case 4:
-          candidate_node_id[5] = 10000000;
-          break;
-        }
-
-      for (int i = 1; i < 6; i++)
-        {
-          if (candidate_node_id[i] != 10000000)
-            {
-              std::cout << "優先度" << i << "の node id = " << candidate_node_id[i] << "予想伝送確率"
-                        << m_rt[candidate_node_id[i]] << "hello受信回数 " << m_recvcount[candidate_node_id[i]] << "\n";
-            }
-        }
-  }
 }
 
 void
@@ -737,6 +739,7 @@ RoutingProtocol::SendGeocast(int32_t pri_value, int32_t source_id, int32_t hopco
     Vector mypos = mobility->GetPosition (); //broadcastするノードの位置情報
 
     int candidate_node_id[NumCandidateNodes + 1];
+    std::cout << "send node id" << send_node_id << "decision relya candidate nodes\n";
     DecisionRelayCandidateNode(candidate_node_id);
 
     hopcount++;
@@ -905,6 +908,8 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
       }
       case GLSGOTYPE_SEND: {
 
+        std::cout << "sendheader packet receive\n";
+
         SendHeader sendheader;
         packet->RemoveHeader (sendheader);
 
@@ -915,8 +920,6 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
         int32_t hopcount = sendheader.GetHopcount ();
         int32_t pri_id[] = {sendheader.GetId1 (), sendheader.GetId2 (), sendheader.GetId3 (),
                             sendheader.GetId4 (), sendheader.GetId5 ()};
-
-
         int32_t judge_multicast_region = 0;  // 1 = multicast regionに位置する
         // multicast region に位置するノードかどうかの判別
         for (auto itr = m_multicast_region_id.begin (); itr != m_multicast_region_id.end (); itr++)
@@ -932,11 +935,16 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
 
         if(judge_multicast_region == 1) //multicast regionに位置するならならば
         {
+          std::cout << "recv id " << id << "はmulticast regionに位置する\n";
+          std::cout << "pos " << mypos << std::endl;
           if(m_recv_packet_id[source_id] == 1) //以前に同様のパケットを受信したことがある
           {
+            std::cout << "以前に受け取ったことがある　パケット破棄します\n";
             break; //パケットを破棄
           }else{  //初めてパケットを受け取る
             //rebroadcast 単純
+            std::cout << "単純Floodingをします\n";
+            m_multicast_region_recv_id.insert(std::make_pair(source_id, id));
             Flooding(source_id, hopcount);
           }
         }else
@@ -971,6 +979,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
                   p_pri_5.push_back (pri_id[4]);
                   packetCount++;
                   // SendGlsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
+                  SendGeocast(i + 1, source_id, hopcount);
                 }
               else //含まれていないか (待状態　かつ　relay candidate nodeではない)
                 {
@@ -1014,6 +1023,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
                     p_pri_5.push_back (pri_id[4]);
                     packetCount++;
                     // SendGlsgoBroadcast (i + 1, des_id, des_x, des_y, hopcount);
+                    SendGeocast(i + 1, source_id, hopcount);
                   }
                 else //含まれていないか
                   {
@@ -1026,6 +1036,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
                         break; //パケットを破棄
                       }else{
                         //rebroadcast 単純
+                        std::cout << "multicast region からのfloodingを受信 rebroadcast します\n";
                         Flooding(source_id, hopcount);
                       }
                     }
@@ -1086,53 +1097,24 @@ RoutingProtocol::SimulationResult (void) //
 {
   std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
   //int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  
   if (Simulator::Now ().GetSeconds () == Grobal_StartTime + Grobal_SourceNodeNum + 1)
     {
-      int sum_end_time = 0;
-      int sum_br = 0; //ブロードキャスト数の平均
-      double average_end_time = 0;
-      int recvCount = 0;
-      std::cout << "\n\n\n結果出力----------------------------------\n\n";
-      for (auto itr = broadcount.begin (); itr != broadcount.end (); itr++)
-        {
-          std::cout << "des id " << itr->first << "glsgo broadcast数" << broadcount[itr->first]
-                    << "\n";
-          sum_br += broadcount[itr->first];
-        }
-      for (auto itr = m_start_time.begin (); itr != m_start_time.end (); itr++)
-        {
-          std::cout << "des id " << itr->first << "送信開始時刻" << m_start_time[itr->first]
-                    << "\n";
-        }
-      for (auto itr = m_finish_time.begin (); itr != m_finish_time.end (); itr++)
-        {
-          if (m_finish_time[itr->first] != 0) // 受信回数分回る
-            {
-              std::cout << "des id " << itr->first << "受信時刻" << m_finish_time[itr->first]
-                        << "\n";
-              int end_to_end_time = m_finish_time[itr->first] - m_start_time[itr->first];
-              sum_end_time += end_to_end_time;
-              std::cout << "destination id = " << itr->first
-                        << "end to end deley time = " << end_to_end_time << "\n";
-              recvCount++;
-            }
-        }
-      std::cout << "sum_br" << sum_br << "\n";
-      std::cout << "recvCount" << recvCount << "\n";
-      std::cout << "sum_end_time" << sum_end_time << "\n";
-      double average_overhead = (double) sum_br / (double) recvCount;
-      double packet_recv_rate = (double) recvCount / (double) m_start_time.size ();
-      average_end_time = (double) sum_end_time / (double) recvCount;
-      std::cout << "本シミュレーションのパケット到達率は" << packet_recv_rate << "\n";
-      std::cout << "本シミュレーションのパケットEnd to End遅延時間は" << average_end_time << "\n";
-      std::cout << "本シミュレーションのパケット平均オーバーヘッドは" << average_overhead << "\n";
-      std::cout << "本シミュレーションのシミュレーション開始時刻は" << Grobal_StartTime << "\n";
-      std::cout << "送信数は" << m_start_time.size () << "\n";
-      std::cout << "受信数は" << recvCount << "\n";
-      std::cout << "PDRテスト" << m_finish_time.size () / m_start_time.size () << "\n";
-      std::cout << "Seed値は" << Grobal_Seed << "\n";
-      std::cout << "車両数は" << numVehicle << "\n";
-      std::cout << "trans probability" << TransProbability << "\n";
+      for(int source_list_index = 0; source_list_index < Grobal_SourceNodeNum; source_list_index ++)
+      {
+        int count = m_multicast_region_id.count(source_list[source_list_index]);
+        int recv_count = m_multicast_region_recv_id.count(source_list[source_list_index]);
+        std::cout << "source id " << source_list[source_list_index] << "のMRの個数 " << count << std::endl;
+        std::cout << "multicast region 受信数" << recv_count << std::endl;
+        double pdr = recv_count/count;
+        std::cout << "pdr" << pdr << std::endl;
+      }
+      // int source_node_id = 0;
+      // int region_count = 0;
+      // for (auto itr = m_mlticast_region.begin (); itr != m_start_time.end (); itr++)
+      // {
+
+      // }
 
       std::string filename;
       std::string send_filename;
@@ -1272,6 +1254,7 @@ std::map<int, double> RoutingProtocol::m_my_posy; // key node id value position 
 std::vector<int> RoutingProtocol::source_list;
 std::vector<int> RoutingProtocol::des_list;
 std::multimap<int, int> RoutingProtocol::m_multicast_region_id;
+std::multimap<int, int>RoutingProtocol::m_multicast_region_recv_id;
 
 //パケット軌跡出力用の変数
 //パケット軌跡出力用の変数
