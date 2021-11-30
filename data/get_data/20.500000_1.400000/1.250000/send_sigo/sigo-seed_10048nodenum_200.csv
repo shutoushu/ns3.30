@@ -1,2 +1,0 @@
-source_id,source_x,source_y,time,hop,pri_1_id,pri_2_id,pri_3_id,pri_4_id,pri_5_id,pri_1_r,pri_2_r,pri_3_r,pri_4_r,pri_5_r,des_id,inter_1id ,inter_2id ,inter_3id ,inter_4id ,inter_5id ,send_log
-11, 1, 23, 5299999, 1, 29, 8, 10000000, 10000000, 10000000, 0.921381, 1, 0, 0, 0, 51, 0, 0, 1, 1, 1, 0

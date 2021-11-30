@@ -1,4 +1,0 @@
-source_x,source_y,recv_x,recv_y,time,recv_priority,hopcount,recv_id,source_id,destination_id,destination_x,destination_y,pri_1,pri_2,pri_3,pri_4,pri_5
-201, 25, 198, 171, 5300200, 3, 1, 60, 98, 297, 798, 787, 23, 368, 60, 199, 249
-201, 25, 201, 212, 5300200, 5, 1, 249, 98, 297, 798, 787, 23, 368, 60, 199, 249
-201, 25, 201, 212, 5300200, 2, 1, 368, 98, 297, 798, 787, 23, 368, 60, 199, 249

@@ -530,6 +530,7 @@ RoutingProtocol::SendToGlsgo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Addres
                 << "time" << Simulator::Now ().GetMicroSeconds () << "m_wait" << m_wait[source_id]
                 << "position(" << mypos.x << "," << mypos.y << ")"
                 << "\n";
+      m_geocast_count[source_id] = m_geocast_count[source_id] + 1;
       socket->SendTo (packet, 0, InetSocketAddress (destination, GLSGO_PORT));
       m_wait.erase (source_id);
       if (m_finish_time[source_id] == 0) // まだ受信車両が受信してなかったら
@@ -613,6 +614,7 @@ RoutingProtocol::MulticastFirstSend (void)
       std::cout << "id " << source_node_id
                     << " source node geocast----------------------------------------------------"
                     << "time" << Simulator::Now ().GetMicroSeconds () << "\n";
+      m_geocast_count[source_node_id] = m_geocast_count[source_node_id] + 1;
     }
 }
 
@@ -869,6 +871,7 @@ RoutingProtocol::Flooding(int32_t source_id, int32_t hopcount)
     Time Jitter = Time (MicroSeconds (m_uniformRandomVariable->GetInteger (0, 50000)));
     Simulator::Schedule (Jitter, &RoutingProtocol::SendToFlooding, this, socket, packet,
                            destination);
+    m_geocast_count[source_id] = m_geocast_count[source_id] + 1;
   }
 }
 
@@ -999,6 +1002,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
                   p_pri_5.push_back (pri_id[4]);
                   packetCount++;
                   SendGeocast(i + 1, source_id, hopcount);
+                  std::cout << "id" << id << "pos" << mypos << "priority " << i + 1 << std::endl;
                   m_recv_packet_id[source_id] = 1; //受信したpacketを記録
                   break;
                 }
@@ -1013,6 +1017,7 @@ RoutingProtocol::RecvGlsgo (Ptr<Socket> socket)
                   break; //パケットを破棄
                 }else{
                   //rebroadcast 単純
+                  std::cout << "relay candidate nodeでもmulticast regionノードでもないが送信ノードがmulticast region\n";
                   Flooding(source_id, hopcount);
                   p_source_id.push_back (source_id);
                   p_send_x.push_back (send_x);
@@ -1092,34 +1097,41 @@ RoutingProtocol::SimulationResult (void) //
   
   if (Simulator::Now ().GetSeconds () == Grobal_StartTime + Grobal_SourceNodeNum + 1)
     {
+      std::map<int, double> m_pdr; // key source_id value PDR
+      std::map<int, double> m_overhead; // key source_id value Overhead
       for(int source_list_index = 0; source_list_index < Grobal_SourceNodeNum; source_list_index ++)
       {
-        int count = m_multicast_region_id.count(source_list[source_list_index]);
+        int count = m_multicast_region_id.count(source_list[source_list_index]); //multicast regionノード数
         int recv_count = m_multicast_region_recv_id.count(source_list[source_list_index]);
         std::cout << "source id " << source_list[source_list_index] << "のMRの個数 " << count << std::endl;
         std::cout << "multicast region 受信数" << recv_count << std::endl;
         double pdr = recv_count/count;
+        double overhead = m_geocast_count[source_list[source_list_index]] / recv_count;
         std::cout << "pdr" << pdr << std::endl;
+        std::cout << "overhead" << overhead << std::endl;
+        m_pdr[source_list[source_list_index]] = pdr;
+        m_overhead[source_list[source_list_index]] = overhead;
       }
-      // int source_node_id = 0;
-      // int region_count = 0;
-      // for (auto itr = m_mlticast_region.begin (); itr != m_start_time.end (); itr++)
-      // {
-
-      // }
 
       std::string filename;
       std::string send_filename;
+      std::string result_filename;
 
       if(Buildings == 1)
       {
         ////書き出し path
-       std::string shadow_dir = "data/get_data/geocast/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+        std::string shadow_dir = "data/get_data/geocast/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/glsgo/glsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
-                             std::to_string (numVehicle) + ".csv";
+                              std::to_string (numVehicle) + ".csv";
         send_filename = shadow_dir + "/send_glsgo/glsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                   std::to_string (numVehicle) + ".csv";
+
+        std::string geocast_shadow_dir =  "data/get_data/geocast_output/shadow" 
+        + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+
+        result_filename = geocast_shadow_dir + "/glsgo/glsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                              std::to_string (numVehicle) + ".csv"; 
         
         const char *dir = shadow_dir.c_str();
         struct stat statBuf;
@@ -1131,12 +1143,15 @@ RoutingProtocol::SimulationResult (void) //
         }
         std::string s_glsgo_dir = shadow_dir + "/glsgo";
         std::string  s_send_glsgo_dir = shadow_dir + "/send_glsgo";
+        std::string s_result_dir = geocast_shadow_dir + "/glsgo";
         const char * c_glsgo_dir = s_glsgo_dir.c_str();
         const char * c_send_glsgo_dir = s_send_glsgo_dir.c_str();
+        const char * c_result_dir = s_result_dir.c_str();
         if(stat(c_glsgo_dir, &statBuf) != 0)
         {
           mkdir(c_glsgo_dir, S_IRWXU);
           mkdir(c_send_glsgo_dir, S_IRWXU);
+          mkdir(c_result_dir, S_IRWXU);
         }
       }
       else{
@@ -1146,6 +1161,30 @@ RoutingProtocol::SimulationResult (void) //
         send_filename = "data/no_buildings/send_glsgo/glsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                                   std::to_string (numVehicle) + ".csv";
       }
+
+      std::ofstream resultOutput (result_filename);
+      resultOutput <<  "seed"
+                   << ","
+                   << "source_id"
+                   << ","
+                   << "PDR"
+                   << ","
+                   << "Overhead" << std::endl;
+      for(int source_list_index = 0; source_list_index < Grobal_SourceNodeNum; source_list_index ++)
+      {
+        resultOutput << Grobal_Seed << ", " << source_list[source_list_index] << ", " 
+              << m_pdr[source_list[source_list_index]] << ", " << m_overhead[source_list[source_list_index]] << std::endl;
+      }
+
+      // for (int i = 0; i < packetCount; i++)
+      //   {
+      //     packetTrajectory << p_source_id[i] << ", " << p_send_x[i] << ", " << p_send_y[i] << ", " << p_recv_x[i] << ", "
+      //                      << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
+      //                      << ", " << p_hopcount[i] << ", " << p_recv_id[i] << ", "
+      //                      << p_send_id[i] << ", " << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
+      //                      << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
+      //                      << p_pri_5[i] << std::endl;
+      //   }
 
       std::ofstream packetTrajectory (filename);
       packetTrajectory << "source_id"
@@ -1181,6 +1220,7 @@ RoutingProtocol::SimulationResult (void) //
                        << "pri_4"
                        << ","
                        << "pri_5" << std::endl;
+
       std::ofstream send_packetTrajectory (send_filename);
       send_packetTrajectory << "source_id"
                             << ","
@@ -1246,6 +1286,7 @@ std::vector<int> RoutingProtocol::source_list;
 std::vector<int> RoutingProtocol::des_list;
 std::multimap<int, int> RoutingProtocol::m_multicast_region_id;
 std::multimap<int, int>RoutingProtocol::m_multicast_region_recv_id;
+std::map<int, int> RoutingProtocol::m_geocast_count;
 
 //パケット軌跡出力用の変数
 //パケット軌跡出力用の変数
