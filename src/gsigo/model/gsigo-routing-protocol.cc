@@ -2032,23 +2032,29 @@ RoutingProtocol::RoadCenterPoint (void)
 void
 RoutingProtocol::SimulationResult (void) //
 {
-  std::map<int, int> m_mr_node_count; //key source_id value: multicast regionのノード数
-  std::map<int, int> m_mr_recv_node_count; //key: source_id value: multicast region 受信数
-  // std::map<int, double> m_overhead; // key source_id value Overhead
-  for(int source_list_index = 0; source_list_index < Grobal_SourceNodeNum; source_list_index ++)
+  std::cout << "time" << Simulator::Now ().GetSeconds () << "\n";
+  // int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
+  if (Simulator::Now ().GetSeconds () == Grobal_StartTime + Grobal_SourceNodeNum + 1)
   {
-    int count = m_multicast_region_id.count(source_list[source_list_index]); //multicast regionノード数
-    int recv_count = m_multicast_region_recv_id.count(source_list[source_list_index]);
-    std::cout << "source id " << source_list[source_list_index] << "のMRの個数 " << count << std::endl;
-    std::cout << "multicast region 受信数" << recv_count << std::endl;
-    double pdr = double(recv_count)/(double)count;
-    // double overhead = m_geocast_count[source_list[source_list_index]] / recv_count;
-    std::cout << "pdr" << pdr << std::endl;
-    std::cout << "number of geocast packets" << m_geocast_count[source_list[source_list_index]] << std::endl;
-    m_pdr[source_list[source_list_index]] = pdr;
-    m_mr_node_count[source_list[source_list_index]] = count;
-    m_mr_recv_node_count[source_list[source_list_index]] = recv_count;
-  }
+    std::map<int, double> m_pdr; // key source_id value PDR
+    std::map<int, int> m_mr_node_count; //key source_id value: multicast regionのノード数
+    std::map<int, int> m_mr_recv_node_count; //key: source_id value: multicast region 受信数
+    // std::map<int, double> m_overhead; // key source_id value Overhead
+    std::cout << "simulation resulet\n";
+    for(int source_list_index = 0; source_list_index < Grobal_SourceNodeNum; source_list_index ++)
+    {
+      int count = m_multicast_region_id.count(source_list[source_list_index]); //multicast regionノード数
+      int recv_count = m_multicast_region_recv_id.count(source_list[source_list_index]);
+      std::cout << "source id " << source_list[source_list_index] << "のMRの個数 " << count << std::endl;
+      std::cout << "multicast region 受信数" << recv_count << std::endl;
+      double pdr = double(recv_count)/(double)count;
+      // double overhead = m_geocast_count[source_list[source_list_index]] / recv_count;
+      std::cout << "pdr" << pdr << std::endl;
+      std::cout << "number of geocast packets" << m_geocast_count[source_list[source_list_index]] << std::endl;
+      m_pdr[source_list[source_list_index]] = pdr;
+      m_mr_node_count[source_list[source_list_index]] = count;
+      m_mr_recv_node_count[source_list[source_list_index]] = recv_count;
+    }
 
     std::string filename;
     std::string send_filename;
@@ -2056,11 +2062,11 @@ RoutingProtocol::SimulationResult (void) //
 
     if(Buildings == 1)
     {
-      // std::string shadow_dir = "data/get_data/" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
-      // + "/" + std::to_string (Grobal_InterPoint);
-      //　書き出し pass
-      std::string shadow_dir = "data/get_data/recover/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
-      std::cout<<"shadowing packet csv \n";
+      std::string shadow_dir = "data/get_data/geocast/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
+      + "/" + std::to_string (Grobal_InterPoint);
+
+      std::string output_shadow_dir = "data/get_data/geocast_output/shadow" 
+        + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
 
       if(Grobal_recovery_protocol == 0)
       {
@@ -2069,26 +2075,23 @@ RoutingProtocol::SimulationResult (void) //
         filename = shadow_dir + "/gsigo/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                             std::to_string (numVehicle) + ".csv";
         send_filename = shadow_dir + "/send_gsigo/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
-                                  std::to_string (numVehicle) + ".csv";          
+                                  std::to_string (numVehicle) + ".csv";
+        result_filename = output_shadow_dir + "/gsigo/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+                              std::to_string (numVehicle) + ".csv"; 
+
       }else if(Grobal_recovery_protocol == 1)
       {
-        std::cout << "\n\n\n  gsigo gsigo recovery output\n";
-        filename = shadow_dir + "/gsigo_recover/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
-                            std::to_string (numVehicle) + ".csv";
-        send_filename = shadow_dir + "/send_gsigo_recover/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
-                                  std::to_string (numVehicle) + ".csv";
-      }else if(Grobal_recovery_protocol == 2)
-      {
-        std::cout << "\n\n\n  gsigo jbr recovery output\n";
-        filename = shadow_dir + "/jbr/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
-                            std::to_string (numVehicle) + ".csv";
-        send_filename = shadow_dir + "/send_jbr/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
-                                  std::to_string (numVehicle) + ".csv";
+        // std::cout << "\n\n\n  gsigo gsigo recovery output\n";
+        // filename = shadow_dir + "/gsigo_recover/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+        //                     std::to_string (numVehicle) + ".csv";
+        // send_filename = shadow_dir + "/send_gsigo_recover/gsigo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
+        //                           std::to_string (numVehicle) + ".csv";
       }else {
         //gpcr
       }
       
       const char *dir = shadow_dir.c_str();
+      const char *result_dir = output_shadow_dir.c_str();
       struct stat statBuf;
 
       if (stat(dir, &statBuf) != 0) //directoryがなかったら
@@ -2096,9 +2099,16 @@ RoutingProtocol::SimulationResult (void) //
         std::cout<<"ディレクトリが存在しないので作成します\n";
         mkdir(dir, S_IRWXU);
       }
+      if (stat(result_dir, &statBuf) != 0) //directoryがなかったら
+      {
+        std::cout<<"ディレクトリが存在しないので作成します\n";
+        mkdir(result_dir, S_IRWXU);
+      }
+
 
       std::string s_gsigo_dir;
       std::string  s_send_gsigo_dir;
+      std::string s_result_dir = output_shadow_dir + "/gsigo";
       
 
       if(Grobal_recovery_protocol == 0)
@@ -2122,10 +2132,16 @@ RoutingProtocol::SimulationResult (void) //
 
       const char * c_gsigo_dir = s_gsigo_dir.c_str();
       const char * c_send_gsigo_dir = s_send_gsigo_dir.c_str();
+      const char * c_result_dir = s_result_dir.c_str();
+
       if(stat(c_gsigo_dir, &statBuf) != 0)
       {
         mkdir(c_gsigo_dir, S_IRWXU);
         mkdir(c_send_gsigo_dir, S_IRWXU);
+      }
+      if(stat(c_result_dir, &statBuf) != 0)
+      {
+        mkdir(c_result_dir, S_IRWXU);
       }
     }
     else{
@@ -2136,42 +2152,70 @@ RoutingProtocol::SimulationResult (void) //
                                 std::to_string (numVehicle) + ".csv";
     }
 
+    std::ofstream resultOutput (result_filename);
+      resultOutput <<  "seed"
+                   << ","
+                   << "source_id"
+                   << ","
+                   << "PDR"
+                   << ","
+                   << "geocast_packets"
+                   << ","
+                   << "flooding_packets"
+                   << ","
+                   << "mr_nodes"
+                   << ","
+                   << "mr_recvs"
+                   << std::endl;
+      for(int source_list_index = 0; source_list_index < Grobal_SourceNodeNum; source_list_index ++)
+      {
+        resultOutput << Grobal_Seed << ", " << source_list[source_list_index] << ", " 
+              << m_pdr[source_list[source_list_index]] << ", " 
+              << m_geocast_count[source_list[source_list_index]] << ", " 
+              << m_flooding_count[source_list[source_list_index]]
+              << ", " 
+              << m_mr_node_count[source_list[source_list_index]]
+              << ", " 
+              << m_mr_recv_node_count[source_list[source_list_index]]
+              << std::endl;
+      }
+
     std::ofstream packetTrajectory (filename);
-    packetTrajectory << "source_x"
-                      << ","
-                      << "source_y"
-                      << ","
-                      << "recv_x"
-                      << ","
-                      << "recv_y"
-                      << ","
-                      << "time"
-                      << ","
-                      << "recv_priority"
-                      << ","
-                      << "hopcount"
-                      << ","
-                      << "recv_id"
-                      << ","
-                      << "source_id"
-                      << ","
-                      << "destination_id"
-                      << ","
-                      << "destination_x"
-                      << ","
-                      << "destination_y"
-                      << ","
-                      << "pri_1"
-                      << ","
-                      << "pri_2"
-                      << ","
-                      << "pri_3"
-                      << ","
-                      << "pri_4"
-                      << ","
-                      << "pri_5"
-                      << ","
-                      << "pri_recover" << std::endl;
+    packetTrajectory << "source_id"
+                     << ","
+                     << "send_x"
+                     << ","
+                     << "send_y"
+                     << ","
+                     << "recv_x"
+                     << ","
+                     << "recv_y"
+                     << ","
+                     << "time"
+                     << ","
+                     << "recv_priority"
+                     << ","
+                     << "hopcount"
+                     << ","
+                     << "recv_id"
+                     << ","
+                     << "send_id"
+                     << ","
+                     << "destination_x"
+                     << ","
+                     << "destination_y"
+                     << ","
+                     << "pri_1"
+                     << ","
+                     << "pri_2"
+                     << ","
+                     << "pri_3"
+                     << ","
+                     << "pri_4"
+                     << ","
+                     << "pri_5"
+                     << ","
+                     << "pri_recover" << std::endl;
 
     std::ofstream send_packetTrajectory (send_filename);
     send_packetTrajectory << "source_id"
@@ -2221,26 +2265,25 @@ RoutingProtocol::SimulationResult (void) //
     for (int i = 0; i < packetCount; i++)
       {
 
-        packetTrajectory << p_source_x[i] << ", " << p_source_y[i] << ", " << p_recv_x[i] << ", "
-                          << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
-                          << ", " << p_hopcount[i] << ", " << p_recv_id[i] << ", "
-                          << p_source_id[i] << ", " << p_destination_id[i] << ", "
-                          << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
-                          << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
-                          << p_pri_5[i] << ", " << p_recovery[i] << std::endl;
+        packetTrajectory << p_source_id[i] << ", " << p_send_x[i] << ", " << p_send_y[i] << ", " << p_recv_x[i] << ", "
+                           << p_recv_y[i] << ", " << p_recv_time[i] << ", " << p_recv_priority[i]
+                           << ", " << p_hopcount[i] << ", " << p_recv_id[i] << ", "
+                           << p_send_id[i] << ", " << p_destination_x[i] << ", " << p_destination_y[i] << ", " << p_pri_1[i]
+                           << ", " << p_pri_2[i] << ", " << p_pri_3[i] << ", " << p_pri_4[i] << ", "
+                           << p_pri_5[i] << ", " << p_recovery[i] << std::endl;
       }
-    for (int i = 0; i < sendpacketCount; i++)
-      {
-        send_packetTrajectory << s_source_id[i] << ", " << s_source_x[i] << ", " << s_source_y[i]
-                              << ", " << s_time[i] << ", " << s_hop[i] << ", " << s_pri_1_id[i]
-                              << ", " << s_pri_2_id[i] << ", " << s_pri_3_id[i] << ", "
-                              << s_pri_4_id[i] << ", " << s_pri_5_id[i] << ", " << s_pri_1_r[i]
-                              << ", " << s_pri_2_r[i] << ", " << s_pri_3_r[i] << ", "
-                              << s_pri_4_r[i] << ", " << s_pri_5_r[i] << ", " << s_des_id[i]
-                              << ", " << s_inter_1_id[i] << ", " << s_inter_2_id[i] << ", "
-                              << s_inter_3_id[i] << ", " << s_inter_4_id[i] << ", "
-                              << s_inter_5_id[i] << ", " << s_send_log[i] << std::endl;
-      }
+    // for (int i = 0; i < sendpacketCount; i++)
+    //   {
+    //     send_packetTrajectory << s_source_id[i] << ", " << s_source_x[i] << ", " << s_source_y[i]
+    //                           << ", " << s_time[i] << ", " << s_hop[i] << ", " << s_pri_1_id[i]
+    //                           << ", " << s_pri_2_id[i] << ", " << s_pri_3_id[i] << ", "
+    //                           << s_pri_4_id[i] << ", " << s_pri_5_id[i] << ", " << s_pri_1_r[i]
+    //                           << ", " << s_pri_2_r[i] << ", " << s_pri_3_r[i] << ", "
+    //                           << s_pri_4_r[i] << ", " << s_pri_5_r[i] << ", " << s_des_id[i]
+    //                           << ", " << s_inter_1_id[i] << ", " << s_inter_2_id[i] << ", "
+    //                           << s_inter_3_id[i] << ", " << s_inter_4_id[i] << ", "
+    //                           << s_inter_5_id[i] << ", " << s_send_log[i] << std::endl;
+    //   }
   }
 }
 

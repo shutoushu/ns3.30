@@ -675,7 +675,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
     
     case 12:
       list.Add (gsigo, 100);
-      m_protocolName = "JBR recovery";
+      m_protocolName = "Geocast sigo";
       Grobal_recovery_protocol  = 0;
       std::cout << "obstacle debug ------------------------------------------ geocast sigo"
                    "protocol done"
@@ -684,7 +684,7 @@ RoutingHelper::SetupRoutingProtocol (NodeContainer &c)
 
     case 13:
       list.Add (gsigo, 100);
-      m_protocolName = "JBR recovery";
+      m_protocolName = "Geocast SIGO and recovery";
       Grobal_recovery_protocol  = 1;
       std::cout << "obstacle debug ------------------------------------------ geocast sigo sigo recovery"
                    "protocol done"
