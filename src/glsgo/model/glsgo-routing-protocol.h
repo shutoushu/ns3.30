@@ -84,7 +84,8 @@ public:
   // key:source node id   value: source nodeがbroadcastした時muilticas regionにいたノードID
   static std::multimap<int, int> m_multicast_region_recv_id;
   //key: source node id value : multicast regionで受信したノードID
-  static std::map<int, int> m_geocast_count; 
+  static std::map<int, int> m_geocast_count;
+  static std::map<int, int> m_flooding_count; 
   //key source node id     value: geocast 送信数
 
   //パケット軌跡出力用の変数 recv
