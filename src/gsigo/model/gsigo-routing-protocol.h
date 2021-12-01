@@ -67,6 +67,12 @@
 
 #define NumCandidateNodes 5
 
+// geocast 中心座標
+#define GeocastCenterX 700
+#define GeocastCenterY 750
+
+#define NumCandidateNodes 5     
+
 
 namespace ns3 {
 namespace gsigo {
@@ -104,20 +110,25 @@ public:
   static std::map<std::string, double> m_road_center_y;  // key road id value road center position y
   static std::vector<int> source_list; //指定エリアにいるsource node 候補 insertされるのはノードID
   static std::vector<int> des_list;
-  std::multimap<int, int> m_multicast_region_id; 
+  static std::multimap<int, int> m_multicast_region_id; 
   // key:source node id   value: source nodeがbroadcastした時muilticas regionにいたノードID
+  static std::multimap<int, int> m_multicast_region_recv_id;
+  //key: source node id value : multicast regionで受信したノードID
+  static std::map<int, int> m_geocast_count;
+  static std::map<int, int> m_flooding_count; 
+  //key source node id     value: geocast 送信数
 
   //パケット軌跡出力用の変数 recv
-  static std::vector<int> p_source_x;
-  static std::vector<int> p_source_y;
+  static std::vector<int> p_source_id;
+  static std::vector<int> p_send_x;
+  static std::vector<int> p_send_y;
   static std::vector<int> p_recv_x;
   static std::vector<int> p_recv_y;
   static std::vector<int> p_recv_time;
   static std::vector<int> p_recv_priority;
   static std::vector<int> p_hopcount;
   static std::vector<int> p_recv_id;
-  static std::vector<int> p_source_id;
-  static std::vector<int> p_destination_id;
+  static std::vector<int> p_send_id;
   static std::vector<int> p_destination_x;
   static std::vector<int> p_destination_y;
   static std::vector<int> p_pri_1;
@@ -266,6 +277,20 @@ private:
   int32_t local_source_x, int32_t local_source_y, int32_t previous_x, int32_t previous_y, 
   int32_t des_x, int32_t des_y);
 
+  // geocast 追加関数
+  void MulticastRegionRegister (int32_t source_id); //multicast regionにいるノードを登録する関数
+  void DecisionRelayCandidateNode (int32_t candidate_node_id[NumCandidateNodes + 1]);
+  // geocast をする関数
+  void SendGeocast (int32_t pri_value, int32_t source_id, int32_t hopcount);
+  // recovery geocastをする関数
+  void SendRecoveryGeocast(int32_t pri_value, int32_t source_id, int32_t local_source_x, 
+  int32_t local_source_y,int32_t hopcount, int32_t one_before_x, 
+  int32_t one_before_y, int32_t previous_x, int32_t previous_y);
+  // relay candidate nodeを決めない broadcastをする関数
+  void Flooding (int32_t source_id, int32_t hopcount); //geocast region内のrebroadcast
+  void SendToFlooding (Ptr<Socket> socket, Ptr<Packet> packet,
+                    Ipv4Address destination); //flooding(relay candidate nodeを決めない broadcast)
+
   //**map**//
   std::map<int, int> m_xpoint; //近隣車両の位置情報を取得するmap  key=nodeid value=xposition
   std::map<int, int> m_ypoint; //近隣車両の位置情報を取得するmap  key=nodeid value=yposition
@@ -284,6 +309,7 @@ private:
   std::map<int, int>
       m_relation; //近隣ノードとの関係性 key = nodeid value=  同一道路1 or　異なる道路 2
   std::map<int, int> m_send_check; //key = destination_id value = send_logファイルのindex
+  std::map<int, int> m_recv_packet_id; //key packet id   value 1 or 0   1 = 受信済み
 
   ///以下のマップは使ったら消去する
   std::map<int, int> m_recvcount; //windows size以下のMAPの取得回数
