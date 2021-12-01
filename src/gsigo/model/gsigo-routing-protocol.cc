@@ -2062,8 +2062,8 @@ RoutingProtocol::SimulationResult (void) //
 
     if(Buildings == 1)
     {
-      std::string shadow_dir = "data/get_data/geocast/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma) 
-      + "/" + std::to_string (Grobal_InterPoint);
+      std::string shadow_dir = "data/get_data/geocast/shadow" + 
+      std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
 
       std::string output_shadow_dir = "data/get_data/geocast_output/shadow" 
         + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
