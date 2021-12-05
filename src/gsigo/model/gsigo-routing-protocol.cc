@@ -742,25 +742,26 @@ RoutingProtocol::SendToFlooding (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Add
 
 void
 RoutingProtocol::SendToGsigo (Ptr<Socket> socket, Ptr<Packet> packet, Ipv4Address destination,
-                             int32_t hopcount, int32_t des_id)
+                             int32_t hopcount, int32_t source_id)
 {
   int32_t id = m_ipv4->GetObject<Node> ()->GetId ();
   Ptr<MobilityModel> mobility = m_ipv4->GetObject<Node> ()->GetObject<MobilityModel> ();
   Vector mypos = mobility->GetPosition ();
 
-  if (m_wait[des_id] == hopcount) //送信するhopcount がまだ待機中だったら
+  if (m_wait[source_id] == hopcount) //送信するhopcount がまだ待機中だったら
     {
       std::cout << "id " << id << " broadcast----------------------------------------------------"
-                << "time" << Simulator::Now ().GetMicroSeconds () << "m_wait" << m_wait[des_id]
+                << "time" << Simulator::Now ().GetMicroSeconds () << "m_wait" << m_wait[source_id]
                 << "position(" << mypos.x << "," << mypos.y << ")"
                 << "\n";
+      m_geocast_count[source_id] = m_geocast_count[source_id] + 1;
       socket->SendTo (packet, 0, InetSocketAddress (destination, GSIGO_PORT));
-      m_wait.erase (des_id);
+      m_wait.erase (source_id);
 
-      if (m_finish_time[des_id] == 0) // まだ受信車両が受信してなかったら
+      if (m_finish_time[source_id] == 0) // まだ受信車両が受信してなかったら
         {
-          s_send_log[m_send_check[des_id]] = 1;
-          broadcount[des_id] = broadcount[des_id] + 1; // gsigo recovery test 中はコメントアウト
+          s_send_log[m_send_check[source_id]] = 1;
+          broadcount[source_id] = broadcount[source_id] + 1; // gsigo recovery test 中はコメントアウト
         }
     }
   else
