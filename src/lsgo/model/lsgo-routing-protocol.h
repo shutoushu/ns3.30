@@ -35,6 +35,7 @@
 #define HelloInterval 1 //Hello packet のインターバル
 #define WaitT 4000 //待ち時間の差 micro単位
 #define TransProbability 1.2 //予想伝送確率の閾値
+#define NumRelayNodes 5
 
 #define SourceLowX -50
 #define SourceHighX 300

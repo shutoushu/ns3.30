@@ -592,7 +592,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
 
       SetEtxMap (); //m_rt と　EtX mapをセットする
       SetPriValueMap (des_x, des_y); //優先度を決める値をセットする関数
-
+      
       int32_t pri_id[6];
       pri_id[1] = 10000000; ///ダミーID
       pri_id[2] = 10000000;
@@ -654,6 +654,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         }
       // 候補ノード選択アルゴリズム
       int candidataNum = 5; // 候補ノード数　初期値は最大
+      double TransmissionProbablility = 1.0; 
 
       for (int n = 1; n < 6; n++) //5回回して、 条件を満たすまでまわる nは候補ノード数
         {
@@ -663,12 +664,14 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
               double rtMiss = 1 - m_rt[pri_id[p]]; // 伝送に失敗する予想確率
               infiniteProduct = infiniteProduct * rtMiss;
             }
-          if (TransProbability <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
+          if (TransmissionProbablility <= (1 - infiniteProduct)) //選択アルゴリズムの条件を満たすならば
             {
               candidataNum = n; //候補ノード数を変更
               break;
             }
         }
+
+      // TransProbablity = 1.2,  candidataNum = NumRelayNodesで中継ノードを固定値に
 
       std::cout << "候補ノード数は" << candidataNum << "\n";
       switch (candidataNum) //候補ノード数によってダミーノードIDを加える
@@ -1065,7 +1068,7 @@ RoutingProtocol::SimulationResult (void) //
       if(Buildings == 1)
       {
         ////書き出し path
-       std::string shadow_dir = "data/get_data/recover_test2/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+       std::string shadow_dir = "data/get_data/evaluation_relay_nodes/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
