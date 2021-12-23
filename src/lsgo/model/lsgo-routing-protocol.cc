@@ -672,7 +672,7 @@ RoutingProtocol::SendLsgoBroadcast (int32_t pri_value, int32_t des_id, int32_t d
         }
 
       // TransProbablity = 1.2,  candidataNum = NumRelayNodesで中継ノードを固定値に
-      candidataNum = 3;
+      candidataNum = 4;
 
       std::cout << "候補ノード数は" << candidataNum << "\n";
       switch (candidataNum) //候補ノード数によってダミーノードIDを加える
@@ -1069,7 +1069,7 @@ RoutingProtocol::SimulationResult (void) //
       if(Buildings == 1)
       {
         ////書き出し path
-       std::string shadow_dir = "data/get_data/evaluation_relay_nodes3/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
+       std::string shadow_dir = "data/get_data/evaluation_relay_nodes4/shadow" + std::to_string(Grobal_m_beta) + "_" + std::to_string (Grobal_m_gamma);
         std::cout<<"shadowing packet csv \n";
         filename = shadow_dir + "/lsgo/lsgo-seed_" + std::to_string (Grobal_Seed) + "nodenum_" +
                              std::to_string (numVehicle) + ".csv";
