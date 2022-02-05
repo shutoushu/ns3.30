@@ -80,10 +80,12 @@ sudo apt-get install libcgal-dev
 
 
 ## ns-3実行
-
+cd ns3.30
 ./waf configure  
 ./waf build  
 
 実行コマンド(例)  
-./waf --run "Lsgo-SimulationScenario --buildings=0  --protocol=6 --lossModel=4 --scenario=3 --nodes=300 --seed=10000"  
+./waf --run "Lsgo-SimulationScenario --buildings=0  --protocol=6 --lossModel=4 --scenario=3 --nodes=300 --seed=10000" 
+
+
 
