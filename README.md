@@ -98,12 +98,17 @@ cd ns3.30
 
 ## 実行コマンド属性
 **buildings** : int (1 or 0),   1 = obstacle shadowing model, 0 = shadowingなし  <br>
+<br>
 **lossModel** : int (1 ~ 4),   (4を推奨)     4 = Logdistance + nakagami + obstacle propagation model  <br>
+<br>
 **scenario** : int(1 ~ 3), (3推奨)   Lsgo-SimulationScenario.cc  > SetupScenarioメソッドで使用する　scenario = 3の時にsumoのmobilityファイルを定義している(2555行目)  <br>
+<br>
 **nodes** : int(200, 300, 400, 500), sumoで作成したmobilityファイルのノード数に依存する.  <br>
 私のns3.30をcloneしている場合は, src/wave/examples/no_signalフォルダに200, 300, 400, 500のノード数のmobilityファイルが存在する.   
 ファイル名 : no_signal{ノード数}.tcl    
+<br>
 **seed** : int, ランダム変数. ソースノードと宛先ノードのペアがランダム変数で決定される.  <br>
+<br>
 **protocol** : int(1 ~ 4)  1 = SIGO, 2 = SIGO + ORS, 3 = SIGO + JBR, 4 = LSGO  <br>
 各プロトコルの詳細 : https://onl.la/Rds4q5R (修士論文参考)
 
