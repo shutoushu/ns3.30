@@ -124,17 +124,17 @@ cd ns3.30
 ```
 pip install notebook
 ```
-** jupyter notebook 起動 **  
+**jupyter notebook 起動**  
 ```
 jupyter notebook
 ```
 
-** パケット可視化ファイルを開く **  
+**パケット可視化ファイルを開く**  
 path = ns3.30/data/Notebooks/ns3-packet-trajectory/packet_visualize.ipynb <br>
 <br>
 ※opencvでパケットを送信したノードと受信したノードを矢印で描画しました. そのため最低限, パケットを送信したノードの位置, 受信したノードの位置が必要(ns3からエクセルファイルに書き出し)になります. 私は, その他プロトコルごとに色分け, ホップ数の絞り込み等をしましたが, 必用であれば書き換えて利用ください. 
 
-** 可視化参考図 **
+**可視化参考図**
 ![messageImage_1644043404420](https://user-images.githubusercontent.com/56241683/152631779-7924de23-06a7-42d8-8f06-f13c9bdbef47.jpg)
 
 
