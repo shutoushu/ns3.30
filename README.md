@@ -2,14 +2,22 @@
 The Network Simulator, Version 3.30
 
 ## Requirement 
-ubuntu 18.04 (Shadowing modelでCGALというライブラリを使用するため)    
+--------------------ns3-----------------------  
+ubuntu 18.04 (CGALをインストールできるバージョン)      
 CGAL   
+python 3.8.9 (パケット軌跡可視化に必要)  
+---------------------------------------------  
+-----------パケット可視化アプリ---------------  
+juypter notebook  
+windows  
+--------------------------------------------  
 
 ## 目次:
 
 1) [NS3環境構築](#環境構築)
 2) [ns-3実行](#ns-3実行)
 3) [ns-3実行](#実行コマンド属性)
+4) [パケット軌跡可視化](#パケット軌跡可視化)
 
 Note:  Much more substantial information about ns-3 can be found at
 http://www.nsnam.org
@@ -112,7 +120,11 @@ cd ns3.30
 **protocol** : int(1 ~ 4)  1 = SIGO, 2 = SIGO + ORS, 3 = SIGO + JBR, 4 = LSGO  <br>
 各プロトコルの詳細 : https://onl.la/Rds4q5R (修士論文参考)
 
+## パケット軌跡可視化
+**jupyter notebook install**
+```
 
+```
 
 
 
