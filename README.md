@@ -104,7 +104,7 @@ scenario : int(1 ~ 3), (3推奨)   Lsgo-SimulationScenario.cc  > SetupScenario�
 nodes: int(200, 300, 400, 500), sumoで作成したmobilityファイルのノード数に依存する.  
 私のns3.30をcloneしている場合は, src/wave/examples/no_signalフォルダに200, 300, 400, 500のノード数のmobilityファイルが存在する.   
 ファイル名 : no_signal{ノード数}.tcl    
-seed : int, ランダム変数. ソースノードと宛先ノードのペアがランダム変数で決定される.
+seed : int, ランダム変数. ソースノードと宛先ノードのペアがランダム変数で決定される.  
 *aiueo  ffff
 
 
