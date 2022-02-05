@@ -1,9 +1,9 @@
 
 The Network Simulator, Version 3.30
 
-推奨　環境  
-ubuntu 18.04 (Shadowing modelでCGALというライブラリを使用するため)  
-ubuntuの最新版ではCGALのインストールができなかった  
+## Requirement 
+ubuntu 18.04 (Shadowing modelでCGALというライブラリを使用するため)    
+CGAL   
 ================================
 
 ## 目次:
@@ -11,7 +11,6 @@ ubuntuの最新版ではCGALのインストールができなかった
 1) [NS3環境構築](#環境構築)
 2) [ns-3実行](#ns-3実行)
 3) [ns-3実行](#実行コマンド属性)
-4) [Running ns-3](#running-ns3)
 
 Note:  Much more substantial information about ns-3 can be found at
 http://www.nsnam.org
@@ -106,6 +105,7 @@ nodes: int(200, 300, 400, 500), sumoで作成したmobilityファイルのノー
 私のns3.30をcloneしている場合は, src/wave/examples/no_signalフォルダに200, 300, 400, 500のノード数のmobilityファイルが存在する.   
 ファイル名 : no_signal{ノード数}.tcl    
 seed : int, ランダム変数. ソースノードと宛先ノードのペアがランダム変数で決定される.
+*aiueo  ffff
 
 
 
