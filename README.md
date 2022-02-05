@@ -10,7 +10,8 @@ ubuntuの最新版ではCGALのインストールができなかった
 
 1) [NS3環境構築](#環境構築)
 2) [ns-3実行](#ns-3実行)
-3) [Running ns-3](#running-ns3)
+3) [ns-3実行](#実行コマンド属性)
+4) [Running ns-3](#running-ns3)
 
 Note:  Much more substantial information about ns-3 can be found at
 http://www.nsnam.org
@@ -62,30 +63,52 @@ sudo apt install -y python3-sphinx dia
 ```
 ---------------------------------------------------------------------------------------------
 
-NS3のインストール  
+NS3のインストール 
+```
 $ cd  
 $ mkdir workspace  
 $ cd workspace  
 $ git clone https://gitlab.com/nsnam/ns-3-allinone.git  
-$ cd ns-3-allinone  
+$ cd ns-3-allinone 
+```
 
 ns-3-allioneディレクトリで私のNS３ファイル群を利用する方はgit cloneでインストールしてください(NS3インストール時に
 デフォルトでインストールされるものも含まれます)  
+```
 git clone https://github.com/shutoushu/ns3.30.git  
+```
 
 また、私のNS３のファイル群にはCGALライブラリが必要なので、CGALライブラリをインストールします  
+```
 sudo apt-get install libcgal-dev  
+```
 
 
 
 
 ## ns-3実行
+```
 cd ns3.30
 ./waf configure  
 ./waf build  
+```
 
 実行コマンド(例)  
+```
 ./waf --run "Lsgo-SimulationScenario --buildings=0  --protocol=6 --lossModel=4 --scenario=3 --nodes=300 --seed=10000" 
+```
+
+## 実行コマンド属性
+buildings : int (1 or 0),   1 = obstacle shadowing model, 0 = shadowingなし  
+lossModel : int (1 ~ 4),   (4を推奨)     4 = Logdistance + nakagami + obstacle propagation model  
+scenario : int(1 ~ 3), (3推奨)   Lsgo-SimulationScenario.cc  > SetupScenarioメソッドで使用する　scenario = 3の時にsumoのmobilityファイルを定義している(2555行目)  
+nodes: int(200, 300, 400, 500), sumoで作成したmobilityファイルのノード数に依存する.  
+私のns3.30をcloneしている場合は, src/wave/examples/no_signalフォルダに200, 300, 400, 500のノード数のmobilityファイルが存在する.   
+ファイル名 : no_signal{ノード数}.tcl    
+
+
+
+
 
 
 
