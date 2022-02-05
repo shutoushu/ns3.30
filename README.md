@@ -122,7 +122,11 @@ cd ns3.30
 ## パケット軌跡可視化
 **jupyter notebook install**
 ```
-
+pip install notebook
+```
+**jupyter notebook 起動**
+```
+jupyter notebook
 ```
 
 
