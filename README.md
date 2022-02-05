@@ -4,7 +4,6 @@ The Network Simulator, Version 3.30
 ## Requirement 
 ubuntu 18.04 (Shadowing modelでCGALというライブラリを使用するため)    
 CGAL   
-================================
 
 ## 目次:
 
