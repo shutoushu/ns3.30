@@ -15,7 +15,7 @@ windows
 
 1) [NS3環境構築](#環境構築)
 2) [ns-3実行](#ns-3実行)
-3) [ns-3実行](#実行コマンド属性)
+3) [実行コマンド属性](#実行コマンド属性)
 4) [パケット軌跡可視化](#パケット軌跡可視化)
 
 Note:  Much more substantial information about ns-3 can be found at
